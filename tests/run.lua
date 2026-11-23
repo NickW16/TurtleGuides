@@ -18,6 +18,7 @@ local testFiles = {
   "tests/events_test.lua",
   "tests/guide_test.lua",
   "tests/guidepicker_test.lua",
+  "tests/guides_test.lua",
   "tests/init_test.lua",
   "tests/item_test.lua",
   "tests/mainwindow_test.lua",

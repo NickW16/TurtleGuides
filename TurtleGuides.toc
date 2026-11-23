@@ -25,6 +25,8 @@ src\parser\Context.lua
 src\parser\Elements.lua
 src\parser\Guide.lua
 src\parser\Registry.lua
+src\guides\Registry.lua
+src\guides\Suggestions.lua
 src\engine\State.lua
 src\engine\Quests.lua
 src\engine\Conditions.lua
