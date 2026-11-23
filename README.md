@@ -19,4 +19,4 @@ See `docs/ARCHITECTURE.md` for the runtime model and package layout, and `CONTRI
 
 ## License
 
-GPL-3.0-only. Copyright (C) 2026 NickW16 and Vittv. See `LICENSE` and `NOTICE`.
+GPL-3.0-only. Copyright (C) 2026 NickW16 and Vittv. See `LICENSE`, `NOTICE`, and `THIRD_PARTY_LICENSES.txt`.
