@@ -30,3 +30,5 @@ globals = {
   "RXPGuides", "SLASH_TURTLEGUIDES1", "SLASH_TURTLEGUIDES2", "TurtleGuidesCharDB",
   "TurtleGuidesDB", "pfDB", "pfQuest_history",
 }
+
+files["src/guides/*.lua"] = { max_line_length = false }
