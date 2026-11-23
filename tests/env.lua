@@ -21,6 +21,22 @@ function env.reset()
   _G.C_Map = nil
   _G.CreateVector2D = nil
   _G.UnitPosition = nil
+  _G.GetNumQuestLogEntries = function()
+    return 0
+  end
+  _G.GetQuestLogTitle = function() end
+  _G.GetNumQuestLeaderBoards = function()
+    return 0
+  end
+  _G.GetQuestLogLeaderBoard = function() end
+  _G.GetContainerNumSlots = function()
+    return 0
+  end
+  _G.GetContainerItemLink = function() end
+  _G.GetContainerItemInfo = function() end
+  _G.GetInventoryItemID = function() end
+  _G.GetInventoryItemLink = function() end
+  _G.GetItemInfo = function() end
   _G.DEFAULT_CHAT_FRAME = {
     AddMessage = function(_, msg)
       table.insert(messages, msg)

@@ -13,6 +13,8 @@ Core\Util.lua
 Compat\Text.lua
 Compat\ZoneData.lua
 Compat\Zone.lua
+Compat\QuestLog.lua
+Compat\Item.lua
 Core\Output.lua
 Core\State.lua
 Core\Events.lua
