@@ -1,0 +1,17 @@
+## Interface: 11200
+## Title: TurtleGuides
+## Notes: RXP-style leveling guides for Turtle WoW (Classic). Speedrun and Survival.
+## Author: TurtleGuides
+## Version: 0.1.0
+## SavedVariables: TurtleGuidesDB
+## SavedVariablesPerCharacter: TurtleGuidesCharDB
+## OptionalDeps: pfQuest, pfQuest-turtle
+
+Core.lua
+Core\Util.lua
+Core\Output.lua
+Core\State.lua
+Core\Events.lua
+Core\Commands.lua
+Core\Init.lua
+Parser\Applies.lua

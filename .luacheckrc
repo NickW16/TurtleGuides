@@ -23,7 +23,7 @@ globals = {
 
   -- frames, constants, and implicit event variables
   "DEFAULT_CHAT_FRAME", "GameTooltip", "INVSLOT_LAST_EQUIPPED", "MerchantFrame",
-  "Minimap", "NUM_TAXI_BUTTONS", "TaxiFrame", "UIParent", "WorldMapFrame",
+  "Minimap", "NUM_TAXI_BUTTONS", "SlashCmdList", "TaxiFrame", "UIParent", "WorldMapFrame",
   "arg1", "arg2", "arg3", "arg4", "arg5", "event", "this",
 
   -- addon globals and optional integrations
