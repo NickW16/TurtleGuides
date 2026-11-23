@@ -47,10 +47,28 @@ function env.reset()
       table.insert(messages, msg)
     end,
   }
-  _G.SlashCmdList = {}
-  local frames, textures, texts = {}, {}, {}
   local noop = function() end
+  _G.SlashCmdList = {}
+  _G.GameTooltip = {
+    SetOwner = noop,
+    SetText = noop,
+    AddLine = noop,
+    Show = noop,
+    Hide = noop,
+  }
+  local frames, textures, texts = {}, {}, {}
   _G.UIParent = {}
+  _G.Minimap = {
+    GetCenter = function()
+      return 0, 0
+    end,
+    GetEffectiveScale = function()
+      return 1
+    end,
+  }
+  _G.GetCursorPosition = function()
+    return 100, 100
+  end
   _G.SetMapToCurrentZone = noop
   _G.GetPlayerMapPosition = function()
     return 0, 0
@@ -69,6 +87,9 @@ function env.reset()
   end
   _G.UnitXPMax = function()
     return 100
+  end
+  _G.UnitLevel = function()
+    return 42
   end
   _G.AcceptQuest = noop
   _G.CompleteQuest = noop
@@ -153,6 +174,43 @@ function env.reset()
     frame.StopMovingOrSizing = noop
     frame.GetPoint = function()
       return "TOP", nil, "TOP", 0, -110
+    end
+    frame.SetText = function(_, text)
+      frame.text = text
+    end
+    frame.GetText = function()
+      return frame.text
+    end
+    frame.GetChecked = function()
+      return frame.checked
+    end
+    frame.SetChecked = function(_, value)
+      frame.checked = value
+    end
+    frame.SetOrientation = noop
+    frame.SetMinMaxValues = noop
+    frame.SetValueStep = noop
+    frame.SetBackdrop = noop
+    frame.SetBackdropColor = noop
+    frame.SetBackdropBorderColor = noop
+    frame.SetValue = function(_, value)
+      frame.value = value
+    end
+    frame.GetValue = function()
+      return frame.value or 0
+    end
+    frame.SetThumbTexture = noop
+    frame.RegisterForClicks = noop
+    frame.SetHighlightTexture = noop
+    frame.ClearAllPoints = noop
+    frame.IsVisible = function()
+      return frame.visible == true
+    end
+    frame.GetCenter = function()
+      return 0, 0
+    end
+    frame.GetEffectiveScale = function()
+      return 1
     end
     frame.CreateTexture = function()
       local texture = {}

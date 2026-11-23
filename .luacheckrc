@@ -22,7 +22,7 @@ globals = {
   "UnitLevel", "UnitName", "UnitRace", "UnitSex", "UnitXP", "UnitXPMax", "UseContainerItem",
 
   -- frames, constants, and implicit event variables
-  "C_Map", "CreateVector2D", "DEFAULT_CHAT_FRAME", "GameTooltip", "INVSLOT_LAST_EQUIPPED", "MerchantFrame",
+  "C_Map", "CreateVector2D", "DEFAULT_CHAT_FRAME", "GameTooltip", "GetCursorPosition", "INVSLOT_LAST_EQUIPPED", "MerchantFrame", "Minimap",
   "Minimap", "NUM_TAXI_BUTTONS", "SlashCmdList", "TaxiFrame", "UIParent", "WorldMapFrame",
   "UnitPosition", "arg1", "arg2", "arg3", "arg4", "arg5", "event", "this", "table.getn", "math.mod",
 
