@@ -10,6 +10,10 @@ mise install
 
 Tasks put the tools on PATH, so no shell activation is needed.
 
+## Architecture
+
+See `docs/ARCHITECTURE.md` for the runtime model, module layout, and loading rules.
+
 ## Writing style
 
 - Never use em dashes in code, comments, docs, or commit messages. Use commas instead.
