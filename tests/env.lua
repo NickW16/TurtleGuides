@@ -212,12 +212,43 @@ function env.reset()
     frame.GetEffectiveScale = function()
       return 1
     end
+    frame.SetNormalTexture = noop
+    frame.SetPushedTexture = noop
+    frame.SetDisabledTexture = noop
+    frame.SetAllPoints = noop
+    frame.SetBlendMode = noop
+    frame.SetFrameLevel = noop
+    frame.GetFrameLevel = function()
+      return 1
+    end
+    frame.GetWidth = function()
+      return 300
+    end
+    frame.SetScale = function(_, value)
+      frame.scale = value
+    end
+    frame.GetScale = function()
+      return frame.scale or 1
+    end
+    frame.IsShown = function()
+      return frame.visible == true
+    end
     frame.CreateTexture = function()
       local texture = {}
       texture.SetTexture = noop
       texture.SetWidth = noop
       texture.SetHeight = noop
       texture.SetPoint = noop
+      texture.ClearAllPoints = noop
+      texture.SetAllPoints = noop
+      texture.SetBlendMode = noop
+      texture.SetAlpha = noop
+      texture.IsShown = function()
+        return true
+      end
+      texture.GetHeight = function()
+        return 16
+      end
       texture.SetTexCoord = function(_, ...)
         texture.coords = { ... }
       end
@@ -232,8 +263,25 @@ function env.reset()
     frame.CreateFontString = function()
       local text = {}
       text.SetPoint = noop
+      text.ClearAllPoints = noop
       text.SetWidth = noop
       text.SetJustifyH = noop
+      text.SetJustifyV = noop
+      text.SetNonSpaceWrap = noop
+      text.SetAlpha = noop
+      text.SetTextColor = noop
+      text.Hide = noop
+      text.Show = noop
+      text.GetStringHeight = function()
+        return 14
+      end
+      text.SetFont = function(_, path, size, flags)
+        text.font = { path = path, size = size, flags = flags }
+      end
+      text.GetFont = function()
+        local font = text.font or { path = "Font", size = 12, flags = "" }
+        return font.path, font.size, font.flags
+      end
       text.SetText = function(_, value)
         text.value = value
       end
