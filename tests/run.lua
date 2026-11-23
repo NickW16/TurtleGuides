@@ -25,6 +25,7 @@ local testFiles = {
   "tests/mainwindow_test.lua",
   "tests/output_test.lua",
   "tests/questlog_test.lua",
+  "tests/race_guides_test.lua",
   "tests/registry_test.lua",
   "tests/runtime_test.lua",
   "tests/settings_test.lua",
