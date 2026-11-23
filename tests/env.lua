@@ -181,6 +181,10 @@ function env.reset()
     frame.GetText = function()
       return frame.text
     end
+    frame.SetAutoFocus = noop
+    frame.SetScrollChild = noop
+    frame.LockHighlight = noop
+    frame.UnlockHighlight = noop
     frame.GetChecked = function()
       return frame.checked
     end

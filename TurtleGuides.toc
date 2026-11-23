@@ -48,5 +48,7 @@ src\ui\Theme.lua
 src\ui\StepText.lua
 src\ui\Widgets.lua
 src\ui\MainWindow.lua
+src\ui\GuidePicker.lua
+src\ui\Settings.lua
 src\ui\Arrow.lua
 src\ui\Minimap.lua
