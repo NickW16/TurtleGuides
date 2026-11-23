@@ -1,0 +1,52 @@
+-- engine event and updater registration
+local TG = _G.TurtleGuides
+
+TG:RegisterEvent("QUEST_LOG_UPDATE", function()
+  TG:OnQuestLogUpdate()
+end)
+TG:RegisterEvent("QUEST_ACCEPTED", function(index)
+  TG:OnQuestAccepted(index)
+end)
+TG:RegisterEvent("QUEST_COMPLETE", function()
+  TG:OnQuestTurninDialog()
+end)
+TG:RegisterEvent("MERCHANT_SHOW", function()
+  TG:SignalManualAction("vendor")
+  TG:SignalManualAction("repair")
+end)
+TG:RegisterEvent("TRAINER_SHOW", function()
+  TG:SignalManualAction("trainer")
+  TG:SignalManualAction("train")
+end)
+TG:RegisterEvent("TAXIMAP_OPENED", function()
+  TG:SignalManualAction("fly")
+  TG:SignalManualAction("f")
+  TG:SignalManualAction("fp")
+end)
+TG:RegisterEvent("QUEST_FINISHED", function()
+  TG:OnQuestLogUpdate()
+end)
+TG:RegisterEvent("BAG_UPDATE", function()
+  TG:CheckAdvance("event")
+  if TG.UpdateUI then
+    TG:UpdateUI()
+  end
+end)
+TG:RegisterEvent("PLAYER_LEVEL_UP", function()
+  TG:CheckAdvance("event")
+  if TG.UpdateUI then
+    TG:UpdateUI()
+  end
+end)
+TG:RegisterEvent("PLAYER_XP_UPDATE", function()
+  if TG.UpdateUI then
+    TG:UpdateUI()
+  end
+end)
+TG:RegisterEvent("UI_INFO_MESSAGE", function() end)
+TG:AddUpdater("engine", 1.0, function()
+  TG:CheckAdvance("tick")
+end)
+TG:AddUpdater("manualCheck", 0.1, function()
+  TG:CheckManualCheckAdvance()
+end)

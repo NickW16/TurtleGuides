@@ -1,0 +1,193 @@
+-- live objective detection and step completion
+local TG = _G.TurtleGuides
+local Shared = TG.Engine.Shared
+local strtrim = TG.Util.strtrim
+local Completion = {}
+TG.Engine.Completion = Completion
+
+function TG:DetectElementDone(el)
+  if not el or el.t ~= "cmd" then
+    return nil
+  end
+  local tag = el.tag
+  if tag == "accept" then
+    local title, id = self:ResolveQuestTitle(el)
+    if title and self:IsQuestInLog(title) then
+      return true
+    end
+    if id and self.GetQuestLogIndexById and self:GetQuestLogIndexById(id) then
+      return true
+    end
+    if id and self._recentAccept then
+      local recent = self._recentAccept[id]
+      if recent and (GetTime and GetTime() or 0) - recent < Shared.RECENT_ACCEPT_WINDOW then
+        return true
+      end
+    end
+    if id and self.IsQuestTurnedIn and self:IsQuestTurnedIn(id) then
+      return true
+    end
+    return false
+  elseif tag == "turnin" then
+    local title, id = self:ResolveQuestTitle(el)
+    if id and self.IsQuestTurnedIn and self:IsQuestTurnedIn(id) then
+      return true
+    end
+    if title and self._turnedInTitles and self._turnedInTitles[title] then
+      return true
+    end
+    if title and not self:IsQuestInLog(title) then
+      if id and pfQuest_history and pfQuest_history[id] then
+        return true
+      end
+      return false
+    end
+    return false
+  elseif tag == "complete" then
+    local title, id = self:ResolveQuestTitle(el)
+    local objNum = el.args and tonumber(el.args[2])
+    if id and self.IsQuestTurnedIn and self:IsQuestTurnedIn(id) then
+      return true
+    end
+    if title and self._turnedInTitles and self._turnedInTitles[title] then
+      return true
+    end
+    local logIdx
+    if title and self.GetQuestLogIndexByTitle then
+      logIdx = self:GetQuestLogIndexByTitle(title)
+    end
+    if not logIdx and id and self.GetQuestLogIndexById then
+      logIdx = self:GetQuestLogIndexById(id)
+    end
+    if logIdx then
+      if objNum then
+        local done
+        if title and self.GetObjectiveDone then
+          done = self:GetObjectiveDone(title, objNum)
+        end
+        if done ~= nil then
+          return done
+        end
+        if GetQuestLogLeaderBoard then
+          local _, _, finished = GetQuestLogLeaderBoard(objNum, logIdx)
+          if finished ~= nil then
+            return finished and true or false
+          end
+        end
+        return nil
+      end
+      local _, _, _, _, _, isComplete = GetQuestLogTitle(logIdx)
+      if isComplete == 1 then
+        return true
+      end
+      if title then
+        local complete = self:IsQuestComplete(title)
+        if complete == 1 then
+          return true
+        end
+      end
+      return false
+    end
+    if title and not self:IsQuestInLog(title) then
+      if id and pfQuest_history and pfQuest_history[id] then
+        return true
+      end
+      return nil
+    end
+    return nil
+  elseif tag == "collect" then
+    local itemId = tonumber(el.args and el.args[1])
+    local count = tonumber(el.args and el.args[2]) or 1
+    local questId = tonumber(el.args and el.args[3])
+    if questId then
+      if self.IsQuestTurnedIn and self:IsQuestTurnedIn(questId) then
+        return true
+      end
+      if self.GetQuestLogIndexById then
+        local idx = self:GetQuestLogIndexById(questId)
+        if idx then
+          local _, _, _, _, _, isComplete = GetQuestLogTitle(idx)
+          if isComplete == 1 then
+            return true
+          end
+        end
+      end
+    end
+    if itemId then
+      return self:GetItemCount(itemId) >= count
+    end
+    return nil
+  elseif tag == "itemcount" then
+    return self:IsItemCountConditionMet(el)
+  elseif tag == "xp" then
+    local op, level, xp = self:ParseXpArg(el.args and el.args[1])
+    if not level then
+      return nil
+    end
+    if not UnitLevel or not UnitXP or not UnitXPMax then
+      return nil
+    end
+    local curLevel = UnitLevel("player")
+    local curXP = UnitXP("player")
+    local maxXP = UnitXPMax("player")
+    if not curLevel or not curXP or not maxXP or maxXP < 1 then
+      return nil
+    end
+    xp = xp or 0
+    if op == "<" then
+      return curLevel < level
+    end
+    if op == ">" then
+      return curLevel >= level
+    end
+    if xp < 0 then
+      return curLevel >= level or (curLevel == level - 1 and curXP >= maxXP + xp)
+    end
+    if xp > 0 and xp < 1 then
+      return curLevel > level or (curLevel == level and curXP >= maxXP * xp)
+    end
+    if xp > 0 then
+      return curLevel > level or (curLevel == level and curXP >= xp)
+    end
+    return curLevel >= level
+  end
+  return nil
+end
+
+function TG:IsElementDone(el)
+  self._tgDoneSource = nil
+  if el and el._tgManualDone then
+    self._tgDoneSource = "manual checkbox"
+    return true
+  end
+  local done = self:DetectElementDone(el)
+  if done == true then
+    self._tgDoneSource = tostring(el and el.tag or "objective") .. " detected"
+  end
+  return done
+end
+
+function TG:IsStepComplete(step)
+  if not step then
+    return false
+  end
+  local hasManual = self:StepHasManualAction(step)
+  if hasManual and not self:StepManualActionsSatisfied(step) then
+    return false
+  end
+  local hasReq, allDone = false, true
+  for _, el in ipairs(step.elements or {}) do
+    if Shared.isObjectiveElement(el) then
+      hasReq = true
+      if self:IsElementDone(el) ~= true then
+        allDone = false
+      end
+    end
+  end
+  if not hasReq then
+    return hasManual
+  end
+  return allDone
+end
+
+Completion.strtrim = strtrim

@@ -29,6 +29,12 @@ src\engine\State.lua
 src\engine\Quests.lua
 src\engine\Conditions.lua
 src\engine\Manual.lua
+src\engine\Completion.lua
+src\engine\Goto.lua
+src\engine\Navigation.lua
+src\engine\Advance.lua
+src\engine\Debug.lua
+src\engine\Events.lua
 src\waypoint\Geometry.lua
 src\waypoint\State.lua
 src\ui\Arrow.lua

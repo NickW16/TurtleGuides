@@ -63,6 +63,12 @@ function env.reset()
   _G.GetTitleText = function()
     return nil
   end
+  _G.UnitXP = function()
+    return 0
+  end
+  _G.UnitXPMax = function()
+    return 100
+  end
   _G.CreateFrame = function(kind, name)
     local frame = { kind = kind, name = name, scripts = {} }
     frame.RegisterEvent = function(_, ev)
