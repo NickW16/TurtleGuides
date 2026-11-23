@@ -1,6 +1,7 @@
 -- loads test modules and exits nonzero if any fail
 local testFiles = {
   "tests/applies_test.lua",
+  "tests/automation_test.lua",
   "tests/commands_test.lua",
   "tests/context_test.lua",
   "tests/elements_test.lua",
@@ -27,6 +28,7 @@ local testFiles = {
   "tests/toc_test.lua",
   "tests/ui_arrow_test.lua",
   "tests/util_test.lua",
+  "tests/vendor_test.lua",
   "tests/waypoint_geometry_test.lua",
   "tests/waypoint_state_test.lua",
   "tests/zone_test.lua",

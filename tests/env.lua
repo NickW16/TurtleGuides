@@ -10,6 +10,7 @@ function env.reset()
   _G.TurtleGuidesCharDB = nil
   _G.event = nil
   _G.arg1 = nil
+  _G.GetTime = nil
   _G.pfDB = nil
   _G.GetZoneText = nil
   _G.GetSubZoneText = nil
@@ -68,6 +69,61 @@ function env.reset()
   end
   _G.UnitXPMax = function()
     return 100
+  end
+  _G.AcceptQuest = noop
+  _G.CompleteQuest = noop
+  _G.GetNumQuestChoices = function()
+    return 0
+  end
+  _G.GetQuestItemLink = function() end
+  _G.GetQuestReward = noop
+  _G.IsQuestCompletable = function()
+    return false
+  end
+  _G.GetGossipActiveQuests = function() end
+  _G.GetGossipAvailableQuests = function() end
+  _G.SelectGossipActiveQuest = noop
+  _G.SelectGossipAvailableQuest = noop
+  _G.GetNumActiveQuests = function()
+    return 0
+  end
+  _G.GetNumAvailableQuests = function()
+    return 0
+  end
+  _G.GetActiveTitle = function() end
+  _G.SelectActiveQuest = noop
+  _G.SelectAvailableQuest = noop
+  _G.TaxiFrame = {
+    IsShown = function()
+      return false
+    end,
+  }
+  _G.MerchantFrame = {
+    IsShown = function()
+      return true
+    end,
+    IsVisible = function()
+      return true
+    end,
+    selectedTab = 1,
+  }
+  _G.BuyMerchantItem = noop
+  _G.GetMerchantNumItems = function()
+    return 0
+  end
+  _G.GetMerchantItemInfo = function() end
+  _G.GetCursorInfo = function() end
+  _G.ClearCursor = noop
+  _G.UseContainerItem = noop
+  _G.ContainerFrame_GetFrameID = function(frame)
+    return frame and frame.bag or 0
+  end
+  _G.ContainerFrameItemButton_OnClick = function() end
+  _G.IsControlKeyDown = function()
+    return false
+  end
+  _G.IsAltKeyDown = function()
+    return false
   end
   _G.CreateFrame = function(kind, name)
     local frame = { kind = kind, name = name, scripts = {} }
