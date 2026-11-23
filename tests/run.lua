@@ -5,9 +5,12 @@ local testFiles = {
   "tests/events_test.lua",
   "tests/init_test.lua",
   "tests/output_test.lua",
+  "tests/runtime_test.lua",
   "tests/state_test.lua",
+  "tests/text_test.lua",
   "tests/toc_test.lua",
   "tests/util_test.lua",
+  "tests/zone_test.lua",
 }
 local failures = 0
 local total = 0

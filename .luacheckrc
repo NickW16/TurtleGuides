@@ -22,9 +22,9 @@ globals = {
   "UnitLevel", "UnitName", "UnitRace", "UnitSex", "UnitXP", "UnitXPMax", "UseContainerItem",
 
   -- frames, constants, and implicit event variables
-  "DEFAULT_CHAT_FRAME", "GameTooltip", "INVSLOT_LAST_EQUIPPED", "MerchantFrame",
+  "C_Map", "CreateVector2D", "DEFAULT_CHAT_FRAME", "GameTooltip", "INVSLOT_LAST_EQUIPPED", "MerchantFrame",
   "Minimap", "NUM_TAXI_BUTTONS", "SlashCmdList", "TaxiFrame", "UIParent", "WorldMapFrame",
-  "arg1", "arg2", "arg3", "arg4", "arg5", "event", "this",
+  "UnitPosition", "arg1", "arg2", "arg3", "arg4", "arg5", "event", "this",
 
   -- addon globals and optional integrations
   "RXPGuides", "SLASH_TURTLEGUIDES1", "SLASH_TURTLEGUIDES2", "TurtleGuidesCharDB",

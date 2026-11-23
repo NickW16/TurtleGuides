@@ -8,7 +8,11 @@
 ## OptionalDeps: pfQuest, pfQuest-turtle
 
 Core.lua
+Compat\Runtime.lua
 Core\Util.lua
+Compat\Text.lua
+Compat\ZoneData.lua
+Compat\Zone.lua
 Core\Output.lua
 Core\State.lua
 Core\Events.lua

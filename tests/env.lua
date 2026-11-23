@@ -10,6 +10,17 @@ function env.reset()
   _G.TurtleGuidesCharDB = nil
   _G.event = nil
   _G.arg1 = nil
+  _G.pfDB = nil
+  _G.GetZoneText = nil
+  _G.GetSubZoneText = nil
+  _G.GetMapInfo = nil
+  _G.GetLocale = function()
+    return "enUS"
+  end
+  _G.WorldMapFrame = nil
+  _G.C_Map = nil
+  _G.CreateVector2D = nil
+  _G.UnitPosition = nil
   _G.DEFAULT_CHAT_FRAME = {
     AddMessage = function(_, msg)
       table.insert(messages, msg)
