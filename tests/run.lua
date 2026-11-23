@@ -15,7 +15,10 @@ local testFiles = {
   "tests/state_test.lua",
   "tests/text_test.lua",
   "tests/toc_test.lua",
+  "tests/ui_arrow_test.lua",
   "tests/util_test.lua",
+  "tests/waypoint_geometry_test.lua",
+  "tests/waypoint_state_test.lua",
   "tests/zone_test.lua",
 }
 local failures = 0

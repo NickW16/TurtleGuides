@@ -3,8 +3,14 @@ local env = dofile("tests/env.lua")
 return {
   test_on_initialize_runs_modules_in_order = function()
     env.reset()
-    local TG =
-      env.load("Core.lua", "Core/Util.lua", "Core/Output.lua", "Core/State.lua", "Core/Events.lua", "Core/Init.lua")
+    local TG = env.load(
+      "src/Core.lua",
+      "src/core/Util.lua",
+      "src/core/Output.lua",
+      "src/core/State.lua",
+      "src/core/Events.lua",
+      "src/core/Init.lua"
+    )
     local calls = {}
     TG.InitCompat = function()
       table.insert(calls, "compat")
@@ -36,7 +42,7 @@ return {
 
   test_player_login_event_registered = function()
     env.reset()
-    env.load("Core.lua", "Core/Events.lua", "Core/Init.lua")
+    env.load("src/Core.lua", "src/core/Events.lua", "src/core/Init.lua")
     env.eq(env.registered[1], "PLAYER_LOGIN")
   end,
 }

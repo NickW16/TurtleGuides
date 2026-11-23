@@ -12,8 +12,8 @@ local function listedFiles()
 end
 
 local function sourceFiles()
-  local files = { "Core.lua" }
-  local handle = assert(io.popen('find Compat Core Parser -name "*.lua" -print'))
+  local files = {}
+  local handle = assert(io.popen('find src -name "*.lua" -print'))
   for line in handle:lines() do
     table.insert(files, line)
   end

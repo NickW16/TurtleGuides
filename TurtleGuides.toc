@@ -7,21 +7,24 @@
 ## SavedVariablesPerCharacter: TurtleGuidesCharDB
 ## OptionalDeps: pfQuest, pfQuest-turtle
 
-Core.lua
-Compat\Runtime.lua
-Core\Util.lua
-Compat\Text.lua
-Compat\ZoneData.lua
-Compat\Zone.lua
-Compat\QuestLog.lua
-Compat\Item.lua
-Core\Output.lua
-Core\State.lua
-Core\Events.lua
-Core\Commands.lua
-Core\Init.lua
-Parser\Applies.lua
-Parser\Context.lua
-Parser\Elements.lua
-Parser\Guide.lua
-Parser\Registry.lua
+src\Core.lua
+src\compat\Runtime.lua
+src\core\Util.lua
+src\compat\Text.lua
+src\compat\ZoneData.lua
+src\compat\Zone.lua
+src\compat\QuestLog.lua
+src\compat\Item.lua
+src\core\Output.lua
+src\core\State.lua
+src\core\Events.lua
+src\core\Commands.lua
+src\core\Init.lua
+src\parser\Applies.lua
+src\parser\Context.lua
+src\parser\Elements.lua
+src\parser\Guide.lua
+src\parser\Registry.lua
+src\waypoint\Geometry.lua
+src\waypoint\State.lua
+src\ui\Arrow.lua

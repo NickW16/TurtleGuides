@@ -4,12 +4,12 @@ return {
   test_context_uses_player_info = function()
     env.reset()
     local TG = env.load(
-      "Core.lua",
-      "Core/Util.lua",
-      "Core/Output.lua",
-      "Core/State.lua",
-      "Parser/Applies.lua",
-      "Parser/Context.lua"
+      "src/Core.lua",
+      "src/core/Util.lua",
+      "src/core/Output.lua",
+      "src/core/State.lua",
+      "src/parser/Applies.lua",
+      "src/parser/Context.lua"
     )
     local ctx = TG.Parser.Context.player()
     env.eq(ctx.class, "MAGE")

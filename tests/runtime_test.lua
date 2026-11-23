@@ -10,7 +10,7 @@ return {
     end
     s.gmatch = nil
     _G.TurtleGuides = {}
-    dofile("Compat/Runtime.lua")
+    dofile("src/compat/Runtime.lua")
     local first = s.gmatch("a b", "%S")()
     s.gmatch = originalGmatch
     s.gfind = originalGfind
@@ -22,7 +22,7 @@ return {
     local original = m.atan2
     m.atan2 = nil
     _G.TurtleGuides = {}
-    dofile("Compat/Runtime.lua")
+    dofile("src/compat/Runtime.lua")
     local value = m.atan2(1, 1)
     m.atan2 = original
     assert(m.abs(value - m.pi / 4) < 0.0001)
@@ -30,7 +30,7 @@ return {
 
   test_collect_garbage_is_callable = function()
     _G.TurtleGuides = {}
-    dofile("Compat/Runtime.lua")
+    dofile("src/compat/Runtime.lua")
     _G.TurtleGuides:CollectGarbage()
   end,
 }

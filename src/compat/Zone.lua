@@ -121,6 +121,10 @@ local function vectorXY(v)
   end
 end
 
+function TG:ClearWorldPosCache()
+  worldPosCache = {}
+end
+
 function TG:PlayerWorldPos()
   if not UnitPosition then
     return nil

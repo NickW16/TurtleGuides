@@ -47,15 +47,74 @@ function env.reset()
     end,
   }
   _G.SlashCmdList = {}
-  _G.CreateFrame = function()
-    local frame = {}
+  local frames, textures, texts = {}, {}, {}
+  local noop = function() end
+  _G.UIParent = {}
+  _G.SetMapToCurrentZone = noop
+  _G.GetPlayerMapPosition = function()
+    return 0, 0
+  end
+  _G.GetPlayerFacing = function()
+    return 0
+  end
+  _G.CreateFrame = function(kind, name)
+    local frame = { kind = kind, name = name, scripts = {} }
     frame.RegisterEvent = function(_, ev)
       table.insert(registered, ev)
     end
-    frame.UnregisterEvent = function() end
-    frame.SetScript = function(_, name, fn)
-      scripts[name] = fn
+    frame.UnregisterEvent = noop
+    frame.SetScript = function(_, script, fn)
+      scripts[script] = fn
+      frame.scripts[script] = fn
     end
+    frame.SetWidth = noop
+    frame.SetHeight = noop
+    frame.SetPoint = noop
+    frame.SetMovable = noop
+    frame.EnableMouse = noop
+    frame.RegisterForDrag = noop
+    frame.SetFrameStrata = noop
+    frame.SetClampedToScreen = noop
+    frame.Hide = function()
+      frame.visible = false
+    end
+    frame.Show = function()
+      frame.visible = true
+    end
+    frame.StartMoving = noop
+    frame.StopMovingOrSizing = noop
+    frame.GetPoint = function()
+      return "TOP", nil, "TOP", 0, -110
+    end
+    frame.CreateTexture = function()
+      local texture = {}
+      texture.SetTexture = noop
+      texture.SetWidth = noop
+      texture.SetHeight = noop
+      texture.SetPoint = noop
+      texture.SetTexCoord = function(_, ...)
+        texture.coords = { ... }
+      end
+      texture.SetVertexColor = function(_, ...)
+        texture.color = { ... }
+      end
+      texture.Show = noop
+      texture.Hide = noop
+      table.insert(textures, texture)
+      return texture
+    end
+    frame.CreateFontString = function()
+      local text = {}
+      text.SetPoint = noop
+      text.SetWidth = noop
+      text.SetJustifyH = noop
+      text.SetText = function(_, value)
+        text.value = value
+      end
+      table.insert(texts, text)
+      return text
+    end
+    table.insert(frames, frame)
     return frame
   end
   _G.UnitClass = function()
@@ -76,6 +135,9 @@ function env.reset()
   env.messages = messages
   env.scripts = scripts
   env.registered = registered
+  env.frames = frames
+  env.textures = textures
+  env.texts = texts
 end
 
 function env.load(...)

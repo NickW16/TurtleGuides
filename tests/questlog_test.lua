@@ -2,7 +2,7 @@ local env = dofile("tests/env.lua")
 
 local function fresh()
   env.reset()
-  return env.load("Core.lua", "Compat/Text.lua", "Compat/QuestLog.lua")
+  return env.load("src/Core.lua", "src/compat/Text.lua", "src/compat/QuestLog.lua")
 end
 
 local function withQuestLog(TG)

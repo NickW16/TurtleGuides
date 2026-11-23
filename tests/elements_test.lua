@@ -3,13 +3,13 @@ local env = dofile("tests/env.lua")
 local function fresh()
   env.reset()
   return env.load(
-    "Core.lua",
-    "Core/Util.lua",
-    "Core/Output.lua",
-    "Core/State.lua",
-    "Parser/Applies.lua",
-    "Parser/Context.lua",
-    "Parser/Elements.lua"
+    "src/Core.lua",
+    "src/core/Util.lua",
+    "src/core/Output.lua",
+    "src/core/State.lua",
+    "src/parser/Applies.lua",
+    "src/parser/Context.lua",
+    "src/parser/Elements.lua"
   )
 end
 

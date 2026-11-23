@@ -24,7 +24,7 @@ globals = {
   -- frames, constants, and implicit event variables
   "C_Map", "CreateVector2D", "DEFAULT_CHAT_FRAME", "GameTooltip", "INVSLOT_LAST_EQUIPPED", "MerchantFrame",
   "Minimap", "NUM_TAXI_BUTTONS", "SlashCmdList", "TaxiFrame", "UIParent", "WorldMapFrame",
-  "UnitPosition", "arg1", "arg2", "arg3", "arg4", "arg5", "event", "this", "table.getn",
+  "UnitPosition", "arg1", "arg2", "arg3", "arg4", "arg5", "event", "this", "table.getn", "math.mod",
 
   -- addon globals and optional integrations
   "RXPGuides", "SLASH_TURTLEGUIDES1", "SLASH_TURTLEGUIDES2", "TurtleGuidesCharDB",

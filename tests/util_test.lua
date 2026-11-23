@@ -1,5 +1,5 @@
 _G.TurtleGuides = {}
-dofile("Core/Util.lua")
+dofile("src/core/Util.lua")
 local Util = _G.TurtleGuides.Util
 
 local function eq(actual, expected)

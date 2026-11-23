@@ -2,7 +2,7 @@ local env = dofile("tests/env.lua")
 
 local function fresh()
   env.reset()
-  return env.load("Core.lua", "Core/Util.lua", "Compat/Text.lua", "Compat/Item.lua")
+  return env.load("src/Core.lua", "src/core/Util.lua", "src/compat/Text.lua", "src/compat/Item.lua")
 end
 
 local function withBags()

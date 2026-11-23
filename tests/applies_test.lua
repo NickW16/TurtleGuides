@@ -1,6 +1,6 @@
 _G.TurtleGuides = {}
-dofile("Core/Util.lua")
-dofile("Parser/Applies.lua")
+dofile("src/core/Util.lua")
+dofile("src/parser/Applies.lua")
 local Applies = _G.TurtleGuides.Parser.Applies
 
 local function ctx(overrides)

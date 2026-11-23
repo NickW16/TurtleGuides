@@ -2,7 +2,7 @@ local env = dofile("tests/env.lua")
 
 local function fresh()
   env.reset()
-  return env.load("Core.lua", "Compat/ZoneData.lua", "Compat/Zone.lua")
+  return env.load("src/Core.lua", "src/compat/ZoneData.lua", "src/compat/Zone.lua")
 end
 
 return {
