@@ -13,9 +13,13 @@ run = "stylua --check ."
 description = "Lint all Lua files"
 run = "luacheck ."
 
+[tasks.test]
+description = "Run the Lua test suite"
+run = "lua5.1 tests/run.lua"
+
 [tasks.check]
-description = "Check formatting and lint without modifying files"
-run = "stylua --check . && luacheck ."
+description = "Check formatting, lint, and test without modifying files"
+run = "stylua --check . && luacheck . && lua5.1 tests/run.lua"
 
 [tasks.fix]
 description = "Format all Lua files, then lint"

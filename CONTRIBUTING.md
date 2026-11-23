@@ -43,4 +43,4 @@ Run this before committing:
 mise run check
 ```
 
-It checks formatting and lints every Lua file without modifying anything. Use `mise run fix` to format the sources and then lint. A change is only ready to commit when validation passes.
+It checks formatting, lints, and runs the tests without modifying anything. Use `mise run test` for tests alone and `mise run fix` to format the sources and then lint. Every new module needs tests, and a change is only ready to commit when validation passes.
