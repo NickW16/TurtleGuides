@@ -57,6 +57,12 @@ function env.reset()
   _G.GetPlayerFacing = function()
     return 0
   end
+  _G.GetBindLocation = function()
+    return "Dun Morogh"
+  end
+  _G.GetTitleText = function()
+    return nil
+  end
   _G.CreateFrame = function(kind, name)
     local frame = { kind = kind, name = name, scripts = {} }
     frame.RegisterEvent = function(_, ev)

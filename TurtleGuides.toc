@@ -25,6 +25,10 @@ src\parser\Context.lua
 src\parser\Elements.lua
 src\parser\Guide.lua
 src\parser\Registry.lua
+src\engine\State.lua
+src\engine\Quests.lua
+src\engine\Conditions.lua
+src\engine\Manual.lua
 src\waypoint\Geometry.lua
 src\waypoint\State.lua
 src\ui\Arrow.lua
