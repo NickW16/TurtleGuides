@@ -37,6 +37,10 @@ function env.reset()
   _G.GetInventoryItemID = function() end
   _G.GetInventoryItemLink = function() end
   _G.GetItemInfo = function() end
+  _G.UnitSex = function()
+    return 2
+  end
+  _G.RXPGuides = nil
   _G.DEFAULT_CHAT_FRAME = {
     AddMessage = function(_, msg)
       table.insert(messages, msg)
