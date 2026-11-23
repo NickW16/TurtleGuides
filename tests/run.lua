@@ -1,5 +1,5 @@
 -- loads test modules and exits nonzero if any fail
-local testFiles = { "tests/util_test.lua" }
+local testFiles = { "tests/applies_test.lua", "tests/util_test.lua" }
 local failures = 0
 local total = 0
 
