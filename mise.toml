@@ -1,0 +1,22 @@
+# pinned tool versions and validation tasks
+[tools]
+stylua = "2.6.0"
+
+# v1.2.0 ships a standalone binary, pinned by url and checksum
+"http:luacheck" = { version = "1.2.0", url = "https://github.com/lunarmodules/luacheck/releases/download/v1.2.0/luacheck", checksum = "sha256:d68da17fca0697d9e2fb04201f3884abd259fa558b3a449bccaed47f1390defc" }
+
+[tasks.format-check]
+description = "Check formatting without modifying files"
+run = "stylua --check ."
+
+[tasks.lint]
+description = "Lint all Lua files"
+run = "luacheck ."
+
+[tasks.check]
+description = "Check formatting and lint without modifying files"
+run = "stylua --check . && luacheck ."
+
+[tasks.fix]
+description = "Format all Lua files, then lint"
+run = "stylua . && luacheck ."
