@@ -1,8 +1,9 @@
--- compact native settings window
+-- compact native settings window built from plain text rows
 local TG = _G.TurtleGuides
 local State = TG.UI.State
 local Text = TG.UI.Text
-local Widgets = TG.UI.Widgets
+
+local ROW_HEIGHT = 16
 
 local function panel(frame)
   frame:SetBackdrop({
@@ -17,6 +18,39 @@ local function panel(frame)
   frame:SetBackdropBorderColor(0.28, 0.28, 0.30, 0.90)
 end
 
+local function textButton(parent, label, width, onClick)
+  local button = CreateFrame("Button", nil, parent)
+  button:SetWidth(width)
+  button:SetHeight(14)
+  local text = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  text:SetPoint("CENTER", button, "CENTER", 0, 0)
+  text:SetText(label)
+  text:SetTextColor(1.00, 0.82, 0.35)
+  Text.register(text, 10)
+  button.text = text
+  button:SetScript("OnClick", onClick)
+  return button
+end
+
+function TG:AnchorSettings()
+  local frame = State.settings
+  if not frame then
+    return
+  end
+  local main = State.main
+  if not main then
+    frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    return
+  end
+  local point = main:GetPoint(1) or "RIGHT"
+  frame:ClearAllPoints()
+  if string.find(point, "LEFT", 1, true) then
+    frame:SetPoint("TOPLEFT", main, "TOPRIGHT", 4, 0)
+  else
+    frame:SetPoint("TOPRIGHT", main, "TOPLEFT", -4, 0)
+  end
+end
+
 function TG:ShowSettings()
   if State.picker then
     State.picker:Hide()
@@ -25,6 +59,7 @@ function TG:ShowSettings()
     self:CreateSettings()
   end
   self:RefreshSettings()
+  self:AnchorSettings()
   State.settings:Show()
 end
 
@@ -35,8 +70,8 @@ end
 function TG:CreateSettings()
   local frame = CreateFrame("Frame", "TurtleGuidesSettingsFrame", UIParent)
   State.settings = frame
-  frame:SetWidth(300)
-  frame:SetHeight(290)
+  frame:SetWidth(240)
+  frame:SetHeight(244)
   frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
   frame:SetMovable(true)
   frame:EnableMouse(true)
@@ -53,85 +88,93 @@ function TG:CreateSettings()
   frame:Hide()
 
   local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  title:SetPoint("TOPLEFT", frame, "TOPLEFT", 6, -6)
-  title:SetText("TurtleGuides")
+  title:SetPoint("TOPLEFT", frame, "TOPLEFT", 6, -5)
+  title:SetText("Settings")
   title:SetTextColor(1.00, 0.82, 0.35)
   Text.register(title, 10)
+  frame.title = title
 
-  local close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
-  close:SetWidth(18)
-  close:SetHeight(18)
-  close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, -2)
-  close:SetScript("OnClick", function()
+  local close = textButton(frame, "x", 12, function()
     frame:Hide()
   end)
+  close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -4, -4)
 
-  frame.checks = {}
-  local y = -22
-  local function add(label, key, after)
-    local check = Widgets.makeCheck(frame, label, 8, y, function()
-      return TG.db[key]
-    end, function(value)
-      TG.db[key] = value
-      if after then
-        after(value)
+  local definitions = {
+    { "showArrow", "Show arrow" },
+    { "locked", "Lock frames" },
+    { "showMinimap", "Show minimap button" },
+    { "disableAutoSkip", "Disable auto-skip" },
+    { "autoTurnIn", "Auto accept / turn-in" },
+    { "autoSellJunk", "Auto sell junk" },
+    { "autoUseQuestItems", "Auto use quest items" },
+    { "autoTakeFlight", "Auto flight paths" },
+    { "autoBuyVendor", "Auto buy vendor items" },
+    {
+      "hardcoreMode",
+      "Hardcore mode",
+      function()
+        if TG.currentGuide then
+          TG:SetGuide(TG.currentGuide.key, TG.currentStepIndex, true)
+        end
+      end,
+    },
+  }
+  frame.rows = {}
+  for i, def in ipairs(definitions) do
+    local row = CreateFrame("Button", nil, frame)
+    row:SetWidth(228)
+    row:SetHeight(ROW_HEIGHT)
+    row:SetPoint("TOPLEFT", frame, "TOPLEFT", 6, -22 - (i - 1) * ROW_HEIGHT)
+    local text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    text:SetPoint("LEFT", row, "LEFT", 2, 0)
+    Text.register(text, 10)
+    row.text = text
+    row.key = def[1]
+    row.label = def[2]
+    row.after = def[3]
+    row:SetScript("OnClick", function()
+      TG.db[row.key] = not TG.db[row.key]
+      if row.after then
+        row.after()
       end
+      TG:RefreshSettings()
     end)
-    Text.register(check.text, 10)
-    check:SetScript("OnClick", function()
-      TG.db[key] = check:GetChecked() and true or false
-      if after then
-        after(TG.db[key])
-      end
-    end)
-    table.insert(frame.checks, check)
-    y = y - 20
+    table.insert(frame.rows, row)
   end
-  add("Show arrow", "showArrow", function()
-    if TG.UpdateArrowVisibility then
-      TG:UpdateArrowVisibility()
-    end
-  end)
-  add("Lock frames", "locked")
-  add("Show minimap button", "showMinimap", function()
-    if TG.UpdateMinimap then
-      TG:UpdateMinimap()
-    end
-  end)
-  add("Disable auto-skip", "disableAutoSkip")
-  add("Auto accept / turn-in", "autoTurnIn")
-  add("Auto sell junk", "autoSellJunk")
-  add("Auto use quest items", "autoUseQuestItems")
-  add("Auto flight paths", "autoTakeFlight")
-  add("Auto buy vendor items", "autoBuyVendor")
-  add("Hardcore mode", "hardcoreMode", function()
-    if TG.currentGuide then
-      TG:SetGuide(TG.currentGuide.key, TG.currentStepIndex, true)
-    end
-  end)
 
-  local find = Widgets.makeButton(frame, "Find my place", 8, y - 4, function()
-    if TG.FindMyPlace then
-      TG:FindMyPlace()
-    end
-  end)
-  find:SetWidth(130)
-  find:SetHeight(18)
-  local guides = Widgets.makeButton(frame, "Guides", 146, y - 4, function()
-    TG:ShowGuidePicker()
-  end)
-  guides:SetWidth(130)
-  guides:SetHeight(18)
+  local fontY = -22 - table.getn(definitions) * ROW_HEIGHT - 4
+  local fontLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  fontLabel:SetPoint("TOPLEFT", frame, "TOPLEFT", 8, fontY)
+  fontLabel:SetText("Font size")
+  fontLabel:SetTextColor(0.90, 0.90, 0.90)
+  Text.register(fontLabel, 10)
+  frame.fontLabel = fontLabel
 
-  frame.fontSlider = Widgets.makeSlider(frame, "Font size", 8, y - 32, 0.8, 1.4, 0.1, function()
-    return tonumber(TG.db.fontScale) or 1.0
-  end, function(value)
-    TG.db.fontScale = value
+  local minus = textButton(frame, "-", 14, function()
+    TG.db.fontScale = math.max(0.8, (tonumber(TG.db.fontScale) or 1.0) - 0.1)
     if TG.RefreshFonts then
       TG:RefreshFonts()
     end
+    TG:RefreshSettings()
   end)
-  Text.register(frame.fontSlider.labelText, 10)
+  minus:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -38, fontY + 2)
+  local plus = textButton(frame, "+", 14, function()
+    TG.db.fontScale = math.min(1.4, (tonumber(TG.db.fontScale) or 1.0) + 0.1)
+    if TG.RefreshFonts then
+      TG:RefreshFonts()
+    end
+    TG:RefreshSettings()
+  end)
+  plus:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -6, fontY + 2)
+  frame.fontValue = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  frame.fontValue:SetPoint("RIGHT", minus, "LEFT", -4, 0)
+  frame.fontValue:SetTextColor(1.00, 0.82, 0.35)
+  Text.register(frame.fontValue, 10)
+
+  local guidesBtn = textButton(frame, "Guides", 40, function()
+    TG:ShowGuidePicker()
+  end)
+  guidesBtn:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 8, 5)
 end
 
 function TG:RefreshSettings()
@@ -139,12 +182,12 @@ function TG:RefreshSettings()
   if not frame then
     return
   end
-  for _, check in ipairs(frame.checks or {}) do
-    if check._get then
-      check:SetChecked(check._get() and 1 or 0)
-    end
+  for _, row in ipairs(frame.rows or {}) do
+    local enabled = TG.db[row.key] and true or false
+    row.text:SetText((enabled and "[x] " or "[ ] ") .. row.label)
+    row.text:SetTextColor(enabled and 0.55 or 0.90, enabled and 0.90 or 0.90, enabled and 0.55 or 0.90)
   end
-  if frame.fontSlider and frame.fontSlider._refresh then
-    frame.fontSlider._refresh()
+  if frame.fontValue then
+    frame.fontValue:SetText(string.format("%.1f", tonumber(TG.db.fontScale) or 1.0))
   end
 end

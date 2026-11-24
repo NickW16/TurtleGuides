@@ -256,6 +256,9 @@ function TG:InitUI()
     if TG.RefreshMainWindowLayout then
       TG:RefreshMainWindowLayout()
     end
+    if TG.AnchorSettings and State.settings and State.settings:IsShown() then
+      TG:AnchorSettings()
+    end
   end)
 
   local title = main:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
