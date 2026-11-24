@@ -1,6 +1,20 @@
--- classic xp values from wispxp/questiedb, octo db values for custom quests
+-- quest XP values from OctoWow DB (Turtle WoW 1.12.1)
 local env = dofile("tests/env.lua")
 local xp = {
+  [2383] = 40, -- Simple Parchment
+  [3065] = 40, -- Simple Tablet
+  [3082] = 40, -- Etched Tablet
+  [3083] = 40, -- Encrypted Tablet
+  [3084] = 40, -- Rune-Inscribed Tablet
+  [3085] = 40, -- Hallowed Tablet
+  [3086] = 40, -- Glyphic Tablet
+  [3087] = 40, -- Etched Parchment
+  [3088] = 40, -- Encrypted Parchment
+  [3089] = 40, -- Rune-Inscribed Parchment
+  [3090] = 40, -- Tainted Parchment
+  [1485] = 355, -- Vile Familiars (warlock)
+  [1499] = 35, -- Vile Familiars (warlock follow-up)
+  [792] = 445, -- Vile Familiars
   [4641] = 40, -- Your Place In The World
   [788] = 170, -- Cutting Teeth
   [4402] = 380, -- Galgar's Cactus Apple Surprise
@@ -62,7 +76,7 @@ return {
   test_all_accepts_have_xp_data = function()
     local TG = fresh()
     TG:BuildGuideIndex()
-    local guide = TG.guideByKey["Turtle Guides (H)||1-10 Durotar"]
+    local guide = TG.guideByKey["Turtle Guides (H)||1-6 Durotar"]
     for _, step in ipairs(guide.steps) do
       for _, el in ipairs(step.elements) do
         if el.t == "cmd" and el.tag == "accept" then
@@ -76,7 +90,7 @@ return {
   test_quest_xp_budget = function()
     local TG = fresh()
     TG:BuildGuideIndex()
-    local guide = TG.guideByKey["Turtle Guides (H)||1-10 Durotar"]
+    local guide = TG.guideByKey["Turtle Guides (H)||1-6 Durotar"]
     local seen, total = {}, 0
     for _, step in ipairs(guide.steps) do
       for _, el in ipairs(step.elements) do
@@ -89,16 +103,16 @@ return {
         end
       end
     end
-    env.eq(total >= 10000, true, "quest XP total " .. total .. " below 10000")
+    env.eq(total >= 7200, true, "quest XP total " .. total .. " below 7200")
   end,
 
-  test_guide_still_ends_at_level_ten = function()
+  test_guide_still_ends_at_level_six = function()
     local TG = fresh()
     TG:BuildGuideIndex()
-    local guide = TG.guideByKey["Turtle Guides (H)||1-10 Durotar"]
+    local guide = TG.guideByKey["Turtle Guides (H)||1-6 Durotar"]
     local lastStep = guide.steps[table.getn(guide.steps)]
     local lastElement = lastStep.elements[table.getn(lastStep.elements)]
     env.eq(lastElement.tag, "xp")
-    env.eq(lastElement.args[1], "10")
+    env.eq(lastElement.args[1], "6")
   end,
 }
