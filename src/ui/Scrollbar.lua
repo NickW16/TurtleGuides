@@ -46,22 +46,35 @@ function Scrollbar.create(scroll, content, width)
   local bar = { scroll = scroll, content = content, track = track, thumb = thumb, width = width }
 
   function bar:update()
-    local viewH = scroll:GetHeight() or 1
-    local contentH = content:GetHeight() or viewH
-    local thumbH = math.max(22, math.floor(viewH * viewH / math.max(contentH, 1)))
+    local rawViewH = scroll:GetHeight() or 0
+    local contentH = content:GetHeight() or 1
+    local viewH = rawViewH > 0 and rawViewH or contentH
+    if rawViewH > 0 and contentH <= rawViewH then
+      setOffset(scroll, 0)
+      thumb:Hide()
+      return
+    end
+    thumb:Show()
+    local range = math.max(0, contentH - rawViewH)
+    local offset = math.max(0, math.min(range, getOffset(scroll)))
+    if offset ~= getOffset(scroll) then
+      setOffset(scroll, offset)
+    end
+    local thumbH = math.max(24, math.floor(viewH * viewH / math.max(contentH, 1)))
     if thumbH > viewH then
       thumbH = viewH
     end
     thumb:SetHeight(thumbH)
-    local range = getRange(scroll, content)
-    local y = (range > 0) and -(getOffset(scroll) / range) * (viewH - thumbH) or 0
+    local y = -(offset / range) * (viewH - thumbH)
     thumb:ClearAllPoints()
     thumb:SetPoint("TOPLEFT", scroll, "TOPRIGHT", -width, y)
-    thumb:Show()
   end
 
   function bar:page(delta)
     local range = getRange(scroll, content)
+    if range <= 0 then
+      return
+    end
     local offset = math.max(0, math.min(range, getOffset(scroll) - (tonumber(delta) or 0) * 24))
     setOffset(scroll, offset)
     self:update()
@@ -73,6 +86,9 @@ function Scrollbar.create(scroll, content, width)
   end
 
   function bar:ensure(index, rowHeight)
+    if getRange(scroll, content) <= 0 then
+      return
+    end
     local viewH = scroll:GetHeight() or 1
     local top = (index - 1) * rowHeight
     local bottom = top + rowHeight
@@ -107,7 +123,7 @@ function Scrollbar.create(scroll, content, width)
   end)
 
   local function dragUpdate()
-    if not GetCursorPosition or not scroll.GetCenter then
+    if not GetCursorPosition or not scroll.GetCenter or getRange(scroll, content) <= 0 then
       return
     end
     local scale = scroll:GetEffectiveScale() or 1

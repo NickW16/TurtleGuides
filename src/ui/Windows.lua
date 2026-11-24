@@ -31,7 +31,7 @@ local function panel(frame, alpha)
 end
 
 local function stepContentWidth(main)
-  return math.max(120, (main:GetWidth() or 225) - 16)
+  return math.max(120, (main:GetWidth() or 225) - 17)
 end
 
 local function makeRow(parent)
@@ -175,24 +175,73 @@ local function updateSmallWindow(frame, title, entries, width)
   frame:SetHeight(19 + total * Text.lineHeight(BODY_SIZE))
 end
 
-local function textButton(parent, label, width, onClick)
+local function iconButton(parent, texture, label, onClick, size)
   local button = CreateFrame("Button", nil, parent)
-  button:SetWidth(width)
-  button:SetHeight(14)
-  local text = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  text:SetPoint("CENTER", button, "CENTER", 0, 0)
-  text:SetText(label)
-  text:SetTextColor(1.00, 0.82, 0.35)
-  Text.register(text, BODY_SIZE)
-  button.text = text
+  button:SetWidth(size or 14)
+  button:SetHeight(size or 14)
+  button:SetNormalTexture(texture)
+  button:SetPushedTexture(texture)
+  local icon = button.GetNormalTexture and button:GetNormalTexture() or nil
+  if icon and icon.SetVertexColor then
+    icon:SetVertexColor(1.00, 0.82, 0.35, 1.00)
+  end
   button:SetScript("OnEnter", function()
-    text:SetTextColor(1.00, 1.00, 1.00)
+    if not GameTooltip then
+      return
+    end
+    GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
+    GameTooltip:SetText(label)
+    GameTooltip:Show()
   end)
   button:SetScript("OnLeave", function()
-    text:SetTextColor(1.00, 0.82, 0.35)
+    if GameTooltip then
+      GameTooltip:Hide()
+    end
   end)
   button:SetScript("OnClick", onClick)
   return button
+end
+
+function TG:SetMainWindowMinimized(value)
+  local main = State.main
+  if not main then
+    return
+  end
+  local minimized = value and true or false
+  if minimized == main._tgMinimized then
+    return
+  end
+  local children = { main.scroll, main.resizer }
+  if minimized then
+    main._tgSavedHeight = main:GetHeight()
+    main:SetHeight(36)
+    for _, child in ipairs(children) do
+      if child then
+        child:Hide()
+      end
+    end
+  else
+    main:SetHeight(main._tgSavedHeight or 230)
+    for _, child in ipairs(children) do
+      if child then
+        child:Show()
+      end
+    end
+  end
+  main._tgMinimized = minimized
+  if main.minimizeBtn then
+    local texture = minimized and "Interface\\AddOns\\TurtleGuides\\Media\\ChevronDown"
+      or "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp"
+    main.minimizeBtn:SetNormalTexture(texture)
+    main.minimizeBtn:SetPushedTexture(texture)
+    local icon = main.minimizeBtn.GetNormalTexture and main.minimizeBtn:GetNormalTexture() or nil
+    if icon and icon.SetVertexColor then
+      icon:SetVertexColor(1.00, 0.82, 0.35, 1.00)
+    end
+  end
+  if not minimized then
+    self:UpdateUI()
+  end
 end
 
 function TG:InitUI()
@@ -236,22 +285,38 @@ function TG:InitUI()
   Text.register(title, BODY_SIZE)
   main.title = title
 
-  local guidesBtn = textButton(main, "Guides", 34, function()
+  local closeBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\Close", "Hide", function()
+    main:Hide()
+    if TG.HideStepWindows then
+      TG:HideStepWindows()
+    end
+  end, 10)
+  closeBtn:SetPoint("TOPRIGHT", main, "TOPRIGHT", -4, -5)
+
+  local minimizeBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp", "Minimize", function()
+    TG:SetMainWindowMinimized(not main._tgMinimized)
+  end, 12)
+  minimizeBtn:SetPoint("RIGHT", closeBtn, "LEFT", -5, 1)
+  main.minimizeBtn = minimizeBtn
+
+  local guidesBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\Magnifier", "Guides", function()
     if TG.ShowGuidePicker then
       TG:ShowGuidePicker()
     end
-  end)
-  guidesBtn:SetPoint("TOPRIGHT", main, "TOPRIGHT", -6, -3)
-  local settingsBtn = textButton(main, "Settings", 42, function()
+  end, 12)
+  guidesBtn:SetPoint("RIGHT", minimizeBtn, "LEFT", -5, 0)
+
+  local settingsBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\Cog", "Settings", function()
     if TG.ShowSettings then
       TG:ShowSettings()
     end
-  end)
-  settingsBtn:SetPoint("RIGHT", guidesBtn, "LEFT", -8, 0)
+  end, 12)
+  settingsBtn:SetPoint("RIGHT", guidesBtn, "LEFT", -5, 0)
+  main.settingsBtn = settingsBtn
 
   local scroll = CreateFrame("ScrollFrame", "TurtleGuidesStepScroll", main)
   scroll:SetPoint("TOPLEFT", main, "TOPLEFT", 5, -19)
-  scroll:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -10, 16)
+  scroll:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -4, 16)
   local content = CreateFrame("Frame", nil, scroll)
   content:SetWidth(stepContentWidth(main))
   content:SetHeight(20)
@@ -279,17 +344,17 @@ function TG:InitUI()
   Text.register(guideName, BODY_SIZE)
   main.guideName = guideName
 
-  local nextBtn = textButton(main, ">", 14, function()
+  local nextBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ArrowRight", "Next step", function()
     if TG.NextStep then
       TG:NextStep(true)
     end
-  end)
-  nextBtn:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -18, 1)
-  local prevBtn = textButton(main, "<", 14, function()
+  end, 12)
+  nextBtn:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -10, 1)
+  local prevBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ArrowLeft", "Previous step", function()
     if TG.PrevStep then
       TG:PrevStep()
     end
-  end)
+  end, 12)
   prevBtn:SetPoint("RIGHT", nextBtn, "LEFT", -2, 0)
 
   local resizer = CreateFrame("Button", nil, main)

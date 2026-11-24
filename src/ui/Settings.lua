@@ -71,7 +71,7 @@ function TG:CreateSettings()
   local frame = CreateFrame("Frame", "TurtleGuidesSettingsFrame", UIParent)
   State.settings = frame
   frame:SetWidth(240)
-  frame:SetHeight(244)
+  frame:SetHeight(210)
   frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
   frame:SetMovable(true)
   frame:EnableMouse(true)
@@ -102,10 +102,19 @@ function TG:CreateSettings()
   Text.register(title, 10)
   frame.title = title
 
-  local close = textButton(frame, "x", 12, function()
+  local close = CreateFrame("Button", nil, frame)
+  close:SetWidth(9)
+  close:SetHeight(9)
+  close:SetNormalTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
+  close:SetPushedTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
+  local closeIcon = close.GetNormalTexture and close:GetNormalTexture() or nil
+  if closeIcon and closeIcon.SetVertexColor then
+    closeIcon:SetVertexColor(1.00, 0.82, 0.35)
+  end
+  close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -4, -6)
+  close:SetScript("OnClick", function()
     frame:Hide()
   end)
-  close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -4, -4)
 
   local definitions = {
     { "showArrow", "Show arrow" },
@@ -178,11 +187,6 @@ function TG:CreateSettings()
   frame.fontValue:SetPoint("RIGHT", minus, "LEFT", -4, 0)
   frame.fontValue:SetTextColor(1.00, 0.82, 0.35)
   Text.register(frame.fontValue, 10)
-
-  local guidesBtn = textButton(frame, "Guides", 40, function()
-    TG:ShowGuidePicker()
-  end)
-  guidesBtn:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 8, 5)
 end
 
 function TG:RefreshSettings()

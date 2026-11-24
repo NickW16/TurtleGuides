@@ -77,6 +77,21 @@ return {
     env.eq(TG.UI.State.main.content:GetHeight() > 20, true)
   end,
 
+  test_minimize_collapses_to_top_bar = function()
+    local TG = fresh()
+    withGuide(TG)
+    TG:InitUI()
+    local main = TG.UI.State.main
+    TG:SetMainWindowMinimized(true)
+    env.eq(main:GetHeight(), 36)
+    env.eq(main.scroll:IsShown(), false)
+    env.eq(string.find(main.progress.value or "", "/", 1, true) ~= nil, true)
+    env.eq(TG.UI.State.smalls[1]:IsShown(), true)
+    TG:SetMainWindowMinimized(false)
+    env.eq(main:GetHeight() > 20, true)
+    env.eq(main.scroll:IsShown(), true)
+  end,
+
   test_checkbox_click_marks_manual_done = function()
     local TG = fresh()
     withGuide(TG)
