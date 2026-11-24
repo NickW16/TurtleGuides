@@ -684,7 +684,7 @@ function TG:UpdateUI()
   local guide = self.currentGuide
   if not guide then
     mainFrame.guideName:SetText("No guide selected. Click Guides.")
-    mainFrame.stepHeader:SetText("Next steps")
+    mainFrame.stepHeader:SetText("Current step")
     State.stepLines[1]:SetText("")
     resetStepSize()
     clearAux()
@@ -704,7 +704,7 @@ function TG:UpdateUI()
   mainFrame.progressBar:SetWidth(math.max(1, math.floor(barWidth * pct)))
   mainFrame.progressText:SetText(string.format("%d%%", math.floor(pct * 100)))
   if total == 0 then
-    mainFrame.stepHeader:SetText("Next steps")
+    mainFrame.stepHeader:SetText("Current step")
     State.stepLines[1]:SetText("")
     resetStepSize()
     clearAux()
@@ -719,9 +719,9 @@ function TG:UpdateUI()
   if idx > total then
     idx = total
   end
-  mainFrame.stepHeader:SetText("Next steps")
   local currentStep = guide.steps[idx]
-  local step = guide.steps[idx + 1] or currentStep
+  local step = currentStep
+  mainFrame.stepHeader:SetText("Current step " .. idx .. " / " .. total)
 
   local totalGotos, gotoIdx, gotoCounter = 0, 1, 0
   if step then

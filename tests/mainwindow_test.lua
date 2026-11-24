@@ -67,7 +67,10 @@ return {
       return {}
     end
     TG:InitUI()
-    env.eq(TG.mainFrame.stepHeader.value, "Next steps")
+    env.eq(TG.mainFrame.stepHeader.value, "Current step 2 / 21")
+    local body = TG.UI.State.stepLines[1].value or ""
+    env.eq(string.find(body, "step 2", 1, true) ~= nil, true)
+    env.eq(string.find(body, "step 3", 1, true), nil)
     local row = TG.UI.State.stepRows[1]
     env.eq(row:GetWidth() > 0, true)
     env.eq(row.text.width > 0, true)
@@ -98,13 +101,13 @@ return {
     local TG = fresh()
     TG.db = {}
     TG.currentGuide = { key = "k", name = "Guide", steps = {} }
-    TG.currentGuide.steps[1] = { elements = { { t = "text", text = "start" } } }
-    TG.currentGuide.steps[2] = {
+    TG.currentGuide.steps[1] = {
       elements = {
         { t = "text", text = "short" },
         { t = "text", text = string.rep("word ", 60) },
       },
     }
+    TG.currentGuide.steps[2] = { elements = { { t = "text", text = "later" } } }
     TG.currentStepIndex = 1
     TG.CurrentStep = function()
       return TG.currentGuide.steps[TG.currentStepIndex]
