@@ -56,6 +56,25 @@ function env.reset()
     Show = noop,
     Hide = noop,
   }
+  local dropdownButtons = {}
+  _G.UIDropDownMenu_CreateInfo = function()
+    return {}
+  end
+  _G.UIDropDownMenu_AddButton = function(info)
+    table.insert(dropdownButtons, info)
+  end
+  _G.UIDropDownMenu_SetText = function(text)
+    env.dropdownText = text
+  end
+  _G.UIDropDownMenu_SetWidth = noop
+  _G.UIDropDownMenu_Initialize = function(_, init)
+    dropdownButtons = {}
+    env.dropdownButtons = dropdownButtons
+    if init then
+      init(1)
+    end
+  end
+  _G.ToggleDropDownMenu = noop
   local frames, textures, texts = {}, {}, {}
   _G.UIParent = {}
   _G.Minimap = {
@@ -69,6 +88,7 @@ function env.reset()
   _G.GetCursorPosition = function()
     return 100, 100
   end
+  _G.STANDARD_TEXT_FONT = "Fonts\\ARIALN.TTF"
   _G.SetMapToCurrentZone = noop
   _G.GetPlayerMapPosition = function()
     return 0, 0
@@ -146,8 +166,28 @@ function env.reset()
   _G.IsAltKeyDown = function()
     return false
   end
-  _G.CreateFrame = function(kind, name)
-    local frame = { kind = kind, name = name, scripts = {} }
+  _G.CreateFrame = function(kind, name, _parent, template)
+    local frame = { kind = kind, name = name, template = template, scripts = {} }
+    if template == "UIPanelScrollFrameTemplate" then
+      local scrollBar = {
+        value = 0,
+        minValue = 0,
+        maxValue = 100,
+      }
+      scrollBar.GetMinMaxValues = function()
+        return scrollBar.minValue, scrollBar.maxValue
+      end
+      scrollBar.GetValue = function()
+        return scrollBar.value
+      end
+      scrollBar.SetValue = function(_, value)
+        scrollBar.value = value
+      end
+      scrollBar.SetThumbTexture = noop
+      scrollBar.Show = noop
+      scrollBar.Hide = noop
+      frame.ScrollBar = scrollBar
+    end
     frame.RegisterEvent = function(_, ev)
       table.insert(registered, ev)
     end
@@ -156,8 +196,25 @@ function env.reset()
       scripts[script] = fn
       frame.scripts[script] = fn
     end
-    frame.SetWidth = noop
-    frame.SetHeight = noop
+    frame.SetWidth = function(_, value)
+      frame.width = value
+    end
+    frame.GetWidth = function()
+      return frame.width or 300
+    end
+    frame.SetHeight = function(_, value)
+      frame.height = value
+    end
+    frame.GetHeight = function()
+      return frame.height or 250
+    end
+    frame.SetResizable = noop
+    frame.SetMinResize = noop
+    frame.StartSizing = noop
+    frame.StopMovingOrSizing = noop
+    frame.SetScrollChild = noop
+    frame.EnableMouseWheel = noop
+    frame.SetAlpha = noop
     frame.SetPoint = noop
     frame.SetMovable = noop
     frame.EnableMouse = noop
@@ -225,9 +282,6 @@ function env.reset()
     frame.GetFrameLevel = function()
       return 1
     end
-    frame.GetWidth = function()
-      return 300
-    end
     frame.SetScale = function(_, value)
       frame.scale = value
     end
@@ -268,7 +322,9 @@ function env.reset()
       local text = {}
       text.SetPoint = noop
       text.ClearAllPoints = noop
-      text.SetWidth = noop
+      text.SetWidth = function(_, value)
+        text.width = value
+      end
       text.SetJustifyH = noop
       text.SetJustifyV = noop
       text.SetNonSpaceWrap = noop
@@ -277,7 +333,16 @@ function env.reset()
       text.Hide = noop
       text.Show = noop
       text.GetStringHeight = function()
-        return 14
+        local lines = 1
+        for _ in string.gmatch(text.value or "", "\n") do
+          lines = lines + 1
+        end
+        return lines * ((text.font and text.font.size or 12) + 4)
+      end
+      text.GetStringWidth = function()
+        local value = string.gsub(text.value or "", "|c%x%x%x%x%x%x%x%x", "")
+        value = string.gsub(value, "|r", "")
+        return string.len(value) * ((text.font and text.font.size or 12) * 0.5)
       end
       text.SetFont = function(_, path, size, flags)
         text.font = { path = path, size = size, flags = flags }
@@ -316,6 +381,7 @@ function env.reset()
   env.frames = frames
   env.textures = textures
   env.texts = texts
+  env.dropdownButtons = dropdownButtons
 end
 
 function env.load(...)

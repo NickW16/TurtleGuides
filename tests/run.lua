@@ -38,6 +38,7 @@ local testFiles = {
   "tests/steptext_test.lua",
   "tests/tauren_xp_test.lua",
   "tests/text_test.lua",
+  "tests/textwrap_test.lua",
   "tests/theme_test.lua",
   "tests/toc_test.lua",
   "tests/ui_minimap_test.lua",

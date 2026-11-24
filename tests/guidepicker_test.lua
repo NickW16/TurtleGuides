@@ -9,6 +9,7 @@ local function loadUI()
     "src/compat/Text.lua",
     "src/ui/State.lua",
     "src/ui/Theme.lua",
+    "src/ui/TextWrap.lua",
     "src/ui/StepText.lua",
     "src/ui/Widgets.lua",
     "src/ui/MainWindow.lua",

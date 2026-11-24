@@ -3,17 +3,16 @@ local TG = _G.TurtleGuides
 local State = TG.UI.State
 local Theme = TG.UI.Theme
 local StepText = TG.UI.StepText
+local TextWrap = TG.UI.TextWrap
 
-local ICON_DONE = "Interface\\Buttons\\UI-CheckBox-Check"
-local ICON_PENDING = "Interface\\Buttons\\UI-CheckBox-Up"
-local ICON_UNKNOWN = "Interface\\Buttons\\UI-CheckBox-Up"
 local ICON_NOTE = "Interface\\Buttons\\WHITE8X8"
 local ICON_HIGHLIGHT = "Interface\\QuestFrame\\UI-QuestTitleHighlight"
 local COLOR_DONE = { 0.45, 0.85, 0.50 }
 local COLOR_UNKNOWN = { 0.58, 0.58, 0.58 }
 local ICON_SIZE = 16
-local ICON_Y_OFFSET = 1
-local STEP_ROW_GAP = 8
+local STEP_ROW_GAP = 0
+local BOX_TEXTURE = "Interface\\Buttons\\UI-CheckBox-Up"
+local CHECK_TEXTURE = "Interface\\Buttons\\UI-CheckBox-Check"
 local STEP_ROW_WIDTH = 246
 local STEP_TEXT_X = 20
 local STEP_TEXT_WIDTH = STEP_ROW_WIDTH - STEP_TEXT_X - 4
@@ -31,6 +30,9 @@ local function hideChildFrames()
     if mainFrame.auxFrames and mainFrame.auxFrames[i] then
       mainFrame.auxFrames[i]:Hide()
     end
+  end
+  if TG.HideStepWindows then
+    TG:HideStepWindows()
   end
 end
 
@@ -74,24 +76,28 @@ local function setStepRowState(row, state)
     row.highlight:Hide()
   end
   row.text:ClearAllPoints()
+  if state ~= "note" and state ~= "none" then
+    if state == true then
+      row.icon:SetTexture(CHECK_TEXTURE)
+    else
+      row.icon:SetTexture(BOX_TEXTURE)
+    end
+  end
   local palette = Theme.current()
   if state == "note" or state == "none" then
     row.icon:Show()
-    setIconGeometry(row, 4, 4, 6, -6)
+    setIconGeometry(row, 4, 4, 10, -10)
     row.icon:SetTexture(ICON_NOTE)
     row.icon:SetVertexColor(1.00, 1.00, 1.00, 0.90)
-    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", STEP_TEXT_X, 0)
-    row.text:SetWidth(STEP_TEXT_WIDTH)
+    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", 28, -6)
     row.text:SetTextColor(unpack(palette.body))
     row.text:SetAlpha(1.00)
     row._tgTip = "Tip / note - not tracked"
   elseif state == true then
     row.icon:Show()
-    setIconGeometry(row, ICON_SIZE, ICON_SIZE, 0, ICON_Y_OFFSET)
-    row.icon:SetTexture(ICON_DONE)
+    setIconGeometry(row, ICON_SIZE, ICON_SIZE, 8, -6)
     row.icon:SetVertexColor(0.40, 1.00, 0.40, 1.00)
-    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", STEP_TEXT_X, 0)
-    row.text:SetWidth(STEP_TEXT_WIDTH)
+    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", 28, -6)
     row.text:SetTextColor(unpack(COLOR_DONE))
     row.text:SetAlpha(0.72)
     if row._tgElement and row._tgElement._tgManualDone then
@@ -101,21 +107,17 @@ local function setStepRowState(row, state)
     end
   elseif state == false then
     row.icon:Show()
-    setIconGeometry(row, ICON_SIZE, ICON_SIZE, 0, ICON_Y_OFFSET)
-    row.icon:SetTexture(ICON_PENDING)
+    setIconGeometry(row, ICON_SIZE, ICON_SIZE, 8, -6)
     row.icon:SetVertexColor(1.00, 1.00, 1.00, 1.00)
-    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", STEP_TEXT_X, 0)
-    row.text:SetWidth(STEP_TEXT_WIDTH)
+    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", 28, -6)
     row.text:SetTextColor(unpack(palette.body))
     row.text:SetAlpha(1.00)
     row._tgTip = clickable and "Not completed - click to mark complete" or "Not completed"
   else
     row.icon:Show()
-    setIconGeometry(row, ICON_SIZE, ICON_SIZE, 0, ICON_Y_OFFSET)
-    row.icon:SetTexture(ICON_UNKNOWN)
+    setIconGeometry(row, ICON_SIZE, ICON_SIZE, 8, -6)
     row.icon:SetVertexColor(0.55, 0.55, 0.58, 0.75)
-    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", STEP_TEXT_X, 0)
-    row.text:SetWidth(STEP_TEXT_WIDTH)
+    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", 28, -6)
     row.text:SetTextColor(unpack(COLOR_UNKNOWN))
     row.text:SetAlpha(0.78)
     row._tgTip = clickable and "Unknown - click to mark complete" or "Unknown - check your quest log or bags"
@@ -128,13 +130,39 @@ local function clearStepRows()
   end
 end
 
+local function fontOf(fs)
+  local _, size = fs:GetFont()
+  return size or 10
+end
+
+-- derive width from the main frame because anchor based GetWidth can be stale
+local function stepContentWidth(mainFrame)
+  return math.max(120, (mainFrame:GetWidth() or 320) - 70)
+end
+
+function TG:RefreshMainWindowLayout()
+  if not State.mainFrame or not State.mainFrame.scrollContent then
+    return
+  end
+  local width = stepContentWidth(State.mainFrame)
+  State.mainFrame.scrollContent:SetWidth(width)
+  for _, row in ipairs(State.stepRows) do
+    row:SetWidth(width)
+  end
+  if State.mainFrame:IsShown() then
+    self:UpdateUI()
+  end
+end
+
 local function layoutStepRows(entries, limit)
   clearStepRows()
   local mainFrame = State.mainFrame
   if not mainFrame or not mainFrame.stepHeader then
     return 0
   end
-  local y, total = -10, 0
+  local y, total = -2, 0
+  local width = stepContentWidth(mainFrame)
+  local textWidth = math.max(60, width - 34)
   for i = 1, limit do
     local row, entry = State.stepRows[i], entries[i]
     if not row or not entry then
@@ -143,26 +171,23 @@ local function layoutStepRows(entries, limit)
     row._tgElement = entry.el
     row._tgSource = entry.source
     row._tgTrackable = entry.el and TG.IsElementTrackable and TG:IsElementTrackable(entry.el) or false
-    row.text:SetText(StepText.stepRowText(entry))
+    row:SetWidth(width)
+    row.text:SetWidth(textWidth)
+    local fontSize = fontOf(row.text)
+    local wrapped, lineCount = TextWrap.wrap(StepText.stepRowText(entry), textWidth - 4, fontSize)
+    row.text:SetText(wrapped)
     setStepRowState(row, entry.state)
     row:Show()
-    local h = 14
-    if row.text.GetStringHeight then
-      h = row.text:GetStringHeight() or 14
-    end
-    if h < 14 then
-      h = 14
-    end
+    local h = math.ceil(lineCount * TextWrap.lineHeight(fontSize)) + 4
     if row.icon:IsShown() and row.icon.GetHeight then
       local iconH = row.icon:GetHeight() or 14
       if iconH > h then
         h = iconH
       end
     end
-    h = math.ceil(h)
     row:SetHeight(h)
     row:ClearAllPoints()
-    row:SetPoint("TOPLEFT", mainFrame.stepHeader, "BOTTOMLEFT", 0, y)
+    row:SetPoint("TOPLEFT", mainFrame.scrollContent, "TOPLEFT", 0, y)
     total = total + h
     if i < limit then
       total = total + STEP_ROW_GAP
@@ -180,12 +205,18 @@ function TG:InitUI()
   end
   local mainFrame = CreateFrame("Frame", "TurtleGuidesMainFrame", UIParent)
   State.mainFrame = mainFrame
-  mainFrame:SetWidth(300)
-  mainFrame:SetHeight(250)
   local palette = Theme.current()
-  local p = TG.db.frame or { point = "RIGHT", relPoint = "RIGHT", x = -40, y = 0 }
+  local p = TG.db.frame or { point = "RIGHT", relPoint = "RIGHT", x = -40, y = 0, w = 320, h = 420 }
+  mainFrame:SetWidth(p.w or 320)
+  mainFrame:SetHeight(p.h or 420)
   mainFrame:SetPoint(p.point or "RIGHT", UIParent, p.relPoint or "RIGHT", p.x or -40, p.y or 0)
   mainFrame:SetMovable(true)
+  if mainFrame.SetResizable then
+    mainFrame:SetResizable(true)
+  end
+  if mainFrame.SetMinResize then
+    mainFrame:SetMinResize(260, 300)
+  end
   mainFrame:EnableMouse(true)
   mainFrame:RegisterForDrag("LeftButton")
   mainFrame:SetScript("OnDragStart", function()
@@ -197,16 +228,50 @@ function TG:InitUI()
     this:StopMovingOrSizing()
     local point, _, rel, x, y = this:GetPoint(1)
     TG.db.frame.point, TG.db.frame.relPoint, TG.db.frame.x, TG.db.frame.y = point, rel, x, y
+    TG.db.frame.w, TG.db.frame.h = this:GetWidth(), this:GetHeight()
+    if TG.RefreshMainWindowLayout then
+      TG:RefreshMainWindowLayout()
+    end
   end)
-  Theme.createBackdrop(mainFrame)
+  mainFrame:SetBackdrop({
+    bgFile = "Interface\\Buttons\\WHITE8X8",
+    edgeFile = "Interface\\Buttons\\WHITE8X8",
+    tile = true,
+    tileSize = 8,
+    edgeSize = 2,
+    insets = { left = 2, right = 2, top = 2, bottom = 2 },
+  })
+  mainFrame:SetBackdropColor(unpack(palette.bg))
+  mainFrame:SetBackdropBorderColor(unpack(palette.border))
 
-  local title = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-  title:SetPoint("TOPLEFT", mainFrame, "TOPLEFT", 10, -8)
+  local accentBar = mainFrame:CreateTexture(nil, "ARTWORK")
+  accentBar:SetTexture("Interface\\Buttons\\WHITE8X8")
+  accentBar:SetVertexColor(unpack(Theme.accent()))
+  accentBar:SetHeight(2)
+  accentBar:SetPoint("TOPLEFT", mainFrame, "TOPLEFT", 2, -2)
+  accentBar:SetPoint("TOPRIGHT", mainFrame, "TOPRIGHT", -2, -2)
+  mainFrame.accentBar = accentBar
+
+  local title = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+  title:SetPoint("TOPLEFT", mainFrame, "TOPLEFT", 12, -10)
   title:SetText("TurtleGuides")
+  title:SetTextColor(unpack(Theme.accent()))
   mainFrame.title = title
 
-  local close = CreateFrame("Button", nil, mainFrame, "UIPanelCloseButton")
-  close:SetPoint("TOPRIGHT", mainFrame, "TOPRIGHT", -2, -2)
+  local close = CreateFrame("Button", nil, mainFrame)
+  close:SetWidth(18)
+  close:SetHeight(18)
+  close:SetPoint("TOPRIGHT", mainFrame, "TOPRIGHT", -8, -8)
+  local closeText = close:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+  closeText:SetPoint("CENTER", close, "CENTER", 0, 0)
+  closeText:SetText("X")
+  closeText:SetTextColor(unpack(palette.body))
+  close:SetScript("OnEnter", function()
+    closeText:SetTextColor(unpack(Theme.accent()))
+  end)
+  close:SetScript("OnLeave", function()
+    closeText:SetTextColor(unpack(palette.body))
+  end)
   close:SetScript("OnClick", function()
     mainFrame:Hide()
     hideChildFrames()
@@ -216,7 +281,7 @@ function TG:InitUI()
   local guideBtn = CreateFrame("Button", nil, mainFrame)
   guideBtn:SetWidth(22)
   guideBtn:SetHeight(22)
-  guideBtn:SetPoint("RIGHT", close, "LEFT", -6, 0)
+  guideBtn:SetPoint("RIGHT", close or mainFrame, "LEFT", -6, 0)
   guideBtn:SetNormalTexture("Interface\\Icons\\INV_Misc_Book_09")
   guideBtn:SetPushedTexture("Interface\\Icons\\INV_Misc_Book_09")
   guideBtn:SetScript("OnClick", function()
@@ -236,8 +301,8 @@ function TG:InitUI()
   mainFrame.settingsBtn = settingsBtn
 
   local guideName = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  guideName:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
-  guideName:SetPoint("RIGHT", mainFrame, "RIGHT", -10, 0)
+  guideName:SetPoint("TOPLEFT", mainFrame, "TOPLEFT", 14, -44)
+  guideName:SetPoint("RIGHT", mainFrame, "RIGHT", -44, 0)
   guideName:SetJustifyH("LEFT")
   guideName:SetText("No guide selected. Click Guides.")
   mainFrame.guideName = guideName
@@ -265,7 +330,7 @@ function TG:InitUI()
   local stepBox = CreateFrame("Frame", nil, mainFrame)
   stepBox:SetPoint("TOPLEFT", progressFrame, "BOTTOMLEFT", -2, -4)
   stepBox:SetPoint("RIGHT", mainFrame, "RIGHT", -10, 0)
-  stepBox:SetHeight(140)
+  stepBox:SetPoint("BOTTOMLEFT", mainFrame, "BOTTOMLEFT", 10, 52)
   Theme.createBackdrop(stepBox, palette.panel)
   mainFrame.stepBox = stepBox
 
@@ -276,6 +341,22 @@ function TG:InitUI()
   stepHeader:SetJustifyH("LEFT")
   stepHeader:SetText("Step")
   mainFrame.stepHeader = stepHeader
+
+  local scrollFrame = CreateFrame("ScrollFrame", "TurtleGuidesStepScroll", stepBox, "UIPanelScrollFrameTemplate")
+  scrollFrame:SetPoint("TOPLEFT", stepHeader, "BOTTOMLEFT", 0, -4)
+  scrollFrame:SetPoint("BOTTOMRIGHT", stepBox, "BOTTOMRIGHT", -18, 4)
+  scrollFrame:EnableMouseWheel(true)
+  local scrollBar = scrollFrame.ScrollBar
+  if scrollBar then
+    scrollBar:SetThumbTexture("Interface\\Buttons\\UI-ScrollBar-Knob")
+    scrollBar:Show()
+  end
+  local content = CreateFrame("Frame", nil, scrollFrame)
+  content:SetWidth(stepContentWidth(mainFrame))
+  content:SetHeight(20)
+  scrollFrame:SetScrollChild(content)
+  mainFrame.scrollFrame = scrollFrame
+  mainFrame.scrollContent = content
 
   local legacy = stepBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   legacy:SetPoint("TOPLEFT", stepHeader, "BOTTOMLEFT", 12, -10)
@@ -294,17 +375,18 @@ function TG:InitUI()
 
   State.stepRows = {}
   for _ = 1, MAX_STEP_ROWS do
-    local row = CreateFrame("Frame", nil, stepBox)
+    local row = CreateFrame("Frame", nil, content)
     row:SetWidth(STEP_ROW_WIDTH)
     row:SetHeight(14)
     row:SetPoint("TOPLEFT", stepHeader, "BOTTOMLEFT", 0, -10)
     local icon = row:CreateTexture(nil, "OVERLAY")
     icon:SetWidth(ICON_SIZE)
     icon:SetHeight(ICON_SIZE)
-    icon:SetPoint("TOPLEFT", row, "TOPLEFT", 0, 0)
+    icon:SetPoint("TOPLEFT", row, "TOPLEFT", 8, -8)
     row.icon = icon
     local text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    text:SetPoint("TOPLEFT", row, "TOPLEFT", STEP_TEXT_X, 0)
+    text:SetFont(STANDARD_TEXT_FONT, 10)
+    text:SetPoint("TOPLEFT", row, "TOPLEFT", 28, -6)
     text:SetWidth(STEP_TEXT_WIDTH)
     text:SetJustifyH("LEFT")
     text:SetJustifyV("TOP")
@@ -325,7 +407,7 @@ function TG:InitUI()
     local checkBtn = CreateFrame("Button", nil, row)
     checkBtn:SetWidth(ICON_SIZE)
     checkBtn:SetHeight(ICON_SIZE)
-    checkBtn:SetPoint("TOPLEFT", row, "TOPLEFT", 0, ICON_Y_OFFSET)
+    checkBtn:SetPoint("TOPLEFT", row, "TOPLEFT", 8, -6)
     if checkBtn.EnableMouse then
       checkBtn:EnableMouse(true)
     end
@@ -378,22 +460,6 @@ function TG:InitUI()
     TG:PrevStep()
   end)
   mainFrame.prevBtn = prevBtn
-
-  local upLabel = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  upLabel:SetPoint("TOPLEFT", stepBox, "BOTTOMLEFT", 0, -2)
-  upLabel:SetText("--- Next step ---")
-  mainFrame.upLabel = upLabel
-
-  local preview = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-  preview:SetPoint("TOPLEFT", upLabel, "BOTTOMLEFT", 0, -1)
-  preview:SetWidth(200)
-  preview:SetJustifyH("LEFT")
-  preview:SetJustifyV("TOP")
-  preview:SetText("")
-  State.upcomingLines[1] = preview
-  for i = 2, 5 do
-    State.upcomingLines[i] = preview
-  end
 
   local overflow = CreateFrame("Frame", "TurtleGuidesOverflowFrame", UIParent)
   overflow:SetWidth(300)
@@ -464,6 +530,32 @@ function TG:InitUI()
     mainFrame.auxFrames[i] = aux
   end
 
+  local resizer = CreateFrame("Frame", "TurtleGuidesResizeGrip", mainFrame)
+  resizer:SetWidth(16)
+  resizer:SetHeight(16)
+  resizer:SetPoint("BOTTOMRIGHT", mainFrame, "BOTTOMRIGHT", -2, 2)
+  resizer:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8" })
+  resizer:SetBackdropColor(0.7, 0.7, 0.7, 0.35)
+  resizer:SetAlpha(0.35)
+  resizer:EnableMouse(true)
+  resizer:RegisterForDrag("LeftButton")
+  resizer:SetScript("OnDragStart", function()
+    if not TG.db.locked then
+      mainFrame:StartSizing("BOTTOMRIGHT")
+    end
+  end)
+  resizer:SetScript("OnDragStop", function()
+    mainFrame:StopMovingOrSizing()
+    TG.db.frame.w, TG.db.frame.h = mainFrame:GetWidth(), mainFrame:GetHeight()
+    if TG.RefreshMainWindowLayout then
+      TG:RefreshMainWindowLayout()
+    end
+  end)
+  mainFrame.resizeGrip = resizer
+
+  if TG.InitStepWindows then
+    TG:InitStepWindows()
+  end
   mainFrame:Show()
   TG.mainFrame = mainFrame
   self:ApplyFrameOrientation()
@@ -517,10 +609,6 @@ function TG:ApplyTheme()
     colorFont(mainFrame.stepHeader, palette.header)
     colorFont(mainFrame.guideName, palette.body)
     colorFont(mainFrame.progressText, palette.body)
-    colorFont(mainFrame.upLabel, palette.body)
-    if mainFrame.upLabel then
-      mainFrame.upLabel:SetAlpha(0.50)
-    end
     for _, fs in ipairs(State.stepLines) do
       Theme.applyStepFont(fs)
       colorFont(fs, palette.body)
@@ -531,13 +619,6 @@ function TG:ApplyTheme()
     for _, row in ipairs(State.stepRows) do
       Theme.applyStepFont(row.text)
       setStepRowState(row, row._tgState)
-    end
-    for _, fs in ipairs(State.upcomingLines) do
-      Theme.applyStepFont(fs)
-      colorFont(fs, palette.body)
-      if fs then
-        fs:SetAlpha(0.55)
-      end
     end
     local overflow = mainFrame.overflowFrame
     if overflow then
@@ -551,6 +632,9 @@ function TG:ApplyTheme()
       colorFont(aux.label, palette.header)
       colorFont(aux.text, palette.body)
       Theme.applyStepFont(aux.text)
+    end
+    if mainFrame:IsShown() then
+      self:RefreshMainWindowLayout()
     end
   end
 end
@@ -575,15 +659,14 @@ function TG:UpdateUI()
   if not mainFrame then
     return
   end
+  if not State.stepLines[1] then
+    State.stepLines[1] = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  end
   if not mainFrame:IsShown() then
     hideChildFrames()
     return
   end
   local function resetStepSize()
-    if mainFrame.stepBox then
-      mainFrame.stepBox:SetHeight(140)
-    end
-    mainFrame:SetHeight(250)
     if mainFrame.overflowFrame then
       mainFrame.overflowFrame:Hide()
     end
@@ -601,11 +684,13 @@ function TG:UpdateUI()
   local guide = self.currentGuide
   if not guide then
     mainFrame.guideName:SetText("No guide selected. Click Guides.")
-    mainFrame.stepHeader:SetText("Step")
+    mainFrame.stepHeader:SetText("Next steps")
     State.stepLines[1]:SetText("")
-    State.upcomingLines[1]:SetText("")
     resetStepSize()
     clearAux()
+    if TG.HideStepWindows then
+      TG:HideStepWindows()
+    end
     return
   end
   mainFrame.guideName:SetText((guide.category or "Speedrun") .. " - " .. (guide.name or ""))
@@ -619,11 +704,13 @@ function TG:UpdateUI()
   mainFrame.progressBar:SetWidth(math.max(1, math.floor(barWidth * pct)))
   mainFrame.progressText:SetText(string.format("%d%%", math.floor(pct * 100)))
   if total == 0 then
-    mainFrame.stepHeader:SetText("No steps")
+    mainFrame.stepHeader:SetText("Next steps")
     State.stepLines[1]:SetText("")
-    State.upcomingLines[1]:SetText("")
     resetStepSize()
     clearAux()
+    if TG.HideStepWindows then
+      TG:HideStepWindows()
+    end
     return
   end
   if idx < 1 then
@@ -632,8 +719,9 @@ function TG:UpdateUI()
   if idx > total then
     idx = total
   end
-  mainFrame.stepHeader:SetText("Step " .. idx .. " / " .. total)
-  local step = guide.steps[idx]
+  mainFrame.stepHeader:SetText("Next steps")
+  local currentStep = guide.steps[idx]
+  local step = guide.steps[idx + 1] or currentStep
 
   local totalGotos, gotoIdx, gotoCounter = 0, 1, 0
   if step then
@@ -725,86 +813,21 @@ function TG:UpdateUI()
     addEntry("|cffaaaaaaContinue|r", "note")
   end
 
-  local nextStep = guide.steps[idx + 1]
-  if nextStep then
-    local first
-    for _, el in ipairs(nextStep.elements or {}) do
-      if not (el.t == "cmd" and el.tag == "goto") then
-        local t = StepText.elToText(el)
-        if t and t ~= "" then
-          first = t
-          break
-        end
-      end
-    end
-    State.upcomingLines[1]:SetText(first or "|cffaaaaaaFollow the arrow|r")
-  else
-    State.upcomingLines[1]:SetText("Guide complete!")
-  end
-
   local markerLines = {}
   for i = 1, table.getn(entries) do
     markerLines[i] = StepText.markerText(entries[i])
   end
   State.stepLines[1]:SetText(table.concat(markerLines, "\n\n"))
 
-  local BASE_HEIGHT, MIN_BOX = 110, 140
   local needed = layoutStepRows(entries, math.min(table.getn(entries), MAX_STEP_ROWS))
   if needed < 14 then
     needed = 14
   end
-  local previewH = 14
-  if State.upcomingLines[1].GetStringHeight then
-    previewH = State.upcomingLines[1]:GetStringHeight() or 14
+  if mainFrame.scrollContent then
+    mainFrame.scrollContent:SetHeight(needed + 8)
   end
-  if previewH < 14 then
-    previewH = 14
-  end
-  local previewExtra = math.max(0, math.ceil(previewH) - 28)
-  local scale = (mainFrame.GetScale and mainFrame:GetScale()) or 1
-  if not scale or scale <= 0 then
-    scale = 1
-  end
-  local screenH = (GetScreenHeight and GetScreenHeight()) or 768
-  local maxBox = math.max(MIN_BOX, math.floor((screenH * 0.7 / scale) - BASE_HEIGHT - previewExtra))
-  local BOX_PADDING = 52
-  local boxH = math.max(MIN_BOX, math.ceil(needed) + BOX_PADDING)
-  local needsOverflow = table.getn(entries) > MAX_STEP_ROWS or boxH > maxBox
-  local overflow = mainFrame.overflowFrame
-  if not needsOverflow then
-    mainFrame.stepBox:SetHeight(boxH)
-    mainFrame:SetHeight(BASE_HEIGHT + boxH + previewExtra)
-    if overflow then
-      overflow:Hide()
-    end
-  elseif overflow then
-    local mainCount = math.min(3, table.getn(entries))
-    local mainNeeded = layoutStepRows(entries, mainCount)
-    if mainNeeded < 14 then
-      mainNeeded = 14
-    end
-    boxH = math.min(maxBox, math.max(MIN_BOX, math.ceil(mainNeeded) + BOX_PADDING))
-    mainFrame.stepBox:SetHeight(boxH)
-    mainFrame:SetHeight(BASE_HEIGHT + boxH + previewExtra)
-    if table.getn(entries) > mainCount then
-      local extraLines = {}
-      for i = mainCount + 1, table.getn(entries) do
-        table.insert(extraLines, markerLines[i])
-      end
-      overflow.text:SetText(table.concat(extraLines, "\n\n"))
-      anchorChildFrame(overflow, mainFrame)
-      local oh = overflow.text.GetStringHeight and overflow.text:GetStringHeight() or 14
-      if oh < 14 then
-        oh = 14
-      end
-      overflow:SetHeight(math.max(math.ceil(oh) + 32, 40))
-      overflow:Show()
-    else
-      overflow:Hide()
-    end
-  else
-    mainFrame.stepBox:SetHeight(maxBox)
-    mainFrame:SetHeight(BASE_HEIGHT + maxBox + previewExtra)
+  if mainFrame.overflowFrame then
+    mainFrame.overflowFrame:Hide()
   end
 
   local auxGroups, seenAuxBodies, seenSignatures = {}, {}, {}
@@ -835,13 +858,16 @@ function TG:UpdateUI()
     addAuxGroup(StepText.auxTextsOfStep(step, false), "Notes")
   end
 
-  local anchor = (overflow and overflow:IsVisible()) and overflow or mainFrame
+  local overflowFrame = mainFrame.overflowFrame
+  local anchor = (overflowFrame and overflowFrame:IsVisible()) and overflowFrame or mainFrame
   for i = 1, 12 do
     local aux = mainFrame.auxFrames[i]
     local group = auxGroups[i]
     if group then
       local body = table.concat(group.texts, "\n\n")
-      if group.label and group.label ~= "" then
+      local labeled = group.label and group.label ~= ""
+      aux.text:ClearAllPoints()
+      if labeled then
         aux.label:SetText(group.label)
         aux.label:Show()
         aux.text:SetPoint("TOPLEFT", aux.label, "BOTTOMLEFT", 0, -4)
@@ -850,17 +876,21 @@ function TG:UpdateUI()
         aux.label:Hide()
         aux.text:SetPoint("TOPLEFT", aux, "TOPLEFT", 12, -10)
       end
-      aux.text:SetText("|cffffff00*|r " .. body)
+      local textWidth = math.max(80, aux:GetWidth() - 24)
+      local fontSize = fontOf(aux.text)
+      local wrapped, lineCount = TextWrap.wrap("|cffffff00*|r " .. body, textWidth, fontSize)
+      aux.text:SetWidth(textWidth)
+      aux.text:SetText(wrapped)
       anchorChildFrame(aux, anchor)
-      local h = aux.text.GetStringHeight and aux.text:GetStringHeight() or 14
-      if h < 14 then
-        h = 14
-      end
-      aux:SetHeight(math.ceil(h) + ((group.label and group.label ~= "") and 32 or 22))
+      local h = math.max(14, math.ceil(lineCount * TextWrap.lineHeight(fontSize)))
+      aux:SetHeight(h + (labeled and 32 or 22))
       aux:Show()
       anchor = aux
     else
       aux:Hide()
     end
+  end
+  if TG.UpdateStepWindows then
+    TG:UpdateStepWindows()
   end
 end

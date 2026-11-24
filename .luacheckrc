@@ -22,12 +22,12 @@ globals = {
   "UnitLevel", "UnitName", "UnitRace", "UnitSex", "UnitXP", "UnitXPMax", "UseContainerItem",
 
   -- frames, constants, and implicit event variables
-  "C_Map", "CreateVector2D", "DEFAULT_CHAT_FRAME", "GameTooltip", "GetCursorPosition", "INVSLOT_LAST_EQUIPPED", "MerchantFrame", "Minimap",
+  "C_Map", "CreateVector2D", "DEFAULT_CHAT_FRAME", "GameTooltip", "GetCursorPosition", "INVSLOT_LAST_EQUIPPED", "MerchantFrame", "Minimap", "ToggleDropDownMenu", "UIDropDownMenu_AddButton", "UIDropDownMenu_CreateInfo", "UIDropDownMenu_Initialize", "UIDropDownMenu_SetText", "UIDropDownMenu_SetWidth",
   "Minimap", "NUM_TAXI_BUTTONS", "SlashCmdList", "TaxiFrame", "UIParent", "WorldMapFrame",
   "UnitPosition", "arg1", "arg2", "arg3", "arg4", "arg5", "event", "this", "table.getn", "math.mod",
 
   -- addon globals and optional integrations
-  "RXPGuides", "SLASH_TURTLEGUIDES1", "SLASH_TURTLEGUIDES2", "TurtleGuidesCharDB",
+  "RXPGuides", "SLASH_TURTLEGUIDES1", "SLASH_TURTLEGUIDES2", "STANDARD_TEXT_FONT", "TurtleGuidesCharDB",
   "TurtleGuidesDB", "pfDB", "pfQuest_history",
 }
 

@@ -245,6 +245,27 @@ function TG:NextStep(manual, isSkip)
   end
 end
 
+function TG:GoToStep(index)
+  if not self.currentGuide then
+    return false
+  end
+  local total = table.getn(self.currentGuide.steps or {})
+  if total == 0 then
+    return false
+  end
+  index = tonumber(index) or 1
+  if index < 1 then
+    index = 1
+  end
+  if index > total then
+    index = total
+  end
+  if self.currentStepIndex == index then
+    return true
+  end
+  return self:SetGuide(self.currentGuide.key, index, true, true)
+end
+
 function TG:PrevStep()
   if not self.currentGuide then
     return

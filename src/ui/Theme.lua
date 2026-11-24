@@ -5,6 +5,17 @@ local Theme = {}
 TG.UI.Theme = Theme
 
 local THEMES = {
+  modern = {
+    name = "Modern",
+    bg = { 0.06, 0.07, 0.10, 0.96 },
+    panel = { 0.09, 0.11, 0.15, 0.94 },
+    progress = { 0.04, 0.05, 0.08, 0.90 },
+    border = { 0.16, 0.20, 0.28, 0.95 },
+    header = { 0.30, 0.85, 0.90 },
+    body = { 0.90, 0.93, 0.98 },
+    bar = { 0.25, 0.78, 0.85 },
+    accent = { 0.30, 0.85, 0.90 },
+  },
   dark = {
     name = "Dark",
     bg = { 0.05, 0.05, 0.12, 0.95 },
@@ -66,10 +77,15 @@ local THEMES = {
     bar = { 0.92, 0.72, 0.38 },
   },
 }
-local THEME_ORDER = { "dark", "light", "gold", "purple", "green", "lily" }
+local THEME_ORDER = { "modern", "dark", "light", "gold", "purple", "green", "lily" }
 
 function Theme.current()
-  return THEMES[TG.db and TG.db.theme] or THEMES.dark
+  return THEMES[TG.db and TG.db.theme] or THEMES.modern
+end
+
+function Theme.accent()
+  local palette = Theme.current()
+  return palette.accent or palette.header
 end
 
 function Theme.scale()
@@ -80,11 +96,11 @@ function Theme.createBackdrop(frame, bg, border)
   local palette = Theme.current()
   frame:SetBackdrop({
     bgFile = "Interface\\Buttons\\WHITE8X8",
-    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+    edgeFile = "Interface\\Buttons\\WHITE8X8",
     tile = true,
-    tileSize = 16,
-    edgeSize = 16,
-    insets = { left = 4, right = 4, top = 4, bottom = 4 },
+    tileSize = 8,
+    edgeSize = 1,
+    insets = { left = 2, right = 2, top = 2, bottom = 2 },
   })
   frame:SetBackdropColor(unpack(bg or palette.bg))
   frame:SetBackdropBorderColor(unpack(border or palette.border))
