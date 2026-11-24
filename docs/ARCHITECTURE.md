@@ -25,6 +25,7 @@ The root stays flat. Code lives in `src/`, tests in `tests/`, and documentation 
 - The `.toc` order is the dependency graph. Packages must not depend on each other in a cycle.
 - A `ui/components/` package gets created only when two or more features duplicate the same widget.
 - The previous themed UI lives in `archive/ui/` with its old tests in `archive/ui/tests/`. Archived files are not listed in the `.toc` and are excluded from linting.
+- `ui/Scrollbar.lua` is the shared slim scrollbar component used by the guide window and the picker.
 
 ## Pure logic and tests
 

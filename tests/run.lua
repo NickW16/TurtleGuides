@@ -33,6 +33,7 @@ local testFiles = {
   "tests/registry_test.lua",
   "tests/runtime_test.lua",
   "tests/state_test.lua",
+  "tests/scrollbar_test.lua",
   "tests/settings_test.lua",
   "tests/tauren_xp_test.lua",
   "tests/text_test.lua",

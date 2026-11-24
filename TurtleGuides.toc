@@ -81,6 +81,7 @@ src\waypoint\Geometry.lua
 src\waypoint\State.lua
 src\ui\State.lua
 src\ui\Text.lua
+src\ui\Scrollbar.lua
 src\ui\Windows.lua
 src\ui\Picker.lua
 src\ui\Settings.lua

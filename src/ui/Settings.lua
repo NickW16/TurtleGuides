@@ -84,6 +84,14 @@ function TG:CreateSettings()
   frame:SetScript("OnDragStop", function()
     this:StopMovingOrSizing()
   end)
+  if frame.EnableKeyboard then
+    frame:EnableKeyboard(true)
+  end
+  frame:SetScript("OnKeyDown", function()
+    if arg1 == "ESCAPE" then
+      frame:Hide()
+    end
+  end)
   panel(frame)
   frame:Hide()
 

@@ -195,38 +195,6 @@ local function textButton(parent, label, width, onClick)
   return button
 end
 
-local function getScrollOffset(scroll)
-  return (scroll.GetVerticalScroll and scroll:GetVerticalScroll()) or 0
-end
-
-local function setScrollOffset(scroll, value)
-  if scroll.SetVerticalScroll then
-    scroll:SetVerticalScroll(value)
-  end
-end
-
-local function scrollRange(scroll, content)
-  return math.max(0, (content:GetHeight() or 0) - (scroll:GetHeight() or 0))
-end
-
-local function updateThumb(main)
-  local scroll, content, thumb = main.scroll, main.content, main.thumb
-  if not scroll or not content or not thumb then
-    return
-  end
-  local viewH = scroll:GetHeight() or 1
-  local contentH = content:GetHeight() or viewH
-  local thumbH = math.max(22, math.floor(viewH * viewH / math.max(contentH, 1)))
-  if thumbH > viewH then
-    thumbH = viewH
-  end
-  thumb:SetHeight(thumbH)
-  local range = math.max(0, contentH - viewH)
-  local y = (range > 0) and -(getScrollOffset(scroll) / range) * (viewH - thumbH) or 0
-  thumb:ClearAllPoints()
-  thumb:SetPoint("TOPLEFT", scroll, "TOPRIGHT", -6, y)
-end
-
 function TG:InitUI()
   if State.main then
     return
@@ -240,7 +208,7 @@ function TG:InitUI()
   main:SetPoint(p.point or "RIGHT", UIParent, p.relPoint or "RIGHT", p.x or -40, p.y or 0)
   main:SetMovable(true)
   main:SetResizable(true)
-  main:SetMinResize(170, 190)
+  main:SetMinResize(170, 38)
   main:EnableMouse(true)
   main:RegisterForDrag("LeftButton")
   main:SetScript("OnDragStart", function()
@@ -284,59 +252,13 @@ function TG:InitUI()
   local scroll = CreateFrame("ScrollFrame", "TurtleGuidesStepScroll", main)
   scroll:SetPoint("TOPLEFT", main, "TOPLEFT", 5, -19)
   scroll:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -10, 16)
-  scroll:EnableMouseWheel(true)
   local content = CreateFrame("Frame", nil, scroll)
   content:SetWidth(stepContentWidth(main))
   content:SetHeight(20)
   scroll:SetScrollChild(content)
-  scroll:SetScript("OnMouseWheel", function()
-    local delta = tonumber(arg1) or 0
-    local range = scrollRange(scroll, content)
-    local offset = math.max(0, math.min(range, getScrollOffset(scroll) - delta * 24))
-    setScrollOffset(scroll, offset)
-    updateThumb(main)
-  end)
   main.scroll = scroll
   main.content = content
-
-  local track = CreateFrame("Frame", nil, scroll)
-  track:SetWidth(6)
-  track:SetPoint("TOPRIGHT", scroll, "TOPRIGHT", 0, 0)
-  track:SetPoint("BOTTOMRIGHT", scroll, "BOTTOMRIGHT", 0, 0)
-  track:SetBackdrop({ bgFile = DOT })
-  track:SetBackdropColor(0.08, 0.08, 0.09, 0.75)
-  main.track = track
-
-  local thumb = CreateFrame("Frame", nil, scroll)
-  thumb:SetWidth(6)
-  thumb:SetHeight(22)
-  thumb:SetBackdrop({ bgFile = DOT })
-  thumb:SetBackdropColor(0.55, 0.56, 0.60, 0.95)
-  thumb:SetMovable(true)
-  thumb:RegisterForDrag("LeftButton")
-  thumb:SetScript("OnDragStart", function()
-    thumb:StartMoving()
-    thumb:SetScript("OnUpdate", function()
-      local _, _, _, _, y = thumb:GetPoint(1)
-      local viewH = scroll:GetHeight() or 1
-      local travel = math.max(1, viewH - (thumb:GetHeight() or 22))
-      local range = scrollRange(scroll, content)
-      if y > 0 then
-        thumb:SetPoint("TOPLEFT", scroll, "TOPRIGHT", -6, 0)
-        setScrollOffset(scroll, 0)
-      elseif y < -travel then
-        thumb:SetPoint("TOPLEFT", scroll, "TOPRIGHT", -6, -travel)
-        setScrollOffset(scroll, range)
-      else
-        setScrollOffset(scroll, (-y / travel) * range)
-      end
-    end)
-  end)
-  thumb:SetScript("OnDragStop", function()
-    thumb:StopMovingOrSizing()
-    thumb:SetScript("OnUpdate", nil)
-  end)
-  main.thumb = thumb
+  main.scrollbar = TG.UI.Scrollbar.create(scroll, content)
   for _ = 1, MAX_ROWS do
     table.insert(rows, makeRow(content))
   end
@@ -375,25 +297,23 @@ function TG:InitUI()
   resizer:SetHeight(12)
   resizer:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -1, 1)
   resizer.pixels = {}
-  for line = 0, 1 do
-    for i = 0, 3 do
-      local pixel = resizer:CreateTexture(nil, "OVERLAY")
-      pixel:SetTexture(DOT)
-      pixel:SetWidth(2)
-      pixel:SetHeight(2)
-      pixel:SetPoint("TOPLEFT", resizer, "TOPLEFT", 1 + i * 2 + line * 3, -(11 - i * 2))
-      pixel:SetVertexColor(0.78, 0.78, 0.82, 0.70)
-      table.insert(resizer.pixels, pixel)
-    end
+  for i = 0, 7 do
+    local row = resizer:CreateTexture(nil, "OVERLAY")
+    row:SetTexture(DOT)
+    row:SetWidth(8 - i)
+    row:SetHeight(1)
+    row:SetPoint("BOTTOMRIGHT", resizer, "BOTTOMRIGHT", 0, i)
+    row:SetVertexColor(0.72, 0.72, 0.76, 0.55)
+    table.insert(resizer.pixels, row)
   end
   resizer:SetScript("OnEnter", function()
     for _, pixel in ipairs(resizer.pixels) do
-      pixel:SetVertexColor(0.95, 0.95, 0.95, 0.95)
+      pixel:SetVertexColor(0.90, 0.90, 0.92, 0.85)
     end
   end)
   resizer:SetScript("OnLeave", function()
     for _, pixel in ipairs(resizer.pixels) do
-      pixel:SetVertexColor(0.78, 0.78, 0.82, 0.70)
+      pixel:SetVertexColor(0.72, 0.72, 0.76, 0.55)
     end
   end)
   resizer:RegisterForDrag("LeftButton")
@@ -562,10 +482,10 @@ function TG:UpdateUI()
   end
   main.content:SetHeight(math.max(20, math.abs(y) + 4))
   if self._uiStep ~= index then
-    setScrollOffset(main.scroll, 0)
+    main.scrollbar:top()
   end
   self._uiStep = index
-  updateThumb(main)
+  main.scrollbar:update()
 end
 
 TG.UI.Windows = {

@@ -9,6 +9,7 @@ local function fresh()
     "src/compat/Text.lua",
     "src/ui/State.lua",
     "src/ui/Text.lua",
+    "src/ui/Scrollbar.lua",
     "src/ui/Windows.lua"
   )
   TG.db = {}
