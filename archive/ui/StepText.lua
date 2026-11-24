@@ -442,6 +442,62 @@ local function markerText(entry)
   return MARK_UNKNOWN .. text
 end
 
+local function stepEntries(step)
+  local out = {}
+  if not step then
+    return out
+  end
+  local function add(text, state, el, source)
+    if text and text ~= "" then
+      table.insert(out, { text = text, state = state, el = el, source = source })
+    end
+  end
+  if isAuxStep(step) then
+    for _, text in ipairs(auxTextsOfStep(step, true)) do
+      add(text, "note")
+    end
+  elseif step.elements then
+    local hasNonGoto, hasDescriptiveGoto = false, false
+    for _, el in ipairs(step.elements) do
+      if el.t == "cmd" and el.tag == "goto" then
+        if el.text and strtrim(el.text) ~= "" then
+          hasDescriptiveGoto = true
+        end
+      else
+        local text = (el.t == "text" and hasWarn(el)) and "" or elToTextNoWarn(el)
+        if text and text ~= "" then
+          hasNonGoto = true
+        end
+      end
+    end
+    for _, el in ipairs(step.elements) do
+      if el.t == "cmd" and el.tag == "goto" then
+        local descriptive = el.text and strtrim(el.text) ~= ""
+        if not ((hasNonGoto or hasDescriptiveGoto) and not descriptive) then
+          add(elToText(el), "note")
+        end
+      elseif not (el.t == "text" and hasWarn(el)) then
+        local text = elToTextNoWarn(el)
+        local state, source = "note", nil
+        if el.t == "cmd" and TG.IsElementTrackable and TG:IsElementTrackable(el) then
+          state = TG:IsElementDone(el)
+          source = TG._tgDoneSource
+        end
+        add(text, state, el, source)
+      end
+    end
+  end
+  if table.getn(out) == 0 and step.elements then
+    for _, el in ipairs(step.elements) do
+      add(elToText(el), "note", el)
+    end
+  end
+  if table.getn(out) == 0 then
+    add("|cffaaaaaaContinue|r", "note")
+  end
+  return out
+end
+
 StepText.elToText = elToText
 StepText.elToTextNoWarn = elToTextNoWarn
 StepText.hasWarn = hasWarn
@@ -450,6 +506,7 @@ StepText.auxTextsOfStep = auxTextsOfStep
 StepText.auxStepSignature = auxStepSignature
 StepText.stepRowText = stepRowText
 StepText.markerText = markerText
+StepText.stepEntries = stepEntries
 StepText.questNameFrom = questNameFrom
 StepText.parseObjectiveComment = parseObjectiveComment
 StepText.stripAllColors = stripAllColors

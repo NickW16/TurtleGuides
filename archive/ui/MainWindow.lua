@@ -7,16 +7,21 @@ local TextWrap = TG.UI.TextWrap
 
 local ICON_NOTE = "Interface\\Buttons\\WHITE8X8"
 local ICON_HIGHLIGHT = "Interface\\QuestFrame\\UI-QuestTitleHighlight"
+local COLOR_BODY = { 0.90, 0.90, 0.90 }
+local COLOR_HEADER = { 1.00, 0.82, 0.35 }
 local COLOR_DONE = { 0.45, 0.85, 0.50 }
 local COLOR_UNKNOWN = { 0.58, 0.58, 0.58 }
-local ICON_SIZE = 16
-local STEP_ROW_GAP = 0
+local ICON_SIZE = 10
 local BOX_TEXTURE = "Interface\\Buttons\\UI-CheckBox-Up"
 local CHECK_TEXTURE = "Interface\\Buttons\\UI-CheckBox-Check"
-local STEP_ROW_WIDTH = 246
-local STEP_TEXT_X = 20
-local STEP_TEXT_WIDTH = STEP_ROW_WIDTH - STEP_TEXT_X - 4
-local MAX_STEP_ROWS = 32
+local HEADER_X = 4
+local TASK_X = 16
+local ROW_GAP = 1
+local GROUP_GAP = 4
+local BASE_FONT_SIZE = 9
+local MAX_UPCOMING_STEPS = 24
+local MAX_TASKS_PER_STEP = 6
+local MAX_STEP_ROWS = 168
 
 local function hideChildFrames()
   local mainFrame = State.mainFrame
@@ -52,6 +57,11 @@ local function anchorChildFrame(child, anchor)
   child:SetPoint(point, anchor, relPoint, 0, gap)
 end
 
+local function fontOf(fs)
+  local _, size = fs:GetFont()
+  return size or 10
+end
+
 local function setIconGeometry(row, w, h, x, y)
   row.icon:ClearAllPoints()
   row.icon:SetWidth(w)
@@ -59,69 +69,67 @@ local function setIconGeometry(row, w, h, x, y)
   row.icon:SetPoint("TOPLEFT", row, "TOPLEFT", x, y)
 end
 
-local function setStepRowState(row, state)
-  if not row or not row.text or not row.icon then
-    return
-  end
+local function applyRow(row, kind, text, state, el, source)
+  row._tgElement = el
+  row._tgSource = source
   row._tgState = state
-  local clickable = row._tgTrackable == true
-  if row.checkBtn then
-    if clickable then
-      row.checkBtn:Show()
-    else
-      row.checkBtn:Hide()
-    end
-  end
-  if row.highlight and not clickable then
+  row._tgTrackable = (el and TG.IsElementTrackable and TG:IsElementTrackable(el)) or false
+  row.kind = kind
+  local palette = Theme.current()
+  local x = (kind == "header") and HEADER_X or TASK_X
+  local width = math.max(40, (row:GetWidth() or 100) - x - 6)
+  local fontSize = fontOf(row.text)
+  local wrapped, lineCount = TextWrap.wrap(text or "", width, fontSize)
+  row.text:SetWidth(width)
+  row.text:SetText(wrapped)
+  row.text:ClearAllPoints()
+  row.text:SetPoint("TOPLEFT", row, "TOPLEFT", x, -2)
+  row.text:SetTextColor(unpack(palette.body))
+  row.text:SetAlpha(1.00)
+  if row.highlight then
     row.highlight:Hide()
   end
-  row.text:ClearAllPoints()
-  if state ~= "note" and state ~= "none" then
+  if kind == "header" then
+    row.icon:Hide()
+    row.checkBtn:Hide()
+    row.text:SetTextColor(unpack(palette.header))
+    row._tgTip = nil
+    return math.ceil(lineCount * TextWrap.lineHeight(fontSize)) + 1
+  end
+  if row._tgTrackable then
+    setIconGeometry(row, ICON_SIZE, ICON_SIZE, 4, -3)
+    row.checkBtn:ClearAllPoints()
+    row.checkBtn:SetWidth(ICON_SIZE)
+    row.checkBtn:SetHeight(ICON_SIZE)
+    row.checkBtn:SetPoint("TOPLEFT", row, "TOPLEFT", 4, -3)
+    row.checkBtn:Show()
+    row.icon:Show()
     if state == true then
       row.icon:SetTexture(CHECK_TEXTURE)
+      row.icon:SetVertexColor(0.40, 1.00, 0.40, 1.00)
+      row.text:SetTextColor(unpack(COLOR_DONE))
+      row.text:SetAlpha(0.82)
+      row._tgTip = el._tgManualDone and "Completed manually - click to undo" or "Completed"
+    elseif state == false then
+      row.icon:SetTexture(BOX_TEXTURE)
+      row.icon:SetVertexColor(1.00, 1.00, 1.00, 1.00)
+      row._tgTip = "Not completed - click to mark complete"
     else
       row.icon:SetTexture(BOX_TEXTURE)
+      row.icon:SetVertexColor(0.55, 0.55, 0.58, 0.75)
+      row.text:SetTextColor(unpack(COLOR_UNKNOWN))
+      row.text:SetAlpha(0.82)
+      row._tgTip = "Unknown - click to mark complete"
     end
-  end
-  local palette = Theme.current()
-  if state == "note" or state == "none" then
-    row.icon:Show()
-    setIconGeometry(row, 4, 4, 10, -10)
-    row.icon:SetTexture(ICON_NOTE)
-    row.icon:SetVertexColor(1.00, 1.00, 1.00, 0.90)
-    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", 28, -6)
-    row.text:SetTextColor(unpack(palette.body))
-    row.text:SetAlpha(1.00)
-    row._tgTip = "Tip / note - not tracked"
-  elseif state == true then
-    row.icon:Show()
-    setIconGeometry(row, ICON_SIZE, ICON_SIZE, 8, -6)
-    row.icon:SetVertexColor(0.40, 1.00, 0.40, 1.00)
-    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", 28, -6)
-    row.text:SetTextColor(unpack(COLOR_DONE))
-    row.text:SetAlpha(0.72)
-    if row._tgElement and row._tgElement._tgManualDone then
-      row._tgTip = "Completed manually - click to undo"
-    else
-      row._tgTip = "Completed" .. (row._tgSource and (" (" .. row._tgSource .. ")") or "")
-    end
-  elseif state == false then
-    row.icon:Show()
-    setIconGeometry(row, ICON_SIZE, ICON_SIZE, 8, -6)
-    row.icon:SetVertexColor(1.00, 1.00, 1.00, 1.00)
-    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", 28, -6)
-    row.text:SetTextColor(unpack(palette.body))
-    row.text:SetAlpha(1.00)
-    row._tgTip = clickable and "Not completed - click to mark complete" or "Not completed"
   else
+    row.checkBtn:Hide()
     row.icon:Show()
-    setIconGeometry(row, ICON_SIZE, ICON_SIZE, 8, -6)
-    row.icon:SetVertexColor(0.55, 0.55, 0.58, 0.75)
-    row.text:SetPoint("TOPLEFT", row, "TOPLEFT", 28, -6)
-    row.text:SetTextColor(unpack(COLOR_UNKNOWN))
-    row.text:SetAlpha(0.78)
-    row._tgTip = clickable and "Unknown - click to mark complete" or "Unknown - check your quest log or bags"
+    setIconGeometry(row, 3, 3, 8, -6)
+    row.icon:SetTexture(ICON_NOTE)
+    row.icon:SetVertexColor(1.00, 1.00, 1.00, 0.55)
+    row._tgTip = nil
   end
+  return math.ceil(lineCount * TextWrap.lineHeight(fontSize)) + 1
 end
 
 local function clearStepRows()
@@ -130,14 +138,9 @@ local function clearStepRows()
   end
 end
 
-local function fontOf(fs)
-  local _, size = fs:GetFont()
-  return size or 10
-end
-
 -- derive width from the main frame because anchor based GetWidth can be stale
 local function stepContentWidth(mainFrame)
-  return math.max(120, (mainFrame:GetWidth() or 320) - 70)
+  return math.max(120, (mainFrame:GetWidth() or 280) - 60)
 end
 
 function TG:RefreshMainWindowLayout()
@@ -154,47 +157,41 @@ function TG:RefreshMainWindowLayout()
   end
 end
 
-local function layoutStepRows(entries, limit)
+local function layoutUpcomingRows(groups, limit)
   clearStepRows()
   local mainFrame = State.mainFrame
-  if not mainFrame or not mainFrame.stepHeader then
+  if not mainFrame or not mainFrame.scrollContent then
     return 0
   end
-  local y, total = -2, 0
+  local y, total, used = -2, 0, 0
   local width = stepContentWidth(mainFrame)
-  local textWidth = math.max(60, width - 34)
-  for i = 1, limit do
-    local row, entry = State.stepRows[i], entries[i]
-    if not row or not entry then
-      break
-    end
-    row._tgElement = entry.el
-    row._tgSource = entry.source
-    row._tgTrackable = entry.el and TG.IsElementTrackable and TG:IsElementTrackable(entry.el) or false
-    row:SetWidth(width)
-    row.text:SetWidth(textWidth)
-    local fontSize = fontOf(row.text)
-    local wrapped, lineCount = TextWrap.wrap(StepText.stepRowText(entry), textWidth - 4, fontSize)
-    row.text:SetText(wrapped)
-    setStepRowState(row, entry.state)
-    row:Show()
-    local h = math.ceil(lineCount * TextWrap.lineHeight(fontSize)) + 4
-    if row.icon:IsShown() and row.icon.GetHeight then
-      local iconH = row.icon:GetHeight() or 14
-      if iconH > h then
-        h = iconH
-      end
-    end
+  local function place(row, h)
     row:SetHeight(h)
     row:ClearAllPoints()
     row:SetPoint("TOPLEFT", mainFrame.scrollContent, "TOPLEFT", 0, y)
-    total = total + h
-    if i < limit then
-      total = total + STEP_ROW_GAP
-      y = y - h - STEP_ROW_GAP
-    else
-      y = y - h
+    row:Show()
+    total = total + h + ROW_GAP
+    y = y - h - ROW_GAP
+  end
+  for _, group in ipairs(groups) do
+    if used >= limit then
+      break
     end
+    local header = State.stepRows[used + 1]
+    used = used + 1
+    header:SetWidth(width)
+    place(header, applyRow(header, "header", group.title, "note", nil, nil))
+    for _, entry in ipairs(group.entries) do
+      if used >= limit then
+        break
+      end
+      local row = State.stepRows[used + 1]
+      used = used + 1
+      row:SetWidth(width)
+      place(row, applyRow(row, "task", entry.text, entry.state, entry.el, entry.source))
+    end
+    total = total + GROUP_GAP - ROW_GAP
+    y = y - (GROUP_GAP - ROW_GAP)
   end
   return total
 end
@@ -206,16 +203,16 @@ function TG:InitUI()
   local mainFrame = CreateFrame("Frame", "TurtleGuidesMainFrame", UIParent)
   State.mainFrame = mainFrame
   local palette = Theme.current()
-  local p = TG.db.frame or { point = "RIGHT", relPoint = "RIGHT", x = -40, y = 0, w = 320, h = 420 }
-  mainFrame:SetWidth(p.w or 320)
-  mainFrame:SetHeight(p.h or 420)
+  local p = TG.db.frame or { point = "RIGHT", relPoint = "RIGHT", x = -40, y = 0, w = 280, h = 360 }
+  mainFrame:SetWidth(p.w or 280)
+  mainFrame:SetHeight(p.h or 360)
   mainFrame:SetPoint(p.point or "RIGHT", UIParent, p.relPoint or "RIGHT", p.x or -40, p.y or 0)
   mainFrame:SetMovable(true)
   if mainFrame.SetResizable then
     mainFrame:SetResizable(true)
   end
   if mainFrame.SetMinResize then
-    mainFrame:SetMinResize(260, 300)
+    mainFrame:SetMinResize(220, 250)
   end
   mainFrame:EnableMouse(true)
   mainFrame:RegisterForDrag("LeftButton")
@@ -252,16 +249,16 @@ function TG:InitUI()
   accentBar:SetPoint("TOPRIGHT", mainFrame, "TOPRIGHT", -2, -2)
   mainFrame.accentBar = accentBar
 
-  local title = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-  title:SetPoint("TOPLEFT", mainFrame, "TOPLEFT", 12, -10)
+  local title = mainFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  title:SetPoint("TOPLEFT", mainFrame, "TOPLEFT", 8, -6)
   title:SetText("TurtleGuides")
   title:SetTextColor(unpack(Theme.accent()))
   mainFrame.title = title
 
   local close = CreateFrame("Button", nil, mainFrame)
-  close:SetWidth(18)
-  close:SetHeight(18)
-  close:SetPoint("TOPRIGHT", mainFrame, "TOPRIGHT", -8, -8)
+  close:SetWidth(16)
+  close:SetHeight(16)
+  close:SetPoint("TOPRIGHT", mainFrame, "TOPRIGHT", -6, -5)
   local closeText = close:CreateFontString(nil, "OVERLAY", "GameFontNormal")
   closeText:SetPoint("CENTER", close, "CENTER", 0, 0)
   closeText:SetText("X")
@@ -279,9 +276,9 @@ function TG:InitUI()
   mainFrame.closeBtn = close
 
   local guideBtn = CreateFrame("Button", nil, mainFrame)
-  guideBtn:SetWidth(22)
-  guideBtn:SetHeight(22)
-  guideBtn:SetPoint("RIGHT", close or mainFrame, "LEFT", -6, 0)
+  guideBtn:SetWidth(18)
+  guideBtn:SetHeight(18)
+  guideBtn:SetPoint("RIGHT", close or mainFrame, "LEFT", -4, 0)
   guideBtn:SetNormalTexture("Interface\\Icons\\INV_Misc_Book_09")
   guideBtn:SetPushedTexture("Interface\\Icons\\INV_Misc_Book_09")
   guideBtn:SetScript("OnClick", function()

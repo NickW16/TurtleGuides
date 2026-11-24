@@ -1,5 +1,6 @@
 -- wow 1.12 api and addon globals used by the sources
 std = "lua51"
+exclude_files = { "archive/**" }
 
 -- unused self is idiomatic in event callbacks
 ignore = { "212/self" }
@@ -31,4 +32,4 @@ globals = {
   "TurtleGuidesDB", "pfDB", "pfQuest_history",
 }
 
-files["src/guides/*.lua"] = { max_line_length = false }
+files["src/guides/*.lua"] = { ignore = { "613" }, max_line_length = false }

@@ -24,6 +24,7 @@ The root stays flat. Code lives in `src/`, tests in `tests/`, and documentation 
 - Rendering lives in `ui/` for every feature. Rendering reads state and never makes decisions.
 - The `.toc` order is the dependency graph. Packages must not depend on each other in a cycle.
 - A `ui/components/` package gets created only when two or more features duplicate the same widget.
+- The previous themed UI lives in `archive/ui/` with its old tests in `archive/ui/tests/`. Archived files are not listed in the `.toc` and are excluded from linting.
 
 ## Pure logic and tests
 

@@ -1,9 +1,4 @@
--- shared ui frame references and row buffers
+-- frame references for the compact guide windows
 local TG = _G.TurtleGuides
-local State = { mainFrame = nil, pickerFrame = nil, settingsFrame = nil }
 TG.UI = TG.UI or {}
-TG.UI.State = State
-
-State.stepLines = {}
-State.stepRows = {}
-State.upcomingLines = {}
+TG.UI.State = { main = nil, smalls = {}, picker = nil, settings = nil }
