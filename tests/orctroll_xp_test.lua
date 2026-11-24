@@ -76,7 +76,7 @@ return {
   test_all_accepts_have_xp_data = function()
     local TG = fresh()
     TG:BuildGuideIndex()
-    local guide = TG.guideByKey["Turtle Guides (H)||1-6 Durotar"]
+    local guide = TG.guideByKey["Turtle Guides (H)||Nick's Durotar 1-6 (Orc/Troll)"]
     for _, step in ipairs(guide.steps) do
       for _, el in ipairs(step.elements) do
         if el.t == "cmd" and el.tag == "accept" then
@@ -90,7 +90,7 @@ return {
   test_quest_xp_budget = function()
     local TG = fresh()
     TG:BuildGuideIndex()
-    local guide = TG.guideByKey["Turtle Guides (H)||1-6 Durotar"]
+    local guide = TG.guideByKey["Turtle Guides (H)||Nick's Durotar 1-6 (Orc/Troll)"]
     local seen, total = {}, 0
     for _, step in ipairs(guide.steps) do
       for _, el in ipairs(step.elements) do
@@ -103,16 +103,16 @@ return {
         end
       end
     end
-    env.eq(total >= 7200, true, "quest XP total " .. total .. " below 7200")
+    env.eq(total >= 4800, true, "quest XP total " .. total .. " below 4800")
   end,
 
-  test_guide_still_ends_at_level_six = function()
+  test_guide_still_ends_at_report_quest = function()
     local TG = fresh()
     TG:BuildGuideIndex()
-    local guide = TG.guideByKey["Turtle Guides (H)||1-6 Durotar"]
+    local guide = TG.guideByKey["Turtle Guides (H)||Nick's Durotar 1-6 (Orc/Troll)"]
     local lastStep = guide.steps[table.getn(guide.steps)]
     local lastElement = lastStep.elements[table.getn(lastStep.elements)]
-    env.eq(lastElement.tag, "xp")
-    env.eq(lastElement.args[1], "6")
+    env.eq(lastElement.tag, "isOnQuest")
+    env.eq(lastElement.args[1], "805")
   end,
 }
