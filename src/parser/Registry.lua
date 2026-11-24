@@ -1,4 +1,5 @@
 -- stores raw guide texts and accepts external registrations
+-- Supports the common RXP-style command syntax; no RXP guides are bundled here.
 local TG = _G.TurtleGuides
 TG.rawGuides = TG.rawGuides or {}
 
