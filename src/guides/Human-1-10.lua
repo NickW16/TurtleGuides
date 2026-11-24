@@ -13,7 +13,7 @@ TG:RegisterGuideText(
 #next 10-16 Westfall
 
 step
-    >>Deputy Willem stands at the Abbey gate. Speak to him, then carry the report inside to Marshal McBride.
+    >>Talk to Deputy Willem
     .goto Elwynn Forest,48.2,42.9
     .target Deputy Willem
     .accept 783 >> Accept A Threat Within
@@ -31,7 +31,7 @@ step
     .accept 3105 >> Accept Tainted Letter
 
 step
-    >>Eagan waits outside the north-west corner. His wolves roam the fields north of the road.
+    >>Turn in Eagan Peltskinner
     .goto Elwynn Forest,48.2,42.9
     .target Deputy Willem
     .turnin 5261 >> Turn in Eagan Peltskinner
@@ -42,7 +42,7 @@ step
     .mob Young Wolf
 
 step
-    >>Return to the Abbey. Willem has more work, and McBride wants Echo Ridge cleared.
+    >>Turn in quests at the Abbey
     .goto Elwynn Forest,48.2,42.9
     .target Deputy Willem
     .turnin 33 >> Turn in Wolves Across the Border
@@ -58,7 +58,7 @@ step
     .accept 110 >> Accept Rest and Relaxation
 
 step
-    >>Turn in the class letters to the trainers inside the Abbey before leaving.
+    >>Turn in the class letters
     .goto Elwynn Forest,50.2,42.3
     .target Llane Beshere
     .turnin 3100 >> Turn in Simple Letter
@@ -79,7 +79,7 @@ step
     .turnin 3105 >> Turn in Tainted Letter
 
 step
-    >>The Defias hold the vineyards east of the Abbey. Take their bandanas, then clear the kobolds at Echo Ridge.
+    >>Collect 12 Red Burlap Bandanas and kill 12 Kobold Workers
     .goto Elwynn Forest,51.8,47.4,40,0
     .complete 18,1 --Collect Red Burlap Bandana (x12)
     .mob Defias Thug
@@ -88,7 +88,7 @@ step
     .mob Kobold Worker
 
 step
-    >>Hand in the bandanas and the kobold report. McBride follows up with the mine labourers.
+    >>Turn in Brotherhood of Thieves and Investigate Echo Ridge
     .goto Elwynn Forest,48.2,42.9
     .target Deputy Willem
     .turnin 18 >> Turn in Brotherhood of Thieves
@@ -99,7 +99,7 @@ step
     .accept 21 >> Accept Skirmish at Echo Ridge
 
 step
-    >>Garrick waits at the far end of the vineyards. The labourers are deeper inside Echo Ridge Mine.
+    >>Kill Garrick Padfoot and 12 Kobold Laborers
     .goto Elwynn Forest,57.5,48.3
     .complete 6,1 --Kill Garrick Padfoot (x1)
     .mob Garrick Padfoot
@@ -108,7 +108,7 @@ step
     .mob Kobold Laborer
 
 step
-    >>Finish the Northshire chain, then follow the road south toward Goldshire.
+    >>Turn in the Northshire chain
     .goto Elwynn Forest,48.2,42.9
     .target Deputy Willem
     .turnin 6 >> Turn in Bounty on Garrick Padfoot
@@ -123,7 +123,7 @@ step
     .accept 419 >> Accept Further Concerns
 
 step
-    >>Milly Osworth waits in the Northshire vineyards. Her chain leads through the Stonefield farm.
+    >>Turn in Milly Osworth
     .goto Elwynn Forest,50.7,39.4
     .target Milly Osworth
     .turnin 3903 >> Turn in Milly Osworth
@@ -136,7 +136,7 @@ step
     .accept 3905 >> Accept Grape Manifest
 
 step
-    >>Goldshire has the mine, candle and dust quests. Pick them all up before heading into Fargodeep.
+    >>Accept the Goldshire quests
     .goto Elwynn Forest,43.3,65.7
     .target William Pestle
     .accept 60 >> Accept Kobold Candles
@@ -146,7 +146,7 @@ step
     .accept 47 >> Accept Gold Dust Exchange
 
 step
-    >>Work through Fargodeep Mine. Gold dust, candles, Goldtooth and the lost books all come from these kobolds.
+    >>Clear Fargodeep Mine
     .goto Elwynn Forest,40.3,82.5,40,0
     .complete 62,1 --Explore Fargodeep Mine
     .collect 4306,10 --Collect Gold Dust (x10)
@@ -158,7 +158,7 @@ step
     .mob Goldtooth
 
 step
-    >>Hand the mine work in around Goldshire, then take William's shipment chain.
+    >>Turn in the mine quests
     .goto Elwynn Forest,42.1,65.9
     .target Marshal Dughan
     .turnin 62 >> Turn in The Fargodeep Mine
@@ -175,7 +175,7 @@ step
     .turnin 3905 >> Turn in Grape Manifest
 
 step
-    >>The Escape is a short errand east of town. Shipment to Stormwind needs the city, so take the gryphon if you can.
+    >>Complete The Escape
     .goto Elwynn Forest,47.5,62.2,35,0
     .complete 113,1 --Escape the murloc ambush
     .goto Elwynn Forest,48.0,63.0
@@ -183,7 +183,7 @@ step
     .turnin 113 >> Turn in The Escape
 
 step
-    >>The Stonefield and Maclure farms hold a long chain of easy errands and good XP.
+    >>Accept the farm quests
     .goto Elwynn Forest,34.5,84.2
     .target Auntie Bernice Stonefield
     .accept 85 >> Accept Lost Necklace
@@ -200,7 +200,7 @@ step
     .accept 107 >> Accept Note to William
 
 step
-    >>Finish the farm chain and collect the Piedboar items.
+    >>Finish the farm chain
     .goto Elwynn Forest,43.1,85.7
     .target Billy Maclure
     .turnin 85 >> Turn in Lost Necklace
@@ -215,7 +215,7 @@ step
     .accept 87 >> Accept Goldtooth
 
 step
-    >>Eastvale Logging Camp has the frontier quests and the lost guard chain. Collect everything in one pass.
+    >>Accept the Eastvale quests
     .goto Elwynn Forest,52.3,49.7
     .target Sara Timberlain
     .accept 365 >> Accept Red Linen Goods
@@ -227,7 +227,7 @@ step
     .accept 419 >> Accept Further Concerns
 
 step
-    >>Work through the Eastvale chain while gathering linen and killing frontier mobs.
+    >>Collect Red Linen and finish the Eastvale objectives
     .collect 4308,12 --Collect Red Linen (x12)
     .collect 4309,4 --Collect Fine Linen Bandage (x4)
     .complete 467,1 --Kill Riverpaw Runt (x10)
@@ -237,7 +237,7 @@ step
     .mob Riverpaw Runt
 
 step
-    >>Hand in the Eastvale chain and pick up the bounty follow-ups.
+    >>Turn in the Eastvale chain
     .goto Elwynn Forest,52.3,49.7
     .target Guard Thomas
     .turnin 422 >> Turn in Find the Lost Guards
@@ -249,7 +249,7 @@ step
     .turnin 467 >> Turn in Protect the Frontier
 
 step
-    >>Finish the Jasperlode and Westbrook chain around the eastern mines.
+    >>Complete The Jasperlode Mine
     .goto Elwynn Forest,42.1,65.9
     .target Marshal Dughan
     .turnin 419 >> Turn in Further Concerns
@@ -266,7 +266,7 @@ step
     .accept 133 >> Accept Riverpaw Gnoll Bounty
 
 step
-    >>Clear the gnolls around Westbrook and finish the collector hunt.
+    >>Kill 12 Riverpaw Gnolls
     .goto Elwynn Forest,49.5,78.0,45,0
     .complete 133,1 --Kill Riverpaw Gnoll (x12)
     .complete 242,1 --Collect Gold Pickup Schedule (x1)
@@ -277,7 +277,7 @@ step
     .accept 244 >> Accept Manhunt
 
 step
-    >>Remaining errands around Goldshire before the final grind.
+    >>Turn in the remaining Goldshire quests
     .goto Elwynn Forest,43.3,65.7
     .target William Pestle
     .turnin 107 >> Turn in Note to William
@@ -289,7 +289,7 @@ step
     .turnin 244 >> Turn in Manhunt
 
 step
-    >>Grind the remaining mobs around Elwynn until level 10, then continue to Westfall.
+    >>Grind to level 10
     .goto Elwynn Forest,45.0,70.0,50,0
     .xp 10
 ]],

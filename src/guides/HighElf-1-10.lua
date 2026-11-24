@@ -17,13 +17,13 @@ step
     .accept 41187 >> Accept Refugees no More
 
 step
-    .goto Thalassian Highlands,48.56,83.64 >> Turn in to |cRXP_FRIENDLY_Commander Anarileth|r in Brinthilien
+    .goto Thalassian Highlands,48.56,83.64 >> Turn in to |cRXP_FRIENDLY_Commander Anarileth|r
     .target Commander Anarileth
     .turnin 41187 >> Turn in Refugees no More
     .accept 41188 >> Accept Provisions for Refugees
 
 step
-    >>Kill |cRXP_ENEMY_Young Thalassian Boars|r. Loot them for |cRXP_LOOT_Young Thalassian Boar Flanks|r
+    >>Kill |cRXP_ENEMY_Young Thalassian Boars|r for |cRXP_LOOT_Young Thalassian Boar Flanks|r
     .goto Thalassian Highlands,50.00,79.10,35,0 >> Boars just south of Brinthilien
     .goto Thalassian Highlands,52.10,84.00,35,0 >> Follow the boar path north
     .collect 41118,10 --Collect Young Thalassian Boar Flank (x10)
@@ -45,37 +45,37 @@ step << Mage
     .goto Thalassian Highlands,49.76,85.31 >> Talk to |cRXP_FRIENDLY_Magister Ala'shor Sunblood|r
     .target Magister Ala'shor Sunblood
     .turnin 41226 >> Turn in Magically Sealed Letter
-    >>Train your class spells here, then press Next when ready
+    >>Train your class spells
 
 step << Paladin
     .goto Thalassian Highlands,49.03,86.11 >> Talk to |cRXP_FRIENDLY_Lor'thas the Holy|r
     .target Lor'thas the Holy
     .turnin 41227 >> Turn in Elegant Letter
-    >>Train your class spells here, then press Next when ready
+    >>Train your class spells
 
 step << Priest
     .goto Thalassian Highlands,49.09,86.21 >> Talk to |cRXP_FRIENDLY_Priestess Maelah Sunsworn|r
     .target Priestess Maelah Sunsworn
     .turnin 41228 >> Turn in Blessed Elegant Letter
-    >>Train your class spells here, then press Next when ready
+    >>Train your class spells
 
 step << Rogue
     .goto Thalassian Highlands,46.25,86.69 >> Talk to |cRXP_FRIENDLY_Leela the Shadow|r
     .target Leela the Shadow
     .turnin 41229 >> Turn in Shady Letter
-    >>Train your class spells here, then press Next when ready
+    >>Train your class spells
 
 step << Warrior
     .goto Thalassian Highlands,46.28,86.62 >> Talk to |cRXP_FRIENDLY_Valanos Dawnfire|r
     .target Valanos Dawnfire
     .turnin 41230 >> Turn in Plain Letter
-    >>Train your class spells here, then press Next when ready
+    >>Train your class spells
 
 step << Hunter
     .goto Thalassian Highlands,46.53,84.37 >> Talk to |cRXP_FRIENDLY_Ranger Rubinah Sunsworn|r
     .target Ranger Rubinah Sunsworn
     .turnin 41231 >> Turn in Feathered Letter
-    >>Train your class spells here, then press Next when ready
+    >>Train your class spells
 
 step
     .goto Thalassian Highlands,47.34,84.18 >> Talk to |cRXP_FRIENDLY_Dalicia Sweetsilver|r
@@ -83,7 +83,7 @@ step
     .accept 41190 >> Accept Thalassian Goulash
 
 step
-    >>Kill |cRXP_ENEMY_Young Crimson Lynxes|r for |cRXP_LOOT_Lynx Steaks|r and |cRXP_ENEMY_Forest Hawkstriders|r for |cRXP_LOOT_Forest Hawkstrider Legs|r
+    >>Kill |cRXP_ENEMY_Young Crimson Lynxes|r and |cRXP_ENEMY_Forest Hawkstriders|r for |cRXP_LOOT_Lynx Steaks|r and |cRXP_LOOT_Forest Hawkstrider Legs|r
     .goto Thalassian Highlands,46.60,76.50,35,0 >> Young Crimson Lynxes south of camp
     .goto Thalassian Highlands,47.40,70.90,35,0 >> Forest Hawkstriders farther south
     .complete 41189,1 --Kill Young Crimson Lynx (x12)
@@ -98,7 +98,7 @@ step
     .accept 41191 >> Accept A Crown of Flowers
 
 step
-    >>Pick up |cRXP_LOOT_Thalassian Daisies|r around Brinthilien
+    >>Collect 10 |cRXP_LOOT_Thalassian Daisies|r
     .goto Thalassian Highlands,48.60,82.30,25,0 >> Thalassian Daisy clusters around the camp
     .collect 41121,10 --Collect Thalassian Daisies (x10)
 
@@ -108,7 +108,7 @@ step
     .accept 41196 >> Accept Maddening Hunger
 
 step
-    >>Loot a |cRXP_LOOT_Charged Arcane Crystal|r from the Arcane Crystal Packages in the mine
+    >>Loot a |cRXP_LOOT_Charged Arcane Crystal|r
     .goto Thalassian Highlands,42.50,79.70,25,0 >> Arcane Crystal Packages west of Brinthilien
     .collect 41123,1 --Collect Charged Arcane Crystal (x1)
 
@@ -118,7 +118,7 @@ step
     .accept 41192 >> Accept Arcane Golem Revolt
 
 step
-    >>Kill the arcane golems in the Silver Sun Mine
+    >>Kill the arcane golems
     .goto Thalassian Highlands,41.40,78.40,25,0 >> Malfunctioning Arcane Golems
     .goto Thalassian Highlands,40.70,82.70,25,0 >> Defective Arcane Golems and Arcane Pounders
     .complete 41192,1 --Kill Malfunctioning Arcane Golem (x8)
@@ -155,7 +155,7 @@ step
     .accept 41193 >> Accept A Troubling Presence
 
 step
-    >>Kill |cRXP_ENEMY_Blood Elf Spies|r and |cRXP_ENEMY_Veloren Brightstar|r. Loot Veloren for the |cRXP_LOOT_Feltouched Letter|r
+    >>Kill |cRXP_ENEMY_Blood Elf Spies|r and |cRXP_ENEMY_Veloren Brightstar|r, then loot the |cRXP_LOOT_Feltouched Letter|r
     .goto Thalassian Highlands,53.30,74.40,25,0 >> Blood Elf Spy camp east of Brinthilien
     .goto Thalassian Highlands,52.79,74.69 >> Veloren Brightstar
     .complete 41193,1 --Kill Blood Elf Spy (x8)
@@ -178,7 +178,7 @@ step
     .accept 41197 >> Accept Delivery to Alah'Thalas
 
 step
-    .goto Alah'Thalas,59.69,61.47 >> Follow the road south-east into Alah'Thalas and find |cRXP_FRIENDLY_Vereesa Windrunner|r
+    .goto Alah'Thalas,59.69,61.47 >> Talk to |cRXP_FRIENDLY_Vereesa Windrunner|r
     .target Vereesa Windrunner
     .turnin 41195 >> Turn in Message for the Windrunner
     .accept 41236 >> Accept The Silver Covenant
@@ -189,13 +189,13 @@ step
     .turnin 41197 >> Turn in Delivery to Alah'Thalas
 
 step
-    .goto Thalassian Highlands,44.16,57.74 >> Return to |cRXP_FRIENDLY_Commander Braedin|r at the Silver Covenant Camp
+    .goto Thalassian Highlands,44.16,57.74 >> Turn in to |cRXP_FRIENDLY_Commander Braedin|r
     .target Commander Braedin
     .turnin 41236 >> Turn in The Silver Covenant
     .accept 41219 >> Accept Wyrms of the Highlands
 
 step
-    >>Kill |cRXP_ENEMY_Brilliant Mana Wyrms|r and loot their |cRXP_LOOT_Mana Wyrm Eyes|r
+    >>Kill |cRXP_ENEMY_Brilliant Mana Wyrms|r for |cRXP_LOOT_Mana Wyrm Eyes|r
     .goto Thalassian Highlands,44.94,58.88,25,0 >> Mana Wyrms around the Silver Covenant Camp
     .collect 41165,10 --Collect Mana Wyrm Eye (x10)
     .mob Brilliant Mana Wyrm
@@ -211,7 +211,7 @@ step
     .accept 41245 >> Accept All Along the Farstride
 
 step
-    >>Kill |cRXP_ENEMY_Farstride Netters|r and |cRXP_ENEMY_Farstride Coastrunners|r along the Farstride
+    >>Kill |cRXP_ENEMY_Farstride Netters|r and |cRXP_ENEMY_Farstride Coastrunners|r
     .goto Thalassian Highlands,36.46,41.30,30,0 >> Farstride coast
     .complete 41245,1 --Kill Farstride Netter (x8)
     .complete 41245,2 --Kill Farstride Coastrunner (x8)
@@ -225,7 +225,7 @@ step
     .accept 41248 >> Accept Naga All Along
 
 step
-    >>Kill |cRXP_ENEMY_Reefscale Nagas|r and loot |cRXP_LOOT_Reefscale Naga Scales|r
+    >>Kill |cRXP_ENEMY_Reefscale Nagas|r for |cRXP_LOOT_Reefscale Naga Scales|r
     .goto Thalassian Highlands,20.06,48.15,30,0 >> Reefscale Nagas on the southern coast
     .collect 41198,9 --Collect Reefscale Naga Scale (x9)
     .mob Reefscale Sunderer
@@ -255,7 +255,7 @@ step
     .turnin 41249 >> Turn in Leaders of the Reefscale
 
 step
-    .goto Thalassian Highlands,48.10,82.00,40,0 >> Grind |cRXP_ENEMY_Young Crimson Lynxes|r and |cRXP_ENEMY_Young Thalassian Boars|r around Brinthilien until level 10
+    .goto Thalassian Highlands,48.10,82.00,40,0 >> Grind to level 10
     .xp 10
 ]],
   "H-Turtle-Alliance-1-10_HighElf"

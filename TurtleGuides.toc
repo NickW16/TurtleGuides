@@ -27,6 +27,12 @@ src\parser\Guide.lua
 src\parser\Registry.lua
 src\guides\HighElf-1-10.lua
 src\guides\Human-1-10.lua
+src\guides\DwarfGnome-1-10.lua
+src\guides\NightElf-1-10.lua
+src\guides\Undead-1-10.lua
+src\guides\Goblin-1-10.lua
+src\guides\OrcTroll-1-10.lua
+src\guides\Tauren-1-10.lua
 src\guides\Registry.lua
 src\guides\Suggestions.lua
 src\engine\State.lua
