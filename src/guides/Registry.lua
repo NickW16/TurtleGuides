@@ -70,7 +70,7 @@ end
 local function categoryFor(guide)
   local group = string.lower(guide.group or "")
   local name = string.lower(guide.name or "")
-  if string.find(group, "turtle survival") or string.find(name, "turtle survival") then
+  if string.find(group, "turtle") or string.find(name, "turtle") then
     return "Turtle Survival"
   end
   if string.find(group, "survival") or string.find(name, "survival") then

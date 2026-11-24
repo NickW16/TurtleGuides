@@ -1,5 +1,5 @@
 -- stores raw guide texts and accepts external registrations
--- Supports the common RXP-style command syntax; no RXP guides are bundled here.
+-- Supports the common RXP-style command syntax.
 local TG = _G.TurtleGuides
 TG.rawGuides = TG.rawGuides or {}
 
@@ -11,5 +11,5 @@ if not _G.RXPGuides then
   _G.RXPGuides = {}
 end
 _G.RXPGuides.RegisterGuide = function(text, group)
-  TG:RegisterGuideText(text, group or "RXP")
+  TG:RegisterGuideText(text, group or "Imported")
 end

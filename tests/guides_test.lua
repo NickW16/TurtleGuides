@@ -40,6 +40,12 @@ return {
     env.eq(TG.guides[1].faction, "Horde")
   end,
 
+  test_turtle_guides_use_turtle_category = function()
+    local TG = fresh()
+    addGuide(TG, "#name 1-10 Elwynn Forest\n#group Turtle Guides (A)\n#classic\nstep\n.accept 1", "test.lua")
+    env.eq(TG.guides[1].category, "Turtle Survival")
+  end,
+
   test_guide_matches_player = function()
     local TG = fresh()
     local guide = { faction = "Horde", meta = { defaultfor = "Orc/Troll" } }
