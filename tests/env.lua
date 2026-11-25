@@ -293,7 +293,9 @@ function env.reset()
     end
     frame.CreateTexture = function()
       local texture = {}
-      texture.SetTexture = noop
+      texture.SetTexture = function(_, path)
+        texture.path = path
+      end
       texture.SetWidth = noop
       texture.SetHeight = noop
       texture.SetPoint = noop

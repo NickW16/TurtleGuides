@@ -6,6 +6,18 @@ local Text = TG.UI.Text
 local BOX = "Interface\\Buttons\\UI-CheckBox-Up"
 local CHECK = "Interface\\Buttons\\UI-CheckBox-Check"
 local DOT = "Interface\\Buttons\\WHITE8X8"
+local CLASS_ICONS = "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes"
+local CLASS_ICON_COORDS = {
+  WARRIOR = { 0, 0.25, 0, 0.25 },
+  MAGE = { 0.25, 0.49609375, 0, 0.25 },
+  ROGUE = { 0.49609375, 0.7421875, 0, 0.25 },
+  DRUID = { 0.7421875, 0.98828125, 0, 0.25 },
+  HUNTER = { 0, 0.25, 0.25, 0.5 },
+  SHAMAN = { 0.25, 0.49609375, 0.25, 0.5 },
+  PRIEST = { 0.49609375, 0.7421875, 0.25, 0.5 },
+  WARLOCK = { 0.7421875, 0.98828125, 0.25, 0.5 },
+  PALADIN = { 0, 0.25, 0.5, 0.75 },
+}
 local BODY_SIZE = 10
 local MAX_SMALL = 3
 local MAX_SMALL_LINES = 5
@@ -479,17 +491,10 @@ function TG:InitUI()
     local _, token = UnitClass("player")
     classToken = token
   end
-  local coords = CLASS_ICON_TCOORDS and classToken and CLASS_ICON_TCOORDS[classToken]
+  local coords = classToken and CLASS_ICON_COORDS[string.upper(classToken)]
   if coords then
-    classIcon:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-    if coords[5] then
-      classIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4], coords[5], coords[6], coords[7], coords[8])
-    else
-      classIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
-    end
-  elseif classToken and classToken ~= "" then
-    classIcon:SetTexture("Interface\\Icons\\ClassIcon_" .. classToken)
-    classIcon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    classIcon:SetTexture(CLASS_ICONS)
+    classIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
   else
     classIcon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
     classIcon:SetTexCoord(0.08, 0.92, 0.08, 0.92)

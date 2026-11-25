@@ -44,6 +44,17 @@ return {
     env.eq(TG.UI.State.main:IsShown(), true)
   end,
 
+  test_class_icon_uses_vanilla_sheet = function()
+    local TG = fresh()
+    TG:InitUI()
+    local icon = TG.UI.State.main.classIcon
+    env.eq(icon.path, "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
+    env.eq(icon.coords[1], 0.25)
+    env.eq(icon.coords[2], 0.49609375)
+    env.eq(icon.coords[3], 0)
+    env.eq(icon.coords[4], 0.25)
+  end,
+
   test_small_window_shows_current_step = function()
     local TG = fresh()
     withGuide(TG)
