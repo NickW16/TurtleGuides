@@ -5,6 +5,36 @@ local Text = TG.UI.Text
 
 local ROW_HEIGHT = 16
 
+local originalEscapeAction
+local escapeBindingActive = false
+
+local function restoreEscapeBinding()
+  if not escapeBindingActive then
+    return
+  end
+  if SetBinding then
+    SetBinding("ESCAPE", originalEscapeAction or "")
+  end
+  originalEscapeAction = nil
+  escapeBindingActive = false
+end
+
+local function captureEscapeBinding(button)
+  if escapeBindingActive or not SetBinding or not GetBindingAction then
+    return
+  end
+  originalEscapeAction = GetBindingAction("ESCAPE")
+  local name = button and button.GetName and button:GetName()
+  if not name then
+    return
+  end
+  if SetBinding("ESCAPE", "CLICK " .. name .. ":LeftButton") ~= false then
+    escapeBindingActive = true
+  else
+    originalEscapeAction = nil
+  end
+end
+
 local function panel(frame)
   frame:SetBackdrop({
     bgFile = "Interface\\Buttons\\WHITE8X8",
@@ -60,6 +90,7 @@ function TG:ShowSettings()
   end
   self:RefreshSettings()
   self:AnchorSettings()
+  captureEscapeBinding(State.settings.close)
   State.settings:Show()
 end
 
@@ -84,14 +115,11 @@ function TG:CreateSettings()
   frame:SetScript("OnDragStop", function()
     this:StopMovingOrSizing()
   end)
-  if frame.EnableKeyboard then
-    frame:EnableKeyboard(true)
+  local baseHide = frame.Hide
+  frame.Hide = function(self)
+    restoreEscapeBinding()
+    baseHide(self)
   end
-  frame:SetScript("OnKeyDown", function()
-    if arg1 == "ESCAPE" then
-      frame:Hide()
-    end
-  end)
   panel(frame)
   frame:Hide()
 
@@ -102,7 +130,8 @@ function TG:CreateSettings()
   Text.register(title, 10)
   frame.title = title
 
-  local close = CreateFrame("Button", nil, frame)
+  local close = CreateFrame("Button", "TurtleGuidesSettingsCloseButton", frame)
+  frame.close = close
   close:SetWidth(9)
   close:SetHeight(9)
   close:SetNormalTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")

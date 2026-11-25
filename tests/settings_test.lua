@@ -41,4 +41,16 @@ return {
     plus.scripts.OnClick()
     env.eq(TG.db.fontScale, 1.1)
   end,
+
+  test_settings_does_not_capture_keyboard = function()
+    local TG = fresh()
+    TG.db = {}
+    TG:ShowSettings()
+    local frame = TG.UI.State.settings
+    env.eq(frame.keyboardEnabled, nil)
+    env.eq(frame.scripts.OnKeyDown, nil)
+    env.eq(env.bindings.ESCAPE, "CLICK TurtleGuidesSettingsCloseButton:LeftButton")
+    frame:Hide()
+    env.eq(env.bindings.ESCAPE, "TOGGLEGAMEMENU")
+  end,
 }

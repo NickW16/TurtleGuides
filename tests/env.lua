@@ -11,6 +11,14 @@ function env.reset()
   _G.event = nil
   _G.arg1 = nil
   _G.GetTime = nil
+  env.bindings = { ESCAPE = "TOGGLEGAMEMENU" }
+  _G.GetBindingAction = function(key)
+    return env.bindings[key]
+  end
+  _G.SetBinding = function(key, action)
+    env.bindings[key] = action
+    return true
+  end
   _G.pfDB = nil
   _G.GetZoneText = nil
   _G.GetSubZoneText = nil
@@ -223,6 +231,9 @@ function env.reset()
     frame.SetPoint = noop
     frame.SetMovable = noop
     frame.EnableMouse = noop
+    frame.EnableKeyboard = function(_, enabled)
+      frame.keyboardEnabled = enabled == true
+    end
     frame.RegisterForDrag = noop
     frame.SetFrameStrata = noop
     frame.SetClampedToScreen = noop
@@ -236,6 +247,9 @@ function env.reset()
     frame.StopMovingOrSizing = noop
     frame.GetPoint = function()
       return "TOP", nil, "TOP", 0, -110
+    end
+    frame.GetName = function()
+      return frame.name
     end
     frame.SetText = function(_, text)
       frame.text = text
