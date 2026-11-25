@@ -78,4 +78,24 @@ step
     env.eq(guide.steps[1]._softcore, true)
     env.eq(guide.steps[2]._softcore, false)
   end,
+
+  test_zoneless_goto_inherits_last_zone = function()
+    local TG = fresh()
+    local guide = TG.Parser.ParseGuide(
+      [[
+#name Test Guide
+#group Classic
+step
+.goto Dun Morogh,10,20
+.goto 30,40
+]],
+      "test.lua"
+    )
+    local first = guide.steps[1].elements[1]
+    local second = guide.steps[1].elements[2]
+    env.eq(first.args[1], "Dun Morogh")
+    env.eq(second.args[1], "30")
+    env.eq(second.args[2], "40")
+    env.eq(second.gotoZone, "Dun Morogh")
+  end,
 }

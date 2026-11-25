@@ -139,9 +139,9 @@ function TG:PlayerWorldPos()
   if not UnitPosition then
     return nil
   end
-  local ok, y, x = pcall(UnitPosition, "player")
+  local ok, y, x, instance = pcall(UnitPosition, "player")
   if ok and type(x) == "number" and type(y) == "number" then
-    return x, y
+    return x, y, tonumber(instance) or nil
   end
 end
 
@@ -159,7 +159,7 @@ function TG:WorldPosFromMapPos(id, x, y)
     if cached == false then
       return nil
     end
-    return cached.x, cached.y
+    return cached.x, cached.y, cached.instance
   end
   local vec
   if CreateVector2D then
@@ -167,15 +167,25 @@ function TG:WorldPosFromMapPos(id, x, y)
   else
     vec = { x = x / 100, y = y / 100 }
   end
-  local _, a, b = pcall(C_Map.GetWorldPosFromMapPos, id, vec)
-  local first, second = vectorXY(a)
-  if not first then
+  local ok, a, b = pcall(C_Map.GetWorldPosFromMapPos, id, vec)
+  if not ok then
+    worldPosCache[key] = false
+    return nil
+  end
+  local instance, first, second
+  if type(a) == "number" and (type(b) == "table" or type(b) == "userdata") then
+    instance = a
     first, second = vectorXY(b)
+  else
+    first, second = vectorXY(a)
+    if type(b) == "number" then
+      instance = b
+    end
   end
   if first and second then
-    local result = { x = second, y = first }
+    local result = { x = second, y = first, instance = tonumber(instance) or nil }
     worldPosCache[key] = result
-    return result.x, result.y
+    return result.x, result.y, result.instance
   end
   worldPosCache[key] = false
   return nil
@@ -190,13 +200,17 @@ function TG:ZoneWorldPos(zone, x, y)
 end
 
 function TG:WorldDistanceToWaypoint(zone, x, y)
-  local px, py = self:PlayerWorldPos()
-  local tx, ty = self:ZoneWorldPos(zone, x, y)
+  local px, py, pinstance = self:PlayerWorldPos()
+  local tx, ty, tinstance = self:ZoneWorldPos(zone, x, y)
   if not px or not tx then
     return nil
   end
+  if pinstance and tinstance and pinstance ~= -1 and tinstance ~= -1
+    and pinstance ~= tinstance then
+    return nil, "travel"
+  end
   local dx, dy = tx - px, ty - py
-  return math.sqrt(dx * dx + dy * dy)
+  return math.sqrt(dx * dx + dy * dy), "world"
 end
 
 local function currentZoneAliases()

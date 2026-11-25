@@ -43,6 +43,7 @@ local function parseGuide(text, source)
   local ctx = Context.player()
   local guideApplicable = true
   local inHeader = true
+  local lastGotoZone
 
   local function pushStep()
     if not currentStep then
@@ -144,7 +145,14 @@ local function parseGuide(text, source)
               currentStep.tags[key] = el.value ~= "" and el.value or true
             else
               table.insert(currentStep.elements, el)
-              if el.t == "cmd" and el.tag == "deathskip" then
+              if el.t == "cmd" and el.tag == "goto" and el.args then
+                local count = table.getn(el.args)
+                if count >= 3 then
+                  lastGotoZone = el.args[1]
+                elseif count == 2 and lastGotoZone then
+                  el.gotoZone = lastGotoZone
+                end
+              elseif el.t == "cmd" and el.tag == "deathskip" then
                 currentStep._deathskip = true
               end
             end

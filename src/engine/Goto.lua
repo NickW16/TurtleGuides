@@ -50,7 +50,7 @@ function TG:GetStepGotos(step)
       elseif table.getn(a) == 2 then
         local x, y = tonumber(a[1]), tonumber(a[2])
         if x and y then
-          local zone = (GetZoneText and GetZoneText() or "")
+          local zone = el.gotoZone or (GetZoneText and GetZoneText() or "")
           table.insert(gotos, {
             zone = zone,
             x = x,
@@ -103,9 +103,12 @@ end
 
 local function gotoDistance(g)
   if TG.WorldDistanceToWaypoint then
-    local d = TG:WorldDistanceToWaypoint(g.zone, g.x, g.y)
+    local d, reason = TG:WorldDistanceToWaypoint(g.zone, g.x, g.y)
     if d then
       return d, true
+    end
+    if reason then
+      return nil, false
     end
   end
   local zone, px, py = localPlayerPos()
@@ -135,42 +138,76 @@ local function gotoRadius(g)
   return Shared.DEFAULT_GOTO_RADIUS
 end
 
-local function selectNearestDynamicGoto(self, gotos, stepKey, current)
+local function reachedTable(self, stepKey)
+  if not self._gotoReached then
+    self._gotoReached = {}
+  end
+  if not self._gotoReached[stepKey] then
+    self._gotoReached[stepKey] = {}
+  end
+  return self._gotoReached[stepKey]
+end
+
+local function markGotoReached(self, stepKey, upto)
+  local reached = reachedTable(self, stepKey)
+  for i = 1, upto do
+    reached[i] = true
+  end
+end
+
+local function clearGotoReached(self, stepKey)
+  if self._gotoReached then
+    self._gotoReached[stepKey] = nil
+  end
+end
+
+local function updateWaypoint(self)
+  if self.UpdateStepWaypoint then
+    self:UpdateStepWaypoint()
+  end
+  if self.UpdateUI then
+    self:UpdateUI()
+  end
+end
+
+local function setGotoIndex(self, stepKey, idx, current)
+  if idx == current then
+    return
+  end
+  if idx > current then
+    markGotoReached(self, stepKey, idx - 1)
+  end
+  self._gotoIndex[stepKey] = idx
+  updateWaypoint(self)
+end
+
+local function advanceGotoIndex(self, stepKey, idx, total)
+  markGotoReached(self, stepKey, idx)
+  local nextIdx = idx + 1
+  if nextIdx <= total then
+    self._gotoIndex[stepKey] = nextIdx
+    updateWaypoint(self)
+  else
+    self._gotoIndex[stepKey] = nil
+    clearGotoReached(self, stepKey)
+    self:NextStep(false)
+  end
+end
+
+local function selectNearestGoto(self, gotos, stepKey, current, reached)
   local best, bestDist
   for i, g in ipairs(gotos) do
-    if isDynamicGoto(g) then
+    if not reached[i] then
       local d = gotoDistance(g)
-      if d and (not bestDist or d < bestDist) then
+      if d and (not bestDist or d < bestDist or (d == bestDist and i == current)) then
         best, bestDist = i, d
       end
     end
   end
   if best and best ~= current then
-    self._gotoIndex[stepKey] = best
-    if self.UpdateStepWaypoint then
-      self:UpdateStepWaypoint()
-    end
-    if self.UpdateUI then
-      self:UpdateUI()
-    end
+    setGotoIndex(self, stepKey, best, current)
   end
-  return best
-end
-
-local function advanceGotoIndex(self, stepKey, idx, total)
-  local nextIdx = idx + 1
-  if nextIdx <= total then
-    self._gotoIndex[stepKey] = nextIdx
-    if self.UpdateStepWaypoint then
-      self:UpdateStepWaypoint()
-    end
-    if self.UpdateUI then
-      self:UpdateUI()
-    end
-  else
-    self._gotoIndex[stepKey] = nil
-    self:NextStep(false)
-  end
+  return best, bestDist
 end
 
 function TG:CheckGotoAdvance()
@@ -193,36 +230,51 @@ function TG:CheckGotoAdvance()
     self._gotoIndex = {}
   end
   local stepKey = tostring(step)
+  local reached = reachedTable(self, stepKey)
   local idx = self._gotoIndex[stepKey] or 1
   if idx > total then
     idx = total
   end
-  local g = gotos[idx]
+  while idx <= total and reached[idx] do
+    idx = idx + 1
+  end
+  if idx > total then
+    self._gotoIndex[stepKey] = nil
+    clearGotoReached(self, stepKey)
+    self:NextStep(false)
+    return
+  end
+  self._gotoIndex[stepKey] = idx
 
-  local arrivedFromDynamic = false
-  if isDynamicGoto(g) then
-    local reached
-    for i, candidate in ipairs(gotos) do
-      if not isDynamicGoto(candidate) then
-        local d = gotoDistance(candidate)
-        if d and d <= gotoRadius(candidate) then
-          reached = i
-          break
-        end
+  local g = gotos[idx]
+  selectNearestGoto(self, gotos, stepKey, idx, reached)
+  idx = self._gotoIndex[stepKey] or idx
+  g = gotos[idx]
+
+  local reachedIdx
+  for i, candidate in ipairs(gotos) do
+    if not reached[i] and not isDynamicGoto(candidate) then
+      local d = gotoDistance(candidate)
+      if d and d <= gotoRadius(candidate) then
+        reachedIdx = i
+        break
       end
     end
-    if reached then
-      idx = reached
-      g = gotos[idx]
-      self._gotoIndex[stepKey] = idx
-      arrivedFromDynamic = true
-    else
-      selectNearestDynamicGoto(self, gotos, stepKey, idx)
-      return
+  end
+  if reachedIdx then
+    if reachedIdx > idx then
+      markGotoReached(self, stepKey, reachedIdx - 1)
+    end
+    local changed = reachedIdx ~= idx
+    idx = reachedIdx
+    g = gotos[idx]
+    self._gotoIndex[stepKey] = idx
+    if changed then
+      updateWaypoint(self)
     end
   end
 
-  if not arrivedFromDynamic then
+  if not reachedIdx then
     local zoneNow = (GetZoneText and GetZoneText() or "")
     local currentZone = g.zone
     if self.ZoneName then
@@ -230,22 +282,24 @@ function TG:CheckGotoAdvance()
     end
     if zoneNow ~= "" and not zoneMatches(zoneNow, currentZone) then
       for j = idx + 1, total do
-        local nextZone = gotos[j].zone
-        if self.ZoneName then
-          nextZone = self:ZoneName(nextZone)
-        end
-        if zoneMatches(zoneNow, nextZone) then
-          self._gotoIndex[stepKey] = j
-          if self.UpdateStepWaypoint then
-            self:UpdateStepWaypoint()
+        if not reached[j] then
+          local nextZone = gotos[j].zone
+          if self.ZoneName then
+            nextZone = self:ZoneName(nextZone)
           end
-          if self.UpdateUI then
-            self:UpdateUI()
+          if zoneMatches(zoneNow, nextZone) then
+            setGotoIndex(self, stepKey, j, idx)
+            idx = j
+            g = gotos[j]
+            break
           end
-          return
         end
       end
     end
+  end
+
+  if isDynamicGoto(g) then
+    return
   end
 
   local dist = gotoDistance(g)
@@ -351,3 +405,4 @@ end
 Goto.gotoDistance = gotoDistance
 Goto.gotoRadius = gotoRadius
 Goto.isDynamicGoto = isDynamicGoto
+Goto.selectNearestGoto = selectNearestGoto

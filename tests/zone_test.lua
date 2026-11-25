@@ -56,4 +56,54 @@ return {
     env.eq(x, 20)
     env.eq(y, 30)
   end,
+
+  test_world_pos_from_map_pos_returns_instance = function()
+    local TG = fresh()
+    _G.C_Map = {
+      GetWorldPosFromMapPos = function()
+        return 1, { GetXY = function()
+          return 30, 20
+        end }
+      end,
+    }
+    local x, y, instance = TG:WorldPosFromMapPos(1432, 50, 60)
+    env.eq(x, 20)
+    env.eq(y, 30)
+    env.eq(instance, 1)
+  end,
+
+  test_player_world_pos_returns_instance = function()
+    local TG = fresh()
+    _G.UnitPosition = function(unit)
+      env.eq(unit, "player")
+      return 20, 10, 0
+    end
+    local x, y, instance = TG:PlayerWorldPos()
+    env.eq(x, 10)
+    env.eq(y, 20)
+    env.eq(instance, 0)
+  end,
+
+  test_world_distance_rejects_instance_mismatch = function()
+    local TG = fresh()
+    _G.UnitPosition = function()
+      return 20, 10, 0
+    end
+    _G.C_Map = {
+      GetWorldPosFromMapPos = function()
+        return 1, { GetXY = function()
+          return 20, 10
+        end }
+      end,
+    }
+    local dist, reason = TG:WorldDistanceToWaypoint("Dun Morogh", 50, 60)
+    env.eq(dist, nil)
+    env.eq(reason, "travel")
+    _G.UnitPosition = function()
+      return 20, 10, 1
+    end
+    TG:ClearWorldPosCache()
+    local dist = TG:WorldDistanceToWaypoint("Dun Morogh", 50, 60)
+    env.eq(type(dist), "number")
+  end,
 }
