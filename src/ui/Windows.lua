@@ -574,13 +574,13 @@ function TG:InitUI()
   Text.register(guideName, BODY_SIZE)
   main.guideName = guideName
 
-  local nextBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ArrowRight_Fantasy", "Next step", function()
+  local nextBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ScrollRight", "Next step", function()
     if TG.NextStep then
       TG:NextStep(true)
     end
   end, 12)
   nextBtn:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -10, 2)
-  local prevBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ArrowLeft_Fantasy", "Previous step", function()
+  local prevBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ScrollLeft", "Previous step", function()
     if TG.PrevStep then
       TG:PrevStep()
     end
