@@ -1,6 +1,79 @@
 -- current step diagnostics
 local TG = _G.TurtleGuides
 
+local copyFrame
+
+function TG:ShowDebugCopy(text)
+  if not copyFrame then
+    copyFrame = CreateFrame("Frame", "TurtleGuidesDebugCopyFrame", UIParent)
+    copyFrame:SetWidth(520)
+    copyFrame:SetHeight(360)
+    copyFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    copyFrame:SetBackdrop({
+      bgFile = "Interface\\Buttons\\WHITE8X8",
+      edgeFile = "Interface\\Buttons\\WHITE8X8",
+      tile = true,
+      tileSize = 4,
+      edgeSize = 1,
+      insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    })
+    copyFrame:SetBackdropColor(0.06, 0.06, 0.06, 0.96)
+    copyFrame:SetBackdropBorderColor(0.45, 0.41, 0.35, 1)
+    copyFrame:SetMovable(true)
+    copyFrame:EnableMouse(true)
+    copyFrame:RegisterForDrag("LeftButton")
+    copyFrame:SetScript("OnDragStart", function()
+      this:StartMoving()
+    end)
+    copyFrame:SetScript("OnDragStop", function()
+      this:StopMovingOrSizing()
+    end)
+
+    local title = copyFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    title:SetPoint("TOPLEFT", copyFrame, "TOPLEFT", 8, -8)
+    title:SetText("TurtleGuides debug - text is selected, press Ctrl+C to copy")
+
+    local close = CreateFrame("Button", nil, copyFrame, "UIPanelCloseButton")
+    close:SetPoint("TOPRIGHT", copyFrame, "TOPRIGHT", 2, -2)
+    close:SetScript("OnClick", function()
+      copyFrame:Hide()
+    end)
+
+    local scroll = CreateFrame("ScrollFrame", "TurtleGuidesDebugCopyScroll", copyFrame, "UIPanelScrollFrameTemplate")
+    scroll:SetPoint("TOPLEFT", copyFrame, "TOPLEFT", 8, -28)
+    scroll:SetPoint("BOTTOMRIGHT", copyFrame, "BOTTOMRIGHT", -28, 8)
+
+    local edit = CreateFrame("EditBox", "TurtleGuidesDebugCopyText", scroll)
+    edit:SetMultiLine(true)
+    edit:SetAutoFocus(false)
+    edit:SetFontObject(GameFontHighlightSmall)
+    edit:SetTextInsets(4, 4, 4, 4)
+    edit:SetScript("OnEscapePressed", function()
+      copyFrame:Hide()
+    end)
+    scroll:SetScrollChild(edit)
+
+    copyFrame.edit = edit
+    copyFrame.scroll = scroll
+    copyFrame:SetScript("OnShow", function()
+      local width = scroll:GetWidth()
+      if width and width > 0 then
+        edit:SetWidth(width - 18)
+      end
+      edit:SetFocus()
+      edit:HighlightText()
+    end)
+  end
+
+  local value = tostring(text or "")
+  local _, lines = string.gsub(value, "\n", "\n")
+  copyFrame.edit:SetText(value)
+  copyFrame.edit:SetHeight(math.max(240, (lines + 1) * 15))
+  copyFrame:Show()
+  copyFrame.edit:SetFocus()
+  copyFrame.edit:HighlightText()
+end
+
 function TG:DebugCurrentStep()
   local guide = self.currentGuide
   if not guide then
@@ -151,5 +224,8 @@ function TG:DebugCurrentStep()
   if self.cdb then
     self.cdb.debug = table.concat(lines, "\n")
     add("Debug: saved to TurtleGuidesCharDB.debug (will persist after /reload).")
+  end
+  if self.ShowDebugCopy then
+    self:ShowDebugCopy(table.concat(lines, "\n"))
   end
 end

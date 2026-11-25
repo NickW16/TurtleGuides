@@ -5,6 +5,7 @@ TG.Engine = TG.Engine or {}
 TG.Engine.Shared = Shared
 
 Shared.RECENT_ACCEPT_WINDOW = 5
+Shared.TURNIN_CONFIRM_WINDOW = 5
 Shared.MANUAL_CHECK_VISIBLE_DELAY = 0.6
 Shared.DEFAULT_GOTO_RADIUS = 8
 
@@ -70,4 +71,5 @@ end
 TG._seenComplete = TG._seenComplete or {}
 TG._turnedInTitles = TG._turnedInTitles or {}
 TG._pendingTurnin = TG._pendingTurnin or {}
+TG._turninCandidates = TG._turninCandidates or {}
 TG._recentAccept = TG._recentAccept or {}

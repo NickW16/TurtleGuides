@@ -51,4 +51,80 @@ return {
     TG:OnQuestAccepted(1)
     env.eq(TG._recentAccept[99] ~= nil, true)
   end,
+
+  test_empty_quest_log_is_not_readable = function()
+    local TG = fresh()
+    env.eq(TG.Engine.Quests.canReadQuestIds(), false)
+  end,
+
+  test_scan_turnins_ignores_log_churn_without_confirmation = function()
+    local TG = fresh()
+    TG.cdb = {}
+    _G.GetTime = function()
+      return 10
+    end
+    local entries = { { title = "Foo", complete = 1, id = 42 } }
+    local function applyLog()
+      _G.GetNumQuestLogEntries = function()
+        return table.getn(entries)
+      end
+      _G.GetQuestLogTitle = function(i)
+        local e = entries[i]
+        if not e then
+          return
+        end
+        return e.title, 1, nil, false, false, e.complete, nil, e.id
+      end
+    end
+    applyLog()
+    TG:ScanQuestTurnins()
+    entries = {}
+    applyLog()
+    TG:ScanQuestTurnins()
+    env.eq(TG:IsQuestTurnedIn(42), false)
+    env.eq(TG._turnedInTitles.Foo, nil)
+  end,
+
+  test_scan_turnins_confirms_after_dialog_close = function()
+    local TG = fresh()
+    TG.cdb = {}
+    _G.GetTime = function()
+      return 10
+    end
+    local entries = { { title = "Foo", complete = 1, id = 42 } }
+    _G.GetNumQuestLogEntries = function()
+      return table.getn(entries)
+    end
+    _G.GetQuestLogTitle = function(i)
+      local e = entries[i]
+      if not e then
+        return
+      end
+      return e.title, 1, nil, false, false, e.complete, nil, e.id
+    end
+    _G.GetTitleText = function()
+      return "Foo"
+    end
+    TG:OnQuestTurninDialog()
+    TG:OnQuestFinished()
+    entries = {}
+    TG:ScanQuestTurnins()
+    env.eq(TG:IsQuestTurnedIn(42), true)
+    env.eq(TG._turnedInTitles.Foo, true)
+  end,
+
+  test_reaccept_clears_turned_in_title = function()
+    local TG = fresh()
+    TG.cdb = {}
+    TG:MarkQuestTurnedIn(42, "Foo")
+    _G.GetNumQuestLogEntries = function()
+      return 1
+    end
+    _G.GetQuestLogTitle = function()
+      return "Foo", 1, nil, false, false, nil, nil, 42
+    end
+    TG:OnQuestAccepted(1)
+    env.eq(TG._turnedInTitles.Foo, nil)
+    env.eq(TG:IsQuestTurnedIn(42), false)
+  end,
 }

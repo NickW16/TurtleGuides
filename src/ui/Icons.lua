@@ -16,12 +16,14 @@ local TALK_ICON = "Interface\\GossipFrame\\GossipGossipIcon"
 local MOB_ICON = "Interface\\Cursor\\Attack"
 local BAG_ICON = "Interface\\Icons\\INV_Misc_Bag_01"
 local BUY_ICON = "Interface\\Cursor\\Buy"
+local TRAVEL_ICON = "Interface\\Icons\\Ability_Rogue_Sprint"
 
 Icons.QUEST_ICON = AVAILABLE_ICON
 Icons.TURNIN_ICON = ACTIVE_ICON
 Icons.COMPLETE_ICON = COMPLETE_ICON
 Icons.COMPLETE_COLOR = { 0.85, 0.85, 0.88 }
 Icons.CHAT_ICON = TALK_ICON
+Icons.TRAVEL_ICON = TRAVEL_ICON
 
 function Icons.isBullet(texture)
   return texture == AVAILABLE_ICON
@@ -35,6 +37,7 @@ function Icons.isBullet(texture)
     or texture == MOB_ICON
     or texture == BAG_ICON
     or texture == BUY_ICON
+    or texture == TRAVEL_ICON
 end
 
 function Icons.token(texture)
@@ -148,6 +151,15 @@ function Icons.forText(text)
   if string.find(lower, "talk", 1, true) or string.find(lower, "speak", 1, true) then
     return TALK_ICON
   end
+  if
+    string.find(lower, "travel", 1, true)
+    or string.find(lower, "go to", 1, true)
+    or string.find(lower, "head to", 1, true)
+    or string.find(lower, "run to", 1, true)
+    or string.find(lower, "make your way", 1, true)
+  then
+    return TRAVEL_ICON
+  end
   if string.find(lower, "kill", 1, true) or string.find(lower, "slay", 1, true) then
     return MOB_ICON
   end
@@ -171,6 +183,9 @@ function Icons.forElement(el)
   end
   if tag == "vendor" or tag == "sell" then
     return BUY_ICON
+  end
+  if tag == "goto" then
+    return TRAVEL_ICON
   end
   if tag == "bankwithdraw" or tag == "bankdeposit" then
     return BAG_ICON

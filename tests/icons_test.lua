@@ -78,6 +78,34 @@ return {
     env.eq(iconFor({ t = "cmd", tag = "turnin", args = { "1" }, text = "" }), "Interface\\GossipFrame\\ActiveQuestIcon")
   end,
 
+  test_travel_icon_for_goto_and_travel_text = function()
+    local TG = fresh()
+    local icons = TG.UI.Icons
+    local travel = "Interface\\Icons\\Ability_Rogue_Sprint"
+    env.eq(icons.forElement({ t = "cmd", tag = "goto", args = { "Dun Morogh", "34", "51" } }), travel)
+    env.eq(icons.forText("Travel toward Tundra MacGrann"), travel)
+    env.eq(icons.forText("Travel toward Tundra MacGrann. Kill Boars en-route"), travel)
+    env.eq(icons.forText("Kill Boars en-route"), "Interface\\Cursor\\Attack")
+    env.eq(icons.isBullet(travel), true)
+    local step = {
+      completewith = true,
+      elements = {
+        {
+          t = "cmd",
+          tag = "goto",
+          args = { "Dun Morogh", "34", "51" },
+          text = "Travel toward Tundra MacGrann",
+        },
+        { t = "text", text = "Kill Boars, Bears and Wolves en-route" },
+      },
+    }
+    local entries = TG.UI.Text.entries(step)
+    env.eq(table.getn(entries), 2)
+    env.eq(entries[1].icon, travel)
+    env.eq(entries[1].bulletIcon, true)
+    env.eq(entries[2].icon, "Interface\\Cursor\\Attack")
+  end,
+
   test_generated_item_icon_table_resolves_names = function()
     local TG = fresh()
     env.eq(TG.ItemIcons[132090] ~= nil, true)

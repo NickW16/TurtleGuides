@@ -6,20 +6,20 @@ local Quests = {}
 TG.Engine.Quests = Quests
 
 function Quests.canReadQuestIds()
-  if not GetNumQuestLogEntries or not GetQuestLogTitle then
+  if not GetNumQuestLogEntries or not GetQuestLogTitle or not TG.GetQuestIdsForLogIndex then
     return false
   end
   local ok, n = pcall(GetNumQuestLogEntries)
-  if not ok or type(n) ~= "number" then
+  if not ok or type(n) ~= "number" or n == 0 then
     return false
   end
   for i = 1, n do
-    local _, _, _, _, _, _, seventh, eighth = GetQuestLogTitle(i)
-    if tonumber(eighth) or tonumber(seventh) then
+    local ids = TG:GetQuestIdsForLogIndex(i)
+    if ids and ids[1] then
       return true
     end
   end
-  return n == 0
+  return false
 end
 
 function Quests.recentlyAccepted(id)
@@ -91,15 +91,18 @@ function TG:IsElementTrackable(el)
 end
 
 function TG:GetQuestLogIdByTitle(title)
-  if not title or title == "" then
+  if not title or title == "" or not self.GetQuestIdForLogIndex then
     return nil
   end
   local want = string.lower(title)
   local n = GetNumQuestLogEntries and GetNumQuestLogEntries() or 0
   for i = 1, n do
-    local t, _, _, isHeader, _, _, seventh, eighth = GetQuestLogTitle(i)
+    local t, _, _, isHeader = GetQuestLogTitle(i)
     if not isHeader and t and string.lower(t) == want then
-      return tonumber(eighth) or tonumber(seventh) or nil
+      local id = self:GetQuestIdForLogIndex(i)
+      if id then
+        return id
+      end
     end
   end
   return nil
@@ -112,23 +115,57 @@ function TG:OnQuestTurninDialog()
   end
   self._seenComplete[title] = true
   self._pendingTurnin[title] = self:GetQuestLogIdByTitle(title)
+  self._turninCandidates[title] = {
+    id = self._pendingTurnin[title],
+    closedAt = nil,
+  }
+end
+
+function TG:OnQuestFinished()
+  local now = GetTime and GetTime() or 0
+  local title = GetTitleText and GetTitleText() or nil
+  local candidate = title and self._turninCandidates[title] or nil
+  if candidate then
+    candidate.closedAt = now
+  else
+    for _, pending in pairs(self._turninCandidates) do
+      if not pending.closedAt then
+        pending.closedAt = now
+      end
+    end
+  end
+  if self.OnQuestLogUpdate then
+    self:OnQuestLogUpdate()
+  end
 end
 
 function TG:OnQuestAccepted(questLogIndex)
   local idx = tonumber(questLogIndex)
-  local id
+  local title
   if idx and GetQuestLogTitle then
-    local _, _, _, _, _, _, seventh, eighth = GetQuestLogTitle(idx)
-    id = tonumber(eighth) or tonumber(seventh)
+    title = GetQuestLogTitle(idx)
+    if self.GetQuestIdsForLogIndex then
+      local ids = self:GetQuestIdsForLogIndex(idx)
+      if ids then
+        local now = GetTime and GetTime() or 0
+        for _, id in ipairs(ids) do
+          self._recentAccept[id] = now
+        end
+      end
+    end
   end
-  if id then
-    self._recentAccept[tonumber(id)] = GetTime and GetTime() or 0
+  if title and title ~= "" then
+    self._turnedInTitles[title] = nil
+    self._turninCandidates[title] = nil
   end
 end
 
 function TG:IsQuestTurnedIn(id)
   id = tonumber(id)
   if not id then
+    return false
+  end
+  if self.GetQuestLogIndexById and self:GetQuestLogIndexById(id) then
     return false
   end
   if pfQuest_history and pfQuest_history[id] then
@@ -154,17 +191,22 @@ function TG:ScanQuestTurnins()
   local present = {}
   local n = GetNumQuestLogEntries()
   for i = 1, n do
-    local title, _, _, isHeader, _, isComplete = GetQuestLogTitle(i)
+    local title, _, _, isHeader = GetQuestLogTitle(i)
     if not isHeader and title then
       present[title] = true
-      if isComplete == 1 then
-        self._seenComplete[title] = true
-      end
     end
   end
-  for title in pairs(self._seenComplete) do
-    if not present[title] then
-      self:MarkQuestTurnedIn(self._pendingTurnin[title], title)
+
+  local now = GetTime and GetTime() or 0
+  for title, candidate in pairs(self._turninCandidates) do
+    local expired = candidate.closedAt and (now - candidate.closedAt) > Shared.TURNIN_CONFIRM_WINDOW
+    if expired then
+      self._turninCandidates[title] = nil
+      self._seenComplete[title] = nil
+      self._pendingTurnin[title] = nil
+    elseif candidate.closedAt and not present[title] then
+      self:MarkQuestTurnedIn(candidate.id, title)
+      self._turninCandidates[title] = nil
       self._seenComplete[title] = nil
       self._pendingTurnin[title] = nil
     end

@@ -195,9 +195,13 @@ function Text.entries(step)
   end
   local elements = step.elements or {}
   if step.sticky or step.completewith then
+    local seen = {}
     for _, el in ipairs(elements) do
-      if not (el.t == "cmd" and el.tag == "goto") then
-        add(Text.element(el), "note", nil, el)
+      local elText = Text.element(el)
+      local key = strip(elText)
+      if elText and key ~= "" and not seen[key] then
+        seen[key] = true
+        add(elText, "note", nil, el)
       end
     end
   else

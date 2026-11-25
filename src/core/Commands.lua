@@ -80,6 +80,11 @@ local commands = {
       TG:DebugCurrentStep()
     end
   end,
+  debugcopy = function()
+    if TG.ShowDebugCopy then
+      TG:ShowDebugCopy((TG.cdb and TG.cdb.debug) or "No debug captured yet. Run /tg debug first.")
+    end
+  end,
   reset = function()
     if TG.ResetGuide then
       TG:ResetGuide()
@@ -102,7 +107,7 @@ SlashCmdList["TURTLEGUIDES"] = function(msg)
   else
     TG:Print(
       "Commands: /tg (toggle), /tg guides, /tg suggest (open Guides tab), /tg arrow,"
-        .. " /tg settings, /tg next, /tg prev, /tg find, /tg reset, /tg junk, /tg debug"
+        .. " /tg settings, /tg next, /tg prev, /tg find, /tg reset, /tg junk, /tg debug, /tg debugcopy"
     )
   end
 end

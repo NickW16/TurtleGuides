@@ -69,6 +69,22 @@ local function checkQuestTurnedIn(id)
   return nil
 end
 
+local function isXpCapElement(el)
+  if not el or el.t ~= "cmd" or el.tag ~= "xp" or not TG.ParseXpArg then
+    return false
+  end
+  local op = select(1, TG:ParseXpArg(el.args and el.args[1]))
+  return op == "<"
+end
+
+local function checkXpCap(el)
+  local op, level = TG:ParseXpArg(el.args and el.args[1])
+  if op ~= "<" or not level or not UnitLevel then
+    return nil
+  end
+  return UnitLevel("player") < level
+end
+
 function TG:IsItemCountConditionMet(el)
   return checkItemCountCondition(el) == true
 end
@@ -81,11 +97,13 @@ function TG:EvaluateConditions(step)
   local unknown = false
   self._skipDebug = nil
   for _, el in ipairs(step.elements or {}) do
-    if el.t == "cmd" and Shared.CONDITION_TAGS[el.tag] then
+    if el.t == "cmd" and (Shared.CONDITION_TAGS[el.tag] or isXpCapElement(el)) then
       local tag, a = el.tag, (el.args or {})
       local value
       if tag == "itemcount" then
         value = checkItemCountCondition(el)
+      elseif tag == "xp" and isXpCapElement(el) then
+        value = checkXpCap(el)
       elseif tag == "isOnQuest" and a[1] then
         value = checkQuestOn(a[1])
       elseif tag == "isNotOnQuest" and a[1] then
@@ -147,18 +165,27 @@ function TG:ShouldSkipStepByZone(step)
   for _, el in ipairs(step.elements) do
     if el.t == "cmd" and (el.tag == "zoneskip" or el.tag == "subzoneskip") then
       local name = el.args and el.args[1]
-      if name and name ~= "" and tonumber(name) == nil then
-        local flags = tonumber(el.args and el.args[2]) or 0
-        local reverse = math.mod(math.floor(flags), 2) == 1
-        local inZone
-        if self.IsInNamedZone then
-          inZone = self:IsInNamedZone(name, el.tag == "subzoneskip")
+      if name and name ~= "" then
+        local resolved = name
+        if tonumber(name) then
+          resolved = self.ZoneNameFromId and self:ZoneNameFromId(name) or nil
+          if not resolved then
+            unknown = true
+          end
         end
-        if inZone == nil then
-          unknown = true
-        elseif inZone ~= reverse then
-          self._skipDebug = "zone skip: " .. tostring(name)
-          return true
+        if resolved then
+          local flags = tonumber(el.args and el.args[2]) or 0
+          local reverse = math.mod(math.floor(flags), 2) == 1
+          local inZone
+          if self.IsInNamedZone then
+            inZone = self:IsInNamedZone(resolved, el.tag == "subzoneskip")
+          end
+          if inZone == nil then
+            unknown = true
+          elseif inZone ~= reverse then
+            self._skipDebug = "zone skip: " .. tostring(resolved)
+            return true
+          end
         end
       end
     end
@@ -188,6 +215,14 @@ function TG:StepSkipState(step)
     return nil
   end
   return false
+end
+
+function TG:AutoSkipEnabled()
+  return not (TG.db and TG.db.disableAutoSkip)
+end
+
+function TG:ShouldAutoSkipStep(step)
+  return self:StepSkipState(step) == true and self:AutoSkipEnabled()
 end
 
 Conditions.canReadBags = canReadBags

@@ -44,4 +44,44 @@ return {
     env.eq(target.zone, "Dun Morogh")
     env.eq(target.title, "Dun Morogh (50.0, 60.0)")
   end,
+
+  test_disable_auto_skip_still_allows_goto_advance = function()
+    local TG = loadEngine()
+    local step = { elements = { { t = "cmd", tag = "goto", args = { "Dun Morogh", "50", "60" } } } }
+    TG.currentGuide = { steps = { step } }
+    TG.currentStepIndex = 1
+    TG.db = { disableAutoSkip = true }
+    TG.StepSkipState = function()
+      return true
+    end
+    TG.WorldDistanceToWaypoint = function()
+      return 0
+    end
+    local advanced = false
+    TG.NextStep = function()
+      advanced = true
+    end
+    TG:CheckGotoAdvance()
+    env.eq(advanced, true)
+  end,
+
+  test_auto_skip_holds_skipped_goto_step = function()
+    local TG = loadEngine()
+    local step = { elements = { { t = "cmd", tag = "goto", args = { "Dun Morogh", "50", "60" } } } }
+    TG.currentGuide = { steps = { step } }
+    TG.currentStepIndex = 1
+    TG.db = {}
+    TG.StepSkipState = function()
+      return true
+    end
+    TG.WorldDistanceToWaypoint = function()
+      return 0
+    end
+    local advanced
+    TG.NextStep = function()
+      advanced = true
+    end
+    TG:CheckGotoAdvance()
+    env.eq(advanced, nil)
+  end,
 }

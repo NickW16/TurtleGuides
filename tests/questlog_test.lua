@@ -64,4 +64,56 @@ return {
     env.eq(objectives[1].done, true)
     env.eq(TG:GetObjectiveDone("First Quest", 1), true)
   end,
+
+  test_stock_client_resolves_id_from_pfdb = function()
+    local TG = fresh()
+    _G.GetNumQuestLogEntries = function()
+      return 1
+    end
+    _G.GetQuestLogTitle = function()
+      return "First Quest", 10, nil, false, false, nil
+    end
+    _G.pfDB = { quests = { loc = { [101] = "First Quest" } } }
+    env.eq(TG:GetQuestIdForLogIndex(1), 101)
+    env.eq(TG:GetQuestLogIndexById(101), 1)
+  end,
+
+  test_unknown_quest_id_stays_unresolved = function()
+    local TG = fresh()
+    _G.GetNumQuestLogEntries = function()
+      return 1
+    end
+    _G.GetQuestLogTitle = function()
+      return "Unknown Quest", 10, nil, false, false, nil
+    end
+    env.eq(TG:GetQuestIdForLogIndex(1), nil)
+    env.eq(TG:GetQuestLogIndexById(101), nil)
+  end,
+
+  test_quest_link_id_is_used_when_title_matches = function()
+    local TG = fresh()
+    _G.GetNumQuestLogEntries = function()
+      return 1
+    end
+    _G.GetQuestLogTitle = function()
+      return "First Quest", 10, nil, false, false, nil
+    end
+    _G.pfDB = { quests = { loc = { [101] = "First Quest" } } }
+    _G.GetQuestLink = function()
+      return "|cffffff00|Hquest:101:10|h[First Quest]|h|r"
+    end
+    env.eq(TG:GetQuestIdForLogIndex(1), 101)
+  end,
+
+  test_ambiguous_title_id_stays_unresolved = function()
+    local TG = fresh()
+    _G.GetNumQuestLogEntries = function()
+      return 1
+    end
+    _G.GetQuestLogTitle = function()
+      return "Same Title", 10, nil, false, false, nil
+    end
+    _G.pfDB = { quests = { loc = { [101] = "Same Title", [102] = "Same Title" } } }
+    env.eq(TG:GetQuestIdForLogIndex(1), nil)
+  end,
 }

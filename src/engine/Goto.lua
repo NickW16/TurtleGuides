@@ -181,7 +181,7 @@ function TG:CheckGotoAdvance()
   if not step then
     return
   end
-  if self.StepSkipState and self:StepSkipState(step) == true then
+  if self.ShouldAutoSkipStep and self:ShouldAutoSkipStep(step) then
     return
   end
   local gotos = self:GetStepGotos(step)

@@ -6,6 +6,9 @@ function TG:CheckAdvance()
   if not self.currentGuide then
     return
   end
+  if not self._questLogSeeded then
+    return
+  end
   if self._manualCheckTime then
     local checkNow = GetTime and GetTime() or 0
     local checkStep = self._manualCheckStep
@@ -52,8 +55,8 @@ function TG:CheckAdvance()
     return
   end
 
-  local skipState = self.StepSkipState and self:StepSkipState(step) or false
-  if skipState == true and not (TG.db and TG.db.disableAutoSkip) then
+  local shouldSkip = self.ShouldAutoSkipStep and self:ShouldAutoSkipStep(step) or false
+  if shouldSkip == true then
     self:NextStep(false, true)
     self._wasStepComplete = nil
     return

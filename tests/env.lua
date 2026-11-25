@@ -26,6 +26,11 @@ function env.reset()
     return 0
   end
   _G.GetQuestLogTitle = function() end
+  _G.GetQuestLink = nil
+  _G.GetQuestLinkForLogIndex = nil
+  _G.C_QuestLog = nil
+  _G.pfDatabase = nil
+  _G.pfQuest_history = nil
   _G.GetNumQuestLeaderBoards = function()
     return 0
   end
@@ -238,6 +243,12 @@ function env.reset()
     frame.GetText = function()
       return frame.text
     end
+    frame.SetMultiLine = noop
+    frame.SetTextInsets = noop
+    frame.SetFontObject = noop
+    frame.SetFocus = noop
+    frame.ClearFocus = noop
+    frame.HighlightText = noop
     frame.SetAutoFocus = noop
     frame.SetScrollChild = noop
     frame.LockHighlight = noop

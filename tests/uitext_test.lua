@@ -46,6 +46,40 @@ return {
     env.eq(entries[1].text, "Talk to the innkeeper")
   end,
 
+  test_completewith_step_shows_goto_label_with_other_text = function()
+    local TG = fresh()
+    local step = {
+      completewith = true,
+      elements = {
+        {
+          t = "cmd",
+          tag = "goto",
+          args = { "Dun Morogh", "34.577", "51.652" },
+          text = "Travel toward Tundra MacGrann",
+        },
+        { t = "text", text = "Kill Boars, Bears and Wolves en-route" },
+      },
+    }
+    local entries = TG.UI.Text.entries(step)
+    env.eq(table.getn(entries), 2)
+    env.eq(entries[1].text, "Travel toward Tundra MacGrann")
+    env.eq(entries[2].text, "Kill Boars, Bears and Wolves en-route")
+  end,
+
+  test_completewith_step_dedupes_matching_goto_label = function()
+    local TG = fresh()
+    local step = {
+      completewith = true,
+      elements = {
+        { t = "cmd", tag = "goto", args = { "Dun Morogh", "34", "51" }, text = "Travel to Brewnall" },
+        { t = "text", text = "Travel to Brewnall" },
+      },
+    }
+    local entries = TG.UI.Text.entries(step)
+    env.eq(table.getn(entries), 1)
+    env.eq(entries[1].text, "Travel to Brewnall")
+  end,
+
   test_child_item_lines_are_marked = function()
     local TG = fresh()
     local step = {

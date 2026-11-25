@@ -21,22 +21,27 @@ for id, name in pairs(zoneData) do
   end
 end
 
+function TG:ZoneNameFromId(id)
+  id = tonumber(id)
+  if not id then
+    return nil
+  end
+  if pfDB and pfDB["zones"] then
+    local loc = pfDB["zones"]["loc"] or pfDB["zones"]["enUS"] or pfDB["zones"][GetLocale() or "enUS"]
+    if loc and loc[id] then
+      return loc[id]
+    end
+  end
+  return zoneData[id]
+end
+
 function TG:ZoneName(zone)
   if zone == nil then
     return ""
   end
   local num = tonumber(zone)
   if num then
-    if pfDB and pfDB["zones"] then
-      local loc = pfDB["zones"]["loc"] or pfDB["zones"]["enUS"] or pfDB["zones"][GetLocale() or "enUS"]
-      if loc and loc[num] then
-        return loc[num]
-      end
-    end
-    if zoneData[num] then
-      return zoneData[num]
-    end
-    return "Map " .. tostring(num)
+    return self:ZoneNameFromId(num) or "Map " .. tostring(num)
   end
   return tostring(zone)
 end

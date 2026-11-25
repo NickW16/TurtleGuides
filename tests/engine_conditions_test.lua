@@ -62,4 +62,69 @@ return {
     env.eq(TG:ShouldSkipStepByZone(step), nil)
     env.eq(TG:StepSkipState(step), nil)
   end,
+
+  test_stock_client_quest_condition_holds = function()
+    local TG = fresh()
+    _G.GetNumQuestLogEntries = function()
+      return 1
+    end
+    _G.GetQuestLogTitle = function()
+      return "Foo", 1, nil, false, false, nil
+    end
+    local step = { elements = { { t = "cmd", tag = "isOnQuest", args = { "99" } } } }
+    env.eq(TG:EvaluateConditions(step), nil)
+  end,
+
+  test_numeric_zone_skip_resolves_pfdb_id = function()
+    local TG = fresh()
+    _G.GetZoneText = function()
+      return "Dun Morogh"
+    end
+    _G.pfDB = { zones = { loc = { [228] = "Dun Morogh" } } }
+    local step = { elements = { { t = "cmd", tag = "zoneskip", args = { "228" } } } }
+    env.eq(TG:ShouldSkipStepByZone(step), true)
+    env.eq(TG:StepSkipState(step), true)
+  end,
+
+  test_unknown_numeric_zone_holds_step = function()
+    local TG = fresh()
+    _G.GetZoneText = function()
+      return "Dun Morogh"
+    end
+    local step = { elements = { { t = "cmd", tag = "zoneskip", args = { "999999" } } } }
+    env.eq(TG:ShouldSkipStepByZone(step), nil)
+    env.eq(TG:StepSkipState(step), nil)
+  end,
+
+  test_expired_xp_cap_step_is_skipped = function()
+    local TG = fresh()
+    _G.UnitLevel = function()
+      return 8
+    end
+    local step = { elements = { { t = "cmd", tag = "xp", args = { "<8", "1" } } } }
+    env.eq(TG:EvaluateConditions(step), false)
+    env.eq(TG:StepSkipState(step), true)
+    env.eq(TG:ShouldAutoSkipStep(step), true)
+  end,
+
+  test_active_xp_cap_step_is_not_skipped = function()
+    local TG = fresh()
+    _G.UnitLevel = function()
+      return 7
+    end
+    local step = { elements = { { t = "cmd", tag = "xp", args = { "<8", "1" } } } }
+    env.eq(TG:EvaluateConditions(step), true)
+    env.eq(TG:StepSkipState(step), false)
+    env.eq(TG:ShouldAutoSkipStep(step), false)
+  end,
+
+  test_xp_grind_goal_is_not_a_skip_gate = function()
+    local TG = fresh()
+    _G.UnitLevel = function()
+      return 7
+    end
+    local step = { elements = { { t = "cmd", tag = "xp", args = { ">8" } } } }
+    env.eq(TG:EvaluateConditions(step), true)
+    env.eq(TG:StepSkipState(step), false)
+  end,
 }

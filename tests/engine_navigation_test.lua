@@ -40,4 +40,19 @@ return {
     TG:PrevStep()
     env.eq(TG.currentStepIndex, 1)
   end,
+
+  test_disable_auto_skip_keeps_deathskip_steps = function()
+    local TG = loadEngine()
+    local g = guide()
+    g.steps[2]._deathskip = true
+    table.insert(g.steps, { elements = { { t = "text", text = "after" } } })
+    TG.db = { hardcoreMode = true, disableAutoSkip = true }
+    TG.cdb = {}
+    TG.guideByKey = { [g.key] = g }
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG:SetGuide(g.key, 1)
+    TG:NextStep(false)
+    env.eq(TG.currentStepIndex, 2)
+  end,
 }

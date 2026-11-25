@@ -83,7 +83,7 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   if idx > n then
     idx = n
   end
-  if TG.db and TG.db.hardcoreMode then
+  if TG.db and TG.db.hardcoreMode and (not self.AutoSkipEnabled or self:AutoSkipEnabled()) then
     while idx <= n do
       local step = guide.steps[idx]
       if step and step._deathskip then
@@ -188,7 +188,7 @@ function TG:NextStep(manual, isSkip)
   end
   if self.currentStepIndex < table.getn(self.currentGuide.steps) then
     self.currentStepIndex = self.currentStepIndex + 1
-    if TG.db and TG.db.hardcoreMode then
+    if TG.db and TG.db.hardcoreMode and (not self.AutoSkipEnabled or self:AutoSkipEnabled()) then
       while self.currentStepIndex <= table.getn(self.currentGuide.steps) do
         local step = self.currentGuide.steps[self.currentStepIndex]
         if step and step._deathskip then

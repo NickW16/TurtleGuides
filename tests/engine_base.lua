@@ -3,7 +3,7 @@ local env = dofile("tests/env.lua")
 
 local function loadEngine()
   env.reset()
-  return env.load(
+  env.load(
     "src/Core.lua",
     "src/compat/Runtime.lua",
     "src/core/Util.lua",
@@ -25,6 +25,9 @@ local function loadEngine()
     "src/engine/Advance.lua",
     "src/engine/Debug.lua"
   )
+  local TG = _G.TurtleGuides
+  TG._questLogSeeded = true
+  return TG
 end
 
 return env, loadEngine
