@@ -78,7 +78,5 @@ function TG:OnQuestLogUpdate()
   self._questLogSeeded = true
   self:ScanQuestTurnins()
   self:CheckAdvance("event")
-  if self.UpdateUI then
-    self:UpdateUI()
-  end
+  self:MarkUIDirty()
 end

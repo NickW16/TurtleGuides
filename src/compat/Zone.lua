@@ -88,6 +88,8 @@ local function pfParentMapId(areaId)
   return n ~= "" and ZONE_NAME_TO_MAPID[n] or nil
 end
 
+local zoneIdCache = {}
+
 function TG:ZoneIdByName(name)
   local num = tonumber(name)
   if num then
@@ -97,15 +99,18 @@ function TG:ZoneIdByName(name)
   if n == "" then
     return nil
   end
+  if zoneIdCache[n] ~= nil then
+    return zoneIdCache[n] or nil
+  end
   local mapId = ZONE_NAME_TO_MAPID[n]
-  if mapId then
-    return mapId
+  if not mapId then
+    local areaId = pfZoneIdByName(n)
+    if areaId then
+      mapId = pfParentMapId(areaId) or areaId
+    end
   end
-  local areaId = pfZoneIdByName(n)
-  if not areaId then
-    return nil
-  end
-  return pfParentMapId(areaId) or areaId
+  zoneIdCache[n] = mapId or false
+  return mapId
 end
 
 -- client coordinate helpers may return y first, normalize to world x, y

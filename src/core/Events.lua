@@ -43,6 +43,20 @@ function TG:RemoveUpdater(name)
   self.updaters[name] = nil
 end
 
+function TG:MarkUIDirty()
+  self._uiDirty = true
+end
+
+TG:AddUpdater("uiFlush", 0, function()
+  if not TG._uiDirty then
+    return
+  end
+  TG._uiDirty = nil
+  if TG.UpdateUI then
+    TG:UpdateUI()
+  end
+end)
+
 eventFrame:SetScript("OnUpdate", function()
   local elapsed = arg1
   for _, updater in pairs(TG.updaters) do

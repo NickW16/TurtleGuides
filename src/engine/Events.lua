@@ -69,20 +69,14 @@ TG:RegisterEvent("QUEST_FINISHED", function()
 end)
 TG:RegisterEvent("BAG_UPDATE", function()
   TG:CheckAdvance("event")
-  if TG.UpdateUI then
-    TG:UpdateUI()
-  end
+  TG:MarkUIDirty()
 end)
 TG:RegisterEvent("PLAYER_LEVEL_UP", function()
   TG:CheckAdvance("event")
-  if TG.UpdateUI then
-    TG:UpdateUI()
-  end
+  TG:MarkUIDirty()
 end)
 TG:RegisterEvent("PLAYER_XP_UPDATE", function()
-  if TG.UpdateUI then
-    TG:UpdateUI()
-  end
+  TG:MarkUIDirty()
 end)
 TG:RegisterEvent("UI_INFO_MESSAGE", function() end)
 TG:AddUpdater("engine", 1.0, function()

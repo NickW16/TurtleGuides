@@ -60,6 +60,7 @@ src\guides\Survival-Horde-Mulgore-1-13.lua
 src\guides\Survival-Horde-Silverpine-13-15.lua
 src\guides\Survival-Horde-Barrens-15-23.lua
 src\guides\Registry.lua
+src\guides\Loader.lua
 src\guides\ItemIcons.lua
 src\guides\Suggestions.lua
 src\engine\State.lua

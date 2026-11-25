@@ -121,7 +121,7 @@ local function factionOf(guide)
   return "Neutral"
 end
 
-function TG:BuildGuideIndex()
+function TG:BuildIndexWith(parseFn)
   self.guides = {}
   self.guideByKey = {}
   self.categories = {
@@ -131,7 +131,7 @@ function TG:BuildGuideIndex()
     ["Other (Classic)"] = {},
   }
   for _, entry in ipairs(self.rawGuides or {}) do
-    local guide = self.Parser.ParseGuide(entry.text, entry.source)
+    local guide = parseFn(entry.text, entry.source)
     if guide and guide.isClassic then
       guide.category = categoryFor(guide)
       guide.faction = factionOf(guide)
@@ -187,21 +187,8 @@ function TG:BuildGuideIndex()
   end
 end
 
-function TG:LoadAllGuides()
-  if self.guides and table.getn(self.guides) > 0 then
-    local count = 0
-    for _ in pairs(self.guideByKey) do
-      count = count + 1
-    end
-    self:Print("Loaded " .. count .. " classic guides.")
-    return
-  end
-  self:BuildGuideIndex()
-  local count = 0
-  for _ in pairs(self.guideByKey) do
-    count = count + 1
-  end
-  self:Print("Loaded " .. count .. " classic guides.")
+function TG:BuildGuideIndex()
+  self:BuildIndexWith(self.Parser.ParseGuide)
 end
 
 function TG:GetGuidesForPicker()

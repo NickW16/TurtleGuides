@@ -21,6 +21,9 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   if not guide then
     return false
   end
+  if self.EnsureGuideParsed then
+    self:EnsureGuideParsed(guide)
+  end
   if self.ClearManualCheckHold then
     self:ClearManualCheckHold()
   end

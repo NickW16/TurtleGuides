@@ -5,6 +5,33 @@ local parseElementLine = TG.Parser.parseElementLine
 local strtrim = TG.Util.strtrim
 local splitLines = TG.Util.splitLines
 
+local function finalizeMeta(guide, source)
+  guide.name = guide.meta.name or guide.meta["#name"] or source or "Unknown"
+  guide.group = guide.meta.group or guide.meta["#group"] or "Guides"
+  guide.subgroup = guide.meta.subgroup or ""
+  guide.next = guide.meta.next
+  guide.defaultFor = guide.meta.defaultfor or guide.meta.defaultFor
+  guide.version = tonumber(guide.meta.version) or 0
+  guide.key = (guide.group or "") .. "||" .. (guide.name or "")
+  local mclassic = guide.meta.classic
+  local hasEraTag = mclassic
+    or guide.meta.tbc
+    or guide.meta.wotlk
+    or guide.meta.wrath
+    or guide.meta.cata
+    or guide.meta.mop
+    or guide.meta.mists
+    or guide.meta.retail
+    or guide.meta.df
+    or guide.meta.som
+    or guide.meta.sod
+  guide.isClassic = (mclassic ~= nil)
+  if not guide.isClassic and not hasEraTag then
+    guide.isClassic = false
+  end
+end
+TG.Parser.FinalizeMeta = finalizeMeta
+
 local function parseGuide(text, source)
   if not text then
     return nil, "empty"
@@ -128,30 +155,7 @@ local function parseGuide(text, source)
   end
   pushStep()
 
-  guide.name = guide.meta.name or guide.meta["#name"] or source or "Unknown"
-  guide.group = guide.meta.group or guide.meta["#group"] or "Guides"
-  guide.subgroup = guide.meta.subgroup or ""
-  guide.next = guide.meta.next
-  guide.defaultFor = guide.meta.defaultfor or guide.meta.defaultFor
-  guide.version = tonumber(guide.meta.version) or 0
-  guide.key = (guide.group or "") .. "||" .. (guide.name or "")
-
-  local mclassic = guide.meta.classic
-  local hasEraTag = mclassic
-    or guide.meta.tbc
-    or guide.meta.wotlk
-    or guide.meta.wrath
-    or guide.meta.cata
-    or guide.meta.mop
-    or guide.meta.mists
-    or guide.meta.retail
-    or guide.meta.df
-    or guide.meta.som
-    or guide.meta.sod
-  guide.isClassic = (mclassic ~= nil)
-  if not guide.isClassic and not hasEraTag then
-    guide.isClassic = false
-  end
+  finalizeMeta(guide, source)
 
   if not guideApplicable then
     return nil, "not applicable"
