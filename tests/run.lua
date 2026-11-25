@@ -23,6 +23,7 @@ local testFiles = {
   "tests/highelf_guide_test.lua",
   "tests/guides_test.lua",
   "tests/human_xp_test.lua",
+  "tests/icons_test.lua",
   "tests/init_test.lua",
   "tests/item_test.lua",
   "tests/nightelf_xp_test.lua",

@@ -1,5 +1,6 @@
 -- formats guide elements and wraps plain lines for the compact windows
 local TG = _G.TurtleGuides
+local Icons = TG.UI.Icons
 local trim = TG.Util.strtrim
 local Text = {}
 TG.UI = TG.UI or {}
@@ -69,7 +70,7 @@ function Text.element(el)
     return nil
   end
   if el.t == "text" then
-    local text = strip(el.text)
+    local text = Icons.clean(el.text)
     return text ~= "" and text or nil
   end
   if el.t ~= "cmd" then
@@ -77,19 +78,19 @@ function Text.element(el)
   end
   local tag = el.tag or ""
   local args = el.args or {}
-  local text = strip(el.text)
+  local text = Icons.clean(el.text)
   if tag == "accept" then
-    return "Accept: " .. questName(args[1], el.text)
+    return ("Accept: " .. questName(args[1], el.text))
   elseif tag == "turnin" then
-    return "Turn in: " .. questName(args[1], el.text)
+    return ("Turn in: " .. questName(args[1], el.text))
   elseif tag == "complete" then
     if text ~= "" then
-      return "Complete: " .. text
+      return ("Complete: " .. text)
     end
-    if el.objectiveText and strip(el.objectiveText) ~= "" then
-      return "Complete: " .. strip(el.objectiveText)
+    if el.objectiveText and Icons.clean(el.objectiveText) ~= "" then
+      return ("Complete: " .. Icons.clean(el.objectiveText))
     end
-    return "Complete: " .. questName(args[1], el.text)
+    return ("Complete: " .. questName(args[1], el.text))
   elseif tag == "collect" then
     local id = tonumber(args[1])
     local need = tonumber(args[2]) or 1
@@ -111,23 +112,31 @@ function Text.element(el)
       local _, parsedLevel = TG:ParseXpArg(args[1])
       level = parsedLevel or level
     end
-    return level and ("Reach level " .. level) or "Gain experience"
+    return (level and ("Reach level " .. level) or "Gain experience")
   elseif tag == "hs" or tag == "hearth" then
-    return text ~= "" and ("Hearth: " .. text) or "Hearthstone"
+    return (text ~= "" and ("Hearth: " .. text) or "Hearthstone")
   elseif tag == "fly" or tag == "f" then
-    return "Fly: " .. (text ~= "" and text or table.concat(args, " "))
+    return ("Fly: " .. (text ~= "" and text or table.concat(args, " ")))
   elseif tag == "home" then
-    return "Set hearthstone" .. (text ~= "" and (": " .. text) or "")
+    return ("Set hearthstone" .. (text ~= "" and (": " .. text) or ""))
   elseif tag == "vendor" then
-    return "Vendor" .. (text ~= "" and (": " .. text) or "")
+    return ("Vendor" .. (text ~= "" and (": " .. text) or ""))
   elseif tag == "trainer" or tag == "train" then
-    if text == "" then
+    local body = text
+    if body == "" then
       local spellId = tonumber(args[1])
       if spellId and GetSpellInfo then
-        text = GetSpellInfo(spellId) or ""
+        body = GetSpellInfo(spellId) or ""
       end
     end
-    return "Train: " .. (text ~= "" and text or ("Spell " .. tostring(args[1] or "?")))
+    if body == "" then
+      body = "Spell " .. tostring(args[1] or "?")
+    end
+    local label = string.sub(string.lower(body), 1, 5) == "train" and "" or "Train: "
+    return label .. body
+  elseif tag == "mob" or tag == "target" or tag == "kill" then
+    local name = text ~= "" and text or table.concat(args, " ")
+    return name ~= "" and ("Kill: " .. name) or nil
   elseif tag == "use" or tag == "destroy" then
     local label = (tag == "use") and "Use: " or "Destroy: "
     return label .. itemName(args[1], el.text)
@@ -142,16 +151,23 @@ function Text.entries(step)
   if not step then
     return out
   end
-  local function add(text, state, el)
+  local function add(text, state, el, element)
     if text and text ~= "" then
-      table.insert(out, { text = text, state = state, el = el })
+      local icon = element and Icons.forElement(element, state) or Icons.forText(text)
+      table.insert(out, {
+        text = text,
+        state = state,
+        el = el,
+        icon = icon,
+        bulletIcon = icon and Icons.isBullet(icon) or false,
+      })
     end
   end
   local elements = step.elements or {}
   if step.sticky or step.completewith then
     for _, el in ipairs(elements) do
       if not (el.t == "cmd" and el.tag == "goto") then
-        add(Text.element(el), "note")
+        add(Text.element(el), "note", nil, el)
       end
     end
   else
@@ -168,7 +184,7 @@ function Text.entries(step)
         if elText then
           local trackable = el.t == "cmd" and TG.IsElementTrackable and TG:IsElementTrackable(el) or false
           local state = trackable and TG:IsElementDone(el) or "note"
-          add(elText, state, trackable and el or nil)
+          add(elText, state, trackable and el or nil, el)
         end
       end
     end
@@ -218,11 +234,12 @@ local function getMeasureFont()
 end
 
 local function widthOf(font, text)
-  font:SetText(text)
+  local measured = Icons.measure(text)
+  font:SetText(measured)
   if font.GetStringWidth then
     return font:GetStringWidth() or 0
   end
-  return string.len(text) * 5
+  return string.len(measured) * 5
 end
 
 local function wrapLine(font, text, maxWidth, result)
@@ -261,7 +278,7 @@ end
 function Text.wrap(text, maxWidth, fontSize)
   local font = getMeasureFont()
   Text.applyFont(font, fontSize or 10)
-  local plain = strip(text)
+  local plain = Icons.clean(text)
   if plain == "" then
     return "", 1
   end

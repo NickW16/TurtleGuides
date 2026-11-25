@@ -6,6 +6,7 @@ local function fresh()
     "src/Core.lua",
     "src/core/Util.lua",
     "src/ui/State.lua",
+    "src/ui/Icons.lua",
     "src/ui/Text.lua",
     "src/ui/Scrollbar.lua",
     "src/ui/Picker.lua"

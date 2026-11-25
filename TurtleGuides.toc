@@ -80,6 +80,7 @@ src\vendor\Events.lua
 src\waypoint\Geometry.lua
 src\waypoint\State.lua
 src\ui\State.lua
+src\ui\Icons.lua
 src\ui\Text.lua
 src\ui\Scrollbar.lua
 src\ui\Windows.lua

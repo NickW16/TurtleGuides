@@ -2,7 +2,14 @@ local env = dofile("tests/env.lua")
 
 local function fresh()
   env.reset()
-  return env.load("src/Core.lua", "src/core/Util.lua", "src/compat/Text.lua", "src/ui/State.lua", "src/ui/Text.lua")
+  return env.load(
+    "src/Core.lua",
+    "src/core/Util.lua",
+    "src/compat/Text.lua",
+    "src/ui/State.lua",
+    "src/ui/Icons.lua",
+    "src/ui/Text.lua"
+  )
 end
 
 return {

@@ -8,6 +8,7 @@ local function fresh()
     "src/core/Util.lua",
     "src/compat/Text.lua",
     "src/ui/State.lua",
+    "src/ui/Icons.lua",
     "src/ui/Text.lua",
     "src/ui/Scrollbar.lua",
     "src/ui/Windows.lua"

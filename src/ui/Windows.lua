@@ -60,6 +60,10 @@ local function makeRow(parent)
   icon:SetWidth(10)
   icon:SetHeight(10)
   row.icon = icon
+  local itemIcon = row:CreateTexture(nil, "OVERLAY")
+  itemIcon:SetWidth(10)
+  itemIcon:SetHeight(10)
+  row.itemIcon = itemIcon
   local check = CreateFrame("Button", nil, row)
   check:SetWidth(10)
   check:SetHeight(10)
@@ -85,11 +89,11 @@ local function makeRow(parent)
   return row
 end
 
-local function renderRow(row, text, state, el, isHeader, width)
+local function renderRow(row, text, state, el, isHeader, width, icon, iconColor, bulletIcon)
   row.el = el
   row.kind = isHeader and "header" or "task"
   row.trackable = (el and TG.IsElementTrackable and TG:IsElementTrackable(el)) or false
-  local x = isHeader and 2 or 14
+  local x = isHeader and 2 or (bulletIcon and 18 or (icon and 28 or 14))
   local textWidth = math.max(20, width - x - 3)
   local wrapped, lines = Text.wrap(text or "", textWidth, BODY_SIZE)
   row.text:SetWidth(textWidth)
@@ -99,6 +103,7 @@ local function renderRow(row, text, state, el, isHeader, width)
   local height = lines * Text.lineHeight(BODY_SIZE) + 1
   if isHeader then
     row.icon:Hide()
+    row.itemIcon:Hide()
     row.check:Hide()
     row.text:SetTextColor(1.00, 0.82, 0.35)
     row.text:SetAlpha(1.00)
@@ -106,6 +111,28 @@ local function renderRow(row, text, state, el, isHeader, width)
   end
   row.text:SetTextColor(0.90, 0.90, 0.90)
   row.text:SetAlpha(1.00)
+  if icon then
+    row.itemIcon:Show()
+    row.itemIcon:SetTexture(icon)
+    local tint = iconColor or { 1.00, 1.00, 1.00 }
+    if state == true and not bulletIcon then
+      tint = { 0.55, 0.90, 0.55 }
+    end
+    row.itemIcon:SetVertexColor(unpack(tint))
+    row.itemIcon:ClearAllPoints()
+    row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", bulletIcon and 3 or 16, -2)
+  else
+    row.itemIcon:Hide()
+  end
+  if bulletIcon then
+    row.icon:Hide()
+    row.check:Show()
+    row.check:SetWidth(10)
+    row.check:SetHeight(10)
+    row.check:ClearAllPoints()
+    row.check:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -2)
+    return height
+  end
   if row.trackable then
     row.icon:Show()
     row.icon:SetWidth(10)
@@ -483,11 +510,18 @@ function TG:UpdateUI()
     self:HideStepWindows()
     return
   end
+  local function layoutFooter()
+    local width = (main.progress.GetStringWidth and main.progress:GetStringWidth()) or 24
+    main.guideName:ClearAllPoints()
+    main.guideName:SetPoint("BOTTOMLEFT", main, "BOTTOMLEFT", 6 + width + 12, 3)
+    main.guideName:SetPoint("RIGHT", main, "RIGHT", -80, 0)
+  end
   local guide = self.currentGuide
   if not guide then
     main.title:SetText("TurtleGuide")
     main.guideName:SetText("No guide selected")
     main.progress:SetText("")
+    layoutFooter()
     self:HideStepWindows()
     for _, row in ipairs(rows) do
       row:Hide()
@@ -500,6 +534,7 @@ function TG:UpdateUI()
   main.title:SetText((guide.name and guide.name ~= "" and guide.name) or "TurtleGuide")
   main.guideName:SetText(guideLabel(guide))
   main.progress:SetText(index .. "/" .. total)
+  layoutFooter()
 
   local current = steps[index]
   local smallData = { { title = "Step " .. index, entries = Text.entries(current) } }
@@ -548,7 +583,8 @@ function TG:UpdateUI()
       used = used + 1
       local entry = entries[i]
       row:SetWidth(width)
-      local rowHeight = renderRow(row, entry.text, entry.state, entry.el, false, width)
+      local rowHeight =
+        renderRow(row, entry.text, entry.state, entry.el, false, width, entry.icon, entry.iconColor, entry.bulletIcon)
       row:ClearAllPoints()
       row:SetPoint("TOPLEFT", main.content, "TOPLEFT", 0, y)
       row:SetHeight(rowHeight)
