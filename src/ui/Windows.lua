@@ -401,13 +401,13 @@ function TG:SetMainWindowMinimized(value)
   end
   main._tgMinimized = minimized
   if main.minimizeBtn then
-    local texture = minimized and "Interface\\AddOns\\TurtleGuides\\Media\\ChevronDown"
-      or "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp"
+    local texture = minimized and "Interface\\AddOns\\TurtleGuides\\Media\\ChevronDown_Button"
+      or "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp_Button"
     main.minimizeBtn:SetNormalTexture(texture)
     main.minimizeBtn:SetPushedTexture(texture)
     local icon = main.minimizeBtn.GetNormalTexture and main.minimizeBtn:GetNormalTexture() or nil
     if icon and icon.SetVertexColor then
-      icon:SetVertexColor(0.85, 0.85, 0.88, 1.00)
+      icon:SetVertexColor(0.82, 0.82, 0.82, 1.00)
     end
   end
   if not minimized then
@@ -506,36 +506,11 @@ function TG:InitUI()
   Text.register(title, 12)
   main.title = title
 
-  local settingsBtn = CreateFrame("Button", nil, main)
-  settingsBtn:SetWidth(14)
-  settingsBtn:SetHeight(14)
-  settingsBtn:SetPoint("TOPRIGHT", main, "TOPRIGHT", -6, -6)
-  local settingsIcon = settingsBtn:CreateTexture(nil, "ARTWORK")
-  settingsIcon:SetAllPoints(settingsBtn)
-  settingsIcon:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\Cog_Filled")
-  settingsIcon:SetVertexColor(0.95, 0.85, 0.45)
-  settingsBtn:SetScript("OnClick", function()
-    if TG.ShowGuidePicker then
-      TG:ShowGuidePicker()
-    end
-  end)
-  settingsBtn:SetScript("OnEnter", function()
-    settingsIcon:SetVertexColor(1.00, 0.92, 0.55)
-    if GameTooltip then
-      GameTooltip:SetOwner(settingsBtn, "ANCHOR_LEFT")
-      GameTooltip:SetText("Guides")
-      GameTooltip:Show()
-    end
-  end)
-  settingsBtn:SetScript("OnLeave", function()
-    settingsIcon:SetVertexColor(0.95, 0.85, 0.45)
-    if GameTooltip then
-      GameTooltip:Hide()
-    end
-  end)
-  main.settingsBtn = settingsBtn
-
-  main.minimizeBtn = nil
+  local minimizeBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp_Button", "Minimize", function()
+    TG:SetMainWindowMinimized(not (State.main and State.main._tgMinimized))
+  end, 14)
+  minimizeBtn:SetPoint("TOPRIGHT", main, "TOPRIGHT", -6, -6)
+  main.minimizeBtn = minimizeBtn
 
   local scroll = CreateFrame("ScrollFrame", "TurtleGuidesStepScroll", main)
   scroll:SetPoint("TOPLEFT", main, "TOPLEFT", 5, -27)
@@ -586,6 +561,35 @@ function TG:InitUI()
     end
   end, 12)
   prevBtn:SetPoint("RIGHT", nextBtn, "LEFT", -2, 0)
+
+  local settingsBtn = CreateFrame("Button", nil, main)
+  settingsBtn:SetWidth(12)
+  settingsBtn:SetHeight(12)
+  settingsBtn:SetPoint("RIGHT", prevBtn, "LEFT", -4, 0)
+  local settingsIcon = settingsBtn:CreateTexture(nil, "ARTWORK")
+  settingsIcon:SetAllPoints(settingsBtn)
+  settingsIcon:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\Cog_Filled")
+  settingsIcon:SetVertexColor(0.85, 0.75, 0.40)
+  settingsBtn:SetScript("OnClick", function()
+    if TG.ShowGuidePicker then
+      TG:ShowGuidePicker()
+    end
+  end)
+  settingsBtn:SetScript("OnEnter", function()
+    settingsIcon:SetVertexColor(1.00, 0.92, 0.55)
+    if GameTooltip then
+      GameTooltip:SetOwner(settingsBtn, "ANCHOR_RIGHT")
+      GameTooltip:SetText("Guides")
+      GameTooltip:Show()
+    end
+  end)
+  settingsBtn:SetScript("OnLeave", function()
+    settingsIcon:SetVertexColor(0.85, 0.75, 0.40)
+    if GameTooltip then
+      GameTooltip:Hide()
+    end
+  end)
+  main.settingsBtn = settingsBtn
 
   local resizer = CreateFrame("Button", nil, main)
   resizer:SetWidth(12)
