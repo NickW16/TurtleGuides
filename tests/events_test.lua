@@ -2,7 +2,7 @@ local env = dofile("tests/env.lua")
 
 local function fresh()
   env.reset()
-  return env.load("src/Core.lua", "src/core/Events.lua")
+  return env.load("src/Core.lua", "src/core/Output.lua", "src/core/Events.lua")
 end
 
 return {
@@ -54,6 +54,42 @@ return {
     env.scripts.OnUpdate()
     env.eq(runs, 1)
     TG:RemoveUpdater("tick")
+    env.scripts.OnUpdate()
+    env.eq(runs, 1)
+  end,
+
+  test_updater_error_does_not_stop_other_updaters = function()
+    local TG = fresh()
+    local runs = 0
+    TG:AddUpdater("bad", 1, function()
+      error("boom")
+    end)
+    TG:AddUpdater("good", 1, function()
+      runs = runs + 1
+    end)
+    _G.arg1 = 1
+    env.scripts.OnUpdate()
+    env.eq(runs, 1)
+    env.scripts.OnUpdate()
+    env.eq(runs, 2)
+    local reported = 0
+    for _, msg in ipairs(env.messages) do
+      if string.find(msg, "bad failed", 1, true) then
+        reported = reported + 1
+      end
+    end
+    env.eq(reported, 1)
+  end,
+
+  test_updater_can_remove_itself = function()
+    local TG = fresh()
+    local runs = 0
+    TG:AddUpdater("once", 1, function()
+      runs = runs + 1
+      TG:RemoveUpdater("once")
+    end)
+    _G.arg1 = 1
+    env.scripts.OnUpdate()
     env.scripts.OnUpdate()
     env.eq(runs, 1)
   end,

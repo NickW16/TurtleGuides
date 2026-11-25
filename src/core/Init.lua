@@ -28,9 +28,6 @@ function TG:OnInitialize()
     self:SetGuide(self.cdb.currentGuideKey, self.cdb.stepIndex or 1, true)
   end
   self:Print("loaded. /tg to toggle, /tg guides to pick a guide.")
-  if self.CollectGarbage then
-    self:CollectGarbage()
-  end
 end
 
 TG:RegisterEvent("PLAYER_LOGIN", function()
