@@ -348,9 +348,12 @@ local function iconButton(parent, texture, label, onClick, size)
   button:SetPushedTexture(texture)
   local icon = button.GetNormalTexture and button:GetNormalTexture() or nil
   if icon and icon.SetVertexColor then
-    icon:SetVertexColor(0.85, 0.85, 0.88, 1.00)
+    icon:SetVertexColor(0.82, 0.82, 0.82, 1.00)
   end
   button:SetScript("OnEnter", function()
+    if icon and icon.SetVertexColor then
+      icon:SetVertexColor(1.00, 1.00, 1.00, 1.00)
+    end
     if not GameTooltip then
       return
     end
@@ -359,6 +362,9 @@ local function iconButton(parent, texture, label, onClick, size)
     GameTooltip:Show()
   end)
   button:SetScript("OnLeave", function()
+    if icon and icon.SetVertexColor then
+      icon:SetVertexColor(0.82, 0.82, 0.82, 1.00)
+    end
     if GameTooltip then
       GameTooltip:Hide()
     end
@@ -573,7 +579,7 @@ function TG:InitUI()
       TG:NextStep(true)
     end
   end, 12)
-  nextBtn:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -10, 1)
+  nextBtn:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -10, 2)
   local prevBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ArrowLeft_Fantasy", "Previous step", function()
     if TG.PrevStep then
       TG:PrevStep()
