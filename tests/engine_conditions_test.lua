@@ -127,4 +127,71 @@ return {
     env.eq(TG:EvaluateConditions(step), true)
     env.eq(TG:StepSkipState(step), false)
   end,
+
+  test_hearthstone_cooldown_skips_step = function()
+    local TG = fresh()
+    _G.GetTime = function()
+      return 200
+    end
+    _G.GetItemCooldown = function()
+      return 100, 3600
+    end
+    local step = {
+      elements = { { t = "cmd", tag = "cooldown", args = { "item", "6948", ">0", "1" } } },
+    }
+    env.eq(TG:EvaluateConditions(step), false)
+    env.eq(TG:StepSkipState(step), true)
+  end,
+
+  test_ready_hearthstone_keeps_step = function()
+    local TG = fresh()
+    _G.GetTime = function()
+      return 3701
+    end
+    _G.GetItemCooldown = function()
+      return 100, 3600
+    end
+    local step = {
+      elements = { { t = "cmd", tag = "cooldown", args = { "item", "6948", ">0", "1" } } },
+    }
+    env.eq(TG:EvaluateConditions(step), true)
+    env.eq(TG:StepSkipState(step), false)
+  end,
+
+  test_item_cooldown_falls_back_to_bag_scan = function()
+    local TG = fresh()
+    _G.GetTime = function()
+      return 200
+    end
+    _G.GetContainerNumSlots = function(bag)
+      return bag == 0 and 1 or 0
+    end
+    _G.GetContainerItemLink = function()
+      return "|Hitem:6948::::::::::::|h[Hearthstone]|h"
+    end
+    _G.GetContainerItemCooldown = function()
+      return 100, 3600
+    end
+    local step = {
+      elements = { { t = "cmd", tag = "cooldown", args = { "item", "6948", ">0", "1" } } },
+    }
+    env.eq(TG:EvaluateConditions(step), false)
+    env.eq(TG:StepSkipState(step), true)
+  end,
+
+  test_hardcore_mode_skips_softcore_step = function()
+    local TG = fresh()
+    TG.db = { hardcoreMode = true }
+    local step = { elements = {}, tags = { softcore = true } }
+    env.eq(TG:StepSkipState(step), true)
+    env.eq(TG:ShouldAutoSkipStep(step), true)
+  end,
+
+  test_softcore_step_is_kept_without_hardcore_mode = function()
+    local TG = fresh()
+    TG.db = {}
+    local step = { elements = {}, tags = { softcore = true } }
+    env.eq(TG:StepSkipState(step), false)
+    env.eq(TG:ShouldAutoSkipStep(step), false)
+  end,
 }

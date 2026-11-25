@@ -65,6 +65,18 @@ return {
     env.eq(TG:GetItemNameById(12345), "Gladius")
   end,
 
+  test_objective_item_progress_uses_guide_name_and_bag_count = function()
+    local TG = fresh()
+    withBags()
+    TG.guides = {
+      { steps = { { elements = { { tag = "collect", objectiveText = "Collect Thing (x3)", args = { "42" } } } } } },
+    }
+    local have, need, id = TG:GetObjectiveItemProgress({ objectiveText = "Collect Thing (x3)" })
+    env.eq(have, 3)
+    env.eq(need, 3)
+    env.eq(id, 42)
+  end,
+
   test_count_by_name_uses_resolved_id = function()
     local TG = fresh()
     withBags()

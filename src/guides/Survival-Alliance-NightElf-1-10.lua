@@ -228,10 +228,6 @@ step
     .goto Teldrassil,57.0,26.4
     >>Loot a |cRXP_LOOT_Webwood Egg|r on the ground at the back of the Cave
     .complete 917,1 --Collect Webwood Egg (x1)
-step
-	#softcore
-	#completewith next
-    .deathskip >> Die and respawn at the |cRXP_FRIENDLY_Spirit Healer|r
 step << skip --logout skip
 	#hardcore
 	#completewith next
@@ -265,10 +261,6 @@ step << Hunter
     .mob +Young Nightsaber
     .complete 457,2 --Kill Thistle Boar (x7)
     .mob +Thistle Boar
-step
-    #requires vial1
-    #completewith next
-    .deathskip >> Die and respawn at the |cRXP_FRIENDLY_Spirit Healer|r
 step << Hunter
     #requires vial1
     .goto Teldrassil,58.6,44.3
@@ -657,10 +649,6 @@ step << !Hunter
     >>|cRXP_ENEMY_Lord Melenas|r may be located in many different spawn locations throughout Fel Rock
     .complete 932,1 --Collect Melenas' Head (x1)
     .unitscan Lord Melenas
-step
-    #softcore
-    #completewith next
-    .deathskip >> Die and respawn at the |cRXP_FRIENDLY_Spirit Healer|r
 step << !Druid
     .goto Teldrassil,56.142,61.714
     .target Corithras Moonrage

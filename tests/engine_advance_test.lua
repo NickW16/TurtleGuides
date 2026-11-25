@@ -49,6 +49,61 @@ return {
     env.eq(advanced, false)
   end,
 
+  test_completed_step_ignores_manual_nav_hold = function()
+    local TG = loadEngine()
+    local step = { elements = {} }
+    TG.currentGuide = { key = "k", steps = { step } }
+    TG.currentStepIndex = 1
+    TG.db = {}
+    TG._manualNavHold = true
+    TG._manualNavStep = 1
+    TG.StepStateSignature = function()
+      return "same"
+    end
+    TG._manualNavSignature = "same"
+    TG.PlayerMovedSinceManualNav = function()
+      return false
+    end
+    TG.IsStepComplete = function()
+      return true
+    end
+    TG.CheckGotoAdvance = function() end
+    local advanced = false
+    TG.NextStep = function()
+      advanced = true
+    end
+    TG:CheckAdvance("tick")
+    env.eq(advanced, true)
+  end,
+
+  test_manual_nav_hold_survives_completed_step = function()
+    local TG = loadEngine()
+    local step = { elements = {} }
+    TG.currentGuide = { key = "k", steps = { step } }
+    TG.currentStepIndex = 1
+    TG.db = {}
+    TG._manualNavHold = true
+    TG._manualNavStep = 1
+    TG._manualNavReason = "Prev"
+    TG.StepStateSignature = function()
+      return "same"
+    end
+    TG._manualNavSignature = "same"
+    TG.PlayerMovedSinceManualNav = function()
+      return false
+    end
+    TG.IsStepComplete = function()
+      return true
+    end
+    TG.CheckGotoAdvance = function() end
+    local advanced = false
+    TG.NextStep = function()
+      advanced = true
+    end
+    TG:CheckAdvance("tick")
+    env.eq(advanced, false)
+  end,
+
   test_unseeded_quest_log_blocks_advance = function()
     local TG = loadEngine()
     local step = { elements = {} }

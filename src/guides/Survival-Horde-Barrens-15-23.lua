@@ -3872,22 +3872,6 @@ step
     .isOnQuest 962
     .dungeon WC
 step
-    #optional
-    #softcore
-    >>Loot the |cRXP_PICK_Serpentbloom|r on the ground
-    >>|cRXP_WARN_Cast|r |T133939:0|t[Find Herbs] |cRXP_WARN_to see them on your minimap|r
-    .complete 962,1 --Serpentbloom (10)
-    .skill herbalism,<1,1
-    .isOnQuest 962
-    .dungeon WC
-step
-    #softcore
-    >>Loot the |cRXP_PICK_Serpentbloom|r on the ground
-    .complete 962,1 --Serpentbloom (10)
-    .skill herbalism,1,1
-    .isOnQuest 962
-    .dungeon WC
-step
     #completewith GlowingShardRP
     .hs >> Hearth to Ratchet
     .bindlocation 392,1

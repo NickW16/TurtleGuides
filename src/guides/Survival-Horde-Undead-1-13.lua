@@ -478,10 +478,6 @@ step
     >>Kill |cRXP_ENEMY_Night Web Spiders|r inside the cave
 	.complete 380,2 --Kill Night Web Spider (x8)
     .mob Night Web Spider
-step << Warlock
-    #softcore
-    #completewith ScarletC
-    .cast 688 >>|cRXP_WARN_Cast|r |T136218:0|t[Summon Imp]
 step << skip
     #hardcore
     #completewith next
@@ -555,10 +551,6 @@ step
     .goto Tirisfal Glades,31.17,65.08
 	>>Click |cRXP_PICK_Marla's Grave|r on the ground
     .complete 6395,1 --Collect Samuel's Remains Buried (1)
- step << Warlock
-    #softcore
-	#completewith ScarletC
-	.cast 688 >>|cRXP_WARN_Cast|r |T136218:0|t[Summon Imp]
 step
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Elreth|r << !Priest
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Elreth|r and |cRXP_FRIENDLY_Duesten|r << Priest

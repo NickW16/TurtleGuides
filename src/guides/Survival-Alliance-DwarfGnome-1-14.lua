@@ -819,8 +819,6 @@ step << Paladin/Warrior/Rogue
 step << Paladin/Warrior/Rogue
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Tundra MacGrann|r
     .target Tundra MacGrann
-    .goto Dun Morogh,43.0,47.4,60,0
-    .goto Dun Morogh,39.6,48.9,60,0
     .goto Dun Morogh,34.577,51.652
     .accept 312 >> Accept Tundra MacGrann's Stolen Stash
 step << !Paladin !Warrior !Rogue
@@ -832,13 +830,12 @@ step << !Paladin !Warrior !Rogue
 step << !Paladin !Warrior !Rogue
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Tundra MacGrann|r
     .target Tundra MacGrann
-    .goto Dun Morogh,35.2,56.4,100,0
-    .goto Dun Morogh,36.0,52.0,100,0
     .goto Dun Morogh,34.577,51.652
     .accept 312 >> Accept Tundra MacGrann's Stolen Stash
 step
     #completewith next
     .goto Dun Morogh,30.5,46.0,50 >> Travel to Brewnall Village
+    >>|cRXP_WARN_Be careful when jumping off the cliff|r
 step << !Mage !Priest
     #completewith next
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Keeg Gibn|r
@@ -937,30 +934,6 @@ step
     .goto Dun Morogh,25.8,47.2,60,0
     .goto Dun Morogh,25.8,47.2,60,0
     .goto Dun Morogh,30.0,51.8
-step
-    #softcore
-    .goto Dun Morogh,30.3,37.5,60 >> Run to here.
-step
-    #softcore
-    .goto Dun Morogh,30.9,33.1,15 >>Run up the mountain north
-step
-    #softcore
-    .goto Dun Morogh,32.4,29.1,15 >>Follow it up to here
-step
-    #softcore
-    .goto Dun Morogh,33.0,27.2,15,0
-    .goto Dun Morogh,33.0,25.2,15,0
-    .goto Wetlands,11.6,43.4,60,0
-    .goto Wetlands,11.6,43.4,0
-    .deathskip >>Keep running straight north, jump down and die once the General Chat changes to Wetlands, then respawn at Menethil Harbor
-step
-    #softcore
-    #completewith next
-    .goto Wetlands,12.7,46.7,30 >> Swim to shore
-step
-    #softcore
-    .goto Wetlands,9.5,59.7
-    .fp Wetlands>> Get the Menethil Harbor flight path
 step
 	#completewith next
     .hs >> Hearth to Kharanos
@@ -1504,10 +1477,6 @@ step
     .accept 1338 >> Accept Stormpike's Order
     .target Mountaineer Stormpike
 step
-    #softcore
-    #completewith next
-    .deathskip >> Die and respawn at Thelsamar
-step
     .isQuestComplete 418
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Vidra Hearthstove|r
     .target Vidra Hearthstove
@@ -1992,12 +1961,6 @@ step
     .mob Defias Bandit
 step
     #era
-    #softcore
-    #sticky
-    #completewith next
-    .goto Elwynn Forest,83.6,69.7,120 >>Die and respawn at the Spirit Healer if you're low health, otherwise just run back and handin
-step
-    #era
     #label Deed
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Sara Timberlain|r
     .target Sara Timberlain
@@ -2076,22 +2039,11 @@ step << Warlock
     .complete 1689,1 --Kill Summoned Voidwalker (x1)
     .mob Summoned Voidwalker
 step << Warlock
-     #softcore
-    >>Life tap on your way back to |cRXP_FRIENDLY_Gakin the Darkbinder|r
-    .target Gakin the Darkbinder
-    .goto StormwindClassic,25.2,78.5
-    .turnin 1689 >> Turn in The Binding
-step << Warlock
     #hardcore
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Gakin the Darkbinder|r
     .target Gakin the Darkbinder
     .goto StormwindClassic,25.25,78.59
     .turnin 1689 >> Turn in The Binding
-step << Warlock
-    #softcore
-    #completewith next
-    .goto StormwindClassic,25.2,78.5
-    .deathskip >> Die and respawn at the Spirit Healer by using Life Tap and standing on the Bonfire next to you
 step
     #completewith next
     .goto Elwynn Forest,42.20,66.00,100 >> Travel to Goldshire
@@ -2320,11 +2272,6 @@ step
     .turnin 36 >> Turn in Westfall Stew
     .accept 38 >> Accept Westfall Stew
     .accept 22 >> Accept Goretusk Liver Pie
-step
-    #softcore
-    #sticky
-    #completewith next
-    .deathskip >> Die and respawn at the Spirit Healer, or run to Sentinel Hill
 step
     #era
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Gryan Stoutmantle|r
@@ -2751,12 +2698,6 @@ step << Mage/Priest/Warlock
     >>|cRXP_WARN_If you aren't able to acquire a|r |T135144:0|t[Greater Magic Wand] |cRXP_WARN_buy a|r |T135468:0|t[Smoldering Wand] |cRXP_WARN_and equip it when you are 15|r
     .collect 5208,1 --Smoldering Wand (1)
     .target Harick Boulderdrum
-step << Warlock
-    #softcore
-    #requires Wand2
-    .goto Ironforge,51.1,8.7,15,0 >> Enter the building
-    .goto Ironforge,50.4,6.3
-    .trainer >> Train your class spells
 step << Warlock
     #hardcore
     .goto Ironforge,51.1,8.7,15,0

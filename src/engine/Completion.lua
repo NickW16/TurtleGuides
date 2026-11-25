@@ -5,6 +5,25 @@ local strtrim = TG.Util.strtrim
 local Completion = {}
 TG.Engine.Completion = Completion
 
+local function characterQuestTurnedIn(self, id, title)
+  if id and self.cdb and self.cdb.turnedIn and self.cdb.turnedIn[id] then
+    return true
+  end
+  if title and self._turnedInTitles and self._turnedInTitles[title] then
+    return true
+  end
+  return false
+end
+
+local function itemObjectiveSatisfied(self, el)
+  local getter = self.GetObjectiveItemProgress
+  if not getter then
+    return false
+  end
+  local have, need = getter(self, el)
+  return have ~= nil and need ~= nil and have >= need
+end
+
 function TG:DetectElementDone(el)
   if not el or el.t ~= "cmd" then
     return nil
@@ -46,10 +65,10 @@ function TG:DetectElementDone(el)
   elseif tag == "complete" then
     local title, id = self:ResolveQuestTitle(el)
     local objNum = el.args and tonumber(el.args[2])
-    if id and self.IsQuestTurnedIn and self:IsQuestTurnedIn(id) then
+    if characterQuestTurnedIn(self, id, title) then
       return true
     end
-    if title and self._turnedInTitles and self._turnedInTitles[title] then
+    if itemObjectiveSatisfied(self, el) then
       return true
     end
     local logIdx
@@ -89,18 +108,15 @@ function TG:DetectElementDone(el)
       return false
     end
     if title and not self:IsQuestInLog(title) then
-      if id and pfQuest_history and pfQuest_history[id] then
-        return true
-      end
-      return nil
+      return false
     end
-    return nil
+    return false
   elseif tag == "collect" then
     local itemId = tonumber(el.args and el.args[1])
     local count = tonumber(el.args and el.args[2]) or 1
     local questId = tonumber(el.args and el.args[3])
     if questId then
-      if self.IsQuestTurnedIn and self:IsQuestTurnedIn(questId) then
+      if characterQuestTurnedIn(self, questId) then
         return true
       end
       if self.GetQuestLogIndexById then

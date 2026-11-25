@@ -122,8 +122,7 @@ function TG:IsQuestComplete(title)
   return isComplete
 end
 
-function TG:GetQuestObjectives(title)
-  local idx = self:GetQuestLogIndexByTitle(title)
+local function objectivesForIndex(idx)
   if not idx then
     return nil
   end
@@ -134,6 +133,14 @@ function TG:GetQuestObjectives(title)
     objectives[j] = { text = text, type = objType, done = finished and true or false }
   end
   return objectives
+end
+
+function TG:GetQuestObjectives(title)
+  return objectivesForIndex(self:GetQuestLogIndexByTitle(title))
+end
+
+function TG:GetQuestObjectivesById(id)
+  return objectivesForIndex(self:GetQuestLogIndexById(id))
 end
 
 function TG:GetObjectiveDone(title, objNum)

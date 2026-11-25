@@ -179,7 +179,7 @@ function Icons.forElement(el)
     return ACTIVE_ICON
   end
   if tag == "complete" then
-    return COMPLETE_ICON
+    return nil
   end
   if tag == "vendor" or tag == "sell" then
     return BUY_ICON

@@ -175,6 +175,34 @@ function TG:DebugCurrentStep()
             .. ")"
             .. (title and (" (" .. title .. ")") or "")
         )
+        if el.tag == "complete" then
+          local objNum = el.args and tonumber(el.args[2])
+          local objectives
+          if title and self.GetQuestObjectives then
+            objectives = self:GetQuestObjectives(title)
+          end
+          if (not objectives or not (objNum and objectives[objNum])) and id and self.GetQuestObjectivesById then
+            objectives = self:GetQuestObjectivesById(id)
+          end
+          local objective = objNum and objectives and objectives[objNum] or nil
+          add("    objectiveText: " .. tostring(el.objectiveText))
+          add(
+            "    log objective: "
+              .. tostring(objective and objective.text)
+              .. " done="
+              .. tostring(objective and objective.done)
+              .. " questId="
+              .. tostring(id)
+              .. " title="
+              .. tostring(title)
+          )
+          add(
+            "    turnedIn character="
+              .. tostring(self.cdb and self.cdb.turnedIn and self.cdb.turnedIn[tonumber(id or "")])
+              .. " account="
+              .. tostring(pfQuest_history and pfQuest_history[tonumber(id or "")])
+          )
+        end
         if el._tgManualDone then
           add("    manual checkbox override active - click the checkbox to undo")
         end

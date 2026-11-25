@@ -75,6 +75,23 @@ local function normalizeItemName(text)
   return strtrim(string.lower(text))
 end
 
+function TG:GetObjectiveItemProgress(el)
+  if not el or not el.objectiveText then
+    return nil
+  end
+  local raw = TG.stripCodes and TG.stripCodes(el.objectiveText) or tostring(el.objectiveText)
+  local need = tonumber(string.match(raw, "%(x(%d+)%)"))
+  local name = normalizeItemName(raw)
+  if name == "" then
+    return nil
+  end
+  local id = TG.GetItemIdByName and TG:GetItemIdByName(name)
+  if not id then
+    return nil
+  end
+  return TG:GetItemCount(id), need, id
+end
+
 local function addGuideItemName(text, id)
   id = tonumber(id)
   local name = normalizeItemName(text)

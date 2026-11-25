@@ -246,10 +246,6 @@ step
 step << Rogue
     .xp 4 >> Grind to 4
 step
-    #completewith next
-    #softcore
-    .deathskip >> Die and respawn at the Spirit Healer
-step
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Deputy Willem|r
     .target Deputy Willem
     .goto Elwynn Forest,48.17,42.94
@@ -319,10 +315,6 @@ step << !Priest !Mage
 step << Priest/Mage
     .xp 5+1175 >> Grind on your way back to 1175+/2800xp
     .goto Elwynn Forest,50.7,39.2
-step
-    #completewith next
-    #softcore
-    .deathskip >> Die and respawn at the Spirit Healer
 step << Priest/Mage
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Milly Osworth|r
     .target Milly Osworth
@@ -1028,10 +1020,6 @@ step
     .accept 1097 >> Accept Elmore's Task
 step
     .xp 10 >> Grind to 10
-step
-    #softcore
-    .goto Elwynn Forest,41.7,65.9
-    .vendor >>vendor trash, repair
 step << Warrior
     .goto Elwynn Forest,41.087,65.768
     .target Ilsa Corbin
@@ -1287,11 +1275,6 @@ step
     .accept 38 >> Accept Westfall Stew
     .accept 22 >>Accept Goretusk Liver Pie
 step
-    #softcore
-    #completewith next
-    .deathskip >> Die and respawn at the |cRXP_FRIENDLY_Spirit Healer|r
-    .target Spirit Healer
-step
     .goto Westfall,56.327,47.520
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Gryan Stoutmantle|r
     .turnin 109 >> Turn in Report to Gryan Stoutmantle
@@ -1378,9 +1361,6 @@ step << Warlock
     .turnin 1685 >> Turn in Gakin's Summons
     .target Gakin the Darkbinder
     .accept 1688 >> Accept Surena Caledon
-step << Warlock
-    #softcore
-    .deathskip >> Die and respawn at the Spirit Healer by using Life Tap and standing on the Bonfire next to you
 step << Warlock
     .goto Elwynn Forest,42.105,65.927
     .zone Elwynn Forest >> Exit Stormwind. Travel to Goldshire

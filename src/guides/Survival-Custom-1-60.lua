@@ -25947,18 +25947,6 @@ step
 .accept 4136 >> Accept Ribbly Screwspigot
 .target Yuka Screwspigot
 step
-#softcoreserver
-#softcore
-.dungeon BRD
-+Die intentionally in the lava in Blackrock Mountain, ideally near the Molten Core entrance location
->>For this step you must be a |T132331:0|t[Ghost] to talk to |cRXP_FRIENDLY_Franclorn Forgewright|r inside Blackrock Mountain. Resurrect at your corpse once you have the quest
-.goto 1415,48.624,64.186
->>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Franclorn Forgewright|r
-.accept 3801 >> Accept Dark Iron Legacy
-.turnin 3801 >> Turn in Dark Iron Legacy
-.accept 3802 >> Accept Dark Iron Legacy
-.target Franclorn Forgewright
-step
 #hardcoreserver
 .dungeon BRD
 .goto 1415,48.656,64.134
@@ -52546,18 +52534,6 @@ step
 step
 #completewith CoreAttunement
 .subzone 25 >> Travel to Blackrock Mountain
-.dungeon BRD
-step
-#softcoreserver
-#softcore
-+Die intentionally in the lava in Blackrock Mountain, ideally near the Molten Core entrance location
->>For this step you must be a |T132331:0|t[Ghost] to talk to |cRXP_FRIENDLY_Franclorn Forgewright|r inside Blackrock Mountain. Resurrect at your corpse once you have the quest
-.goto 1415,48.624,64.186
->>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Franclorn Forgewright|r
-.accept 3801 >> Accept Dark Iron Legacy
-.turnin 3801 >> Turn in Dark Iron Legacy
-.accept 3802 >> Accept Dark Iron Legacy
-.target Franclorn Forgewright
 .dungeon BRD
 step
 #hardcoreserver

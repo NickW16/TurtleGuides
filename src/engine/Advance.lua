@@ -27,7 +27,11 @@ function TG:CheckAdvance()
     local heldStep = self:CurrentStep()
     local sig = heldStep and self:StepStateSignature(heldStep) or ""
     local moved = self:PlayerMovedSinceManualNav()
-    if sig ~= self._manualNavSignature or moved then
+    local complete = heldStep and self:IsStepComplete(heldStep) or false
+    local reason = self._manualNavReason
+    if complete and (not reason or reason == "" or reason == "guide load") then
+      self:ClearManualNavHold("step already complete")
+    elseif sig ~= self._manualNavSignature or moved then
       self:ClearManualNavHold(moved and "player moved" or "completion state changed")
     else
       return

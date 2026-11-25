@@ -46,10 +46,7 @@ return {
       "Interface\\GossipFrame\\AvailableQuestIcon"
     )
     env.eq(iconFor({ t = "cmd", tag = "turnin", args = { "1" }, text = "" }), "Interface\\GossipFrame\\ActiveQuestIcon")
-    env.eq(
-      iconFor({ t = "cmd", tag = "complete", args = { "1", "1" }, text = "" }),
-      "Interface\\Buttons\\UI-CheckBox-Check"
-    )
+    env.eq(iconFor({ t = "cmd", tag = "complete", args = { "1", "1" }, text = "" }), nil)
     env.eq(iconFor({ t = "cmd", tag = "vendor", args = {}, text = "" }), "Interface\\Cursor\\Buy")
     env.eq(iconFor({ t = "cmd", tag = "mob", args = {}, text = "Ragged Young Wolf" }), "Interface\\Cursor\\Attack")
     env.eq(iconFor({ t = "text", text = "Talk to Thran Khorman" }), "Interface\\GossipFrame\\GossipGossipIcon")

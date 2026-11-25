@@ -19,9 +19,12 @@ return {
     TG.GetGuidesForPicker = function()
       return { { name = "Starter", guides = { { key = "human", group = "Alliance", name = "Human 1-10" } } } }
     end
-    local loaded
+    local loaded, found
     TG.SetGuide = function(_, key)
       loaded = key
+    end
+    TG.FindMyPlace = function(_, quiet)
+      found = quiet
     end
     TG:ShowGuidePicker()
     local picker = TG.UI.State.picker
@@ -31,6 +34,7 @@ return {
     env.eq(picker.rows[2].text.value, "Alliance - Human 1-10")
     picker.rows[2].scripts.OnClick()
     env.eq(loaded, "human")
+    env.eq(found, true)
     env.eq(picker:IsShown(), false)
   end,
 

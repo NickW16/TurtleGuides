@@ -87,9 +87,9 @@ local function parseGuide(text, source)
           cond = strtrim(string.sub(line, p + 2))
         end
         if TG.Parser.parseApplies(cond, ctx) then
-          currentStep = { elements = {}, cond = cond, tags = {}, _deathskip = false }
+          currentStep = { elements = {}, cond = cond, tags = {}, _deathskip = false, _softcore = false }
         else
-          currentStep = { elements = {}, cond = cond, tags = {}, _skip = true, _deathskip = false }
+          currentStep = { elements = {}, cond = cond, tags = {}, _skip = true, _deathskip = false, _softcore = false }
         end
       else
         inHeader = false
@@ -109,6 +109,8 @@ local function parseGuide(text, source)
                 currentStep.optional = true
               elseif key == "requires" then
                 currentStep.requires = el.value
+              elseif key == "softcore" then
+                currentStep._softcore = true
               else
                 table.insert(currentStep.elements, el)
               end

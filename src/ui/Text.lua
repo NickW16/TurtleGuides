@@ -98,6 +98,56 @@ local function countText(have, need)
   return value .. "/" .. tostring(need or 0)
 end
 
+local function questObjectiveProgress(el)
+  local objNum = tonumber(el.args and el.args[2])
+  if not objNum then
+    return nil
+  end
+  local title, id
+  if TG.ResolveQuestTitle then
+    title, id = TG:ResolveQuestTitle(el)
+  end
+  local objectives
+  if title and TG.GetQuestObjectives then
+    objectives = TG:GetQuestObjectives(title)
+  end
+  if (not objectives or not objectives[objNum]) and id and TG.GetQuestObjectivesById then
+    objectives = TG:GetQuestObjectivesById(id)
+  end
+  local objective = objectives and objectives[objNum]
+  local logHave, logNeed = string.match(objective and objective.text or "", "(%d+)%s*/%s*(%d+)")
+  logHave, logNeed = tonumber(logHave), tonumber(logNeed)
+  local bagHave, bagNeed
+  if TG.GetObjectiveItemProgress then
+    bagHave, bagNeed = TG:GetObjectiveItemProgress(el)
+  end
+  if bagHave and bagNeed then
+    if logHave and logNeed then
+      return math.max(logHave, bagHave), logNeed
+    end
+    return bagHave, bagNeed
+  end
+  if not logHave then
+    return nil
+  end
+  return logHave, logNeed
+end
+
+local function withObjectiveProgress(text, el)
+  local have, need = questObjectiveProgress(el)
+  local guideNeed = tonumber(string.match(strip(text), "%(x(%d+)%)"))
+  need = need or guideNeed
+  if not need then
+    return text
+  end
+  have = math.min(have or 0, need)
+  local progress = "(" .. have .. "/" .. need .. ")"
+  if string.find(text, "%(x%d+%)") then
+    return string.gsub(text, "%(x%d+%)", progress, 1)
+  end
+  return text .. " " .. progress
+end
+
 function Text.element(el)
   if not el then
     return nil
@@ -133,7 +183,7 @@ function Text.element(el)
     return "Turn in: " .. questName(args[1])
   elseif tag == "complete" then
     if el.objectiveText and strip(el.objectiveText) ~= "" then
-      return "Complete: " .. display(el.objectiveText)
+      return withObjectiveProgress(display(el.objectiveText), el)
     end
     return "Complete: " .. questName(args[1])
   elseif tag == "itemcount" then
@@ -170,6 +220,9 @@ function Text.entries(step)
       local raw = element and element.text or text
       local contentIcon = Icons.content(raw)
       local icon = (element and Icons.forElement(element)) or Icons.forText(text)
+      if element and element.t == "cmd" and element.tag == "complete" then
+        icon = nil
+      end
       local previous = out[table.getn(out)]
       local iconColor
       if icon == Icons.COMPLETE_ICON then
@@ -217,7 +270,10 @@ function Text.entries(step)
         local elText = Text.element(el)
         if elText then
           local trackable = el.t == "cmd" and TG.IsElementTrackable and TG:IsElementTrackable(el) or false
-          local state = trackable and TG:IsElementDone(el) or "note"
+          local state = "note"
+          if trackable then
+            state = TG.IsElementDone and TG:IsElementDone(el) or false
+          end
           add(elText, state, trackable and el or nil, el)
         end
       end

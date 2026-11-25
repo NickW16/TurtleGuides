@@ -148,7 +148,7 @@ local function renderRow(
     row.stepNum:Hide()
   end
   local topPad = (topLine and not isHeader) and 2 or 0
-  local x = isHeader and 2 or (child and 22 or (bulletIcon and 16 or (icon and 26 or 12)))
+  local x = isHeader and 2 or (child and 22 or (bulletIcon and 16 or (icon and 26 or (row.trackable and 16 or 12))))
   local textWidth = math.max(20, width - x - 1 - (stepNum and 18 or 0))
   local position = contentIcon and string.find(text or "", "%[", 1, true) or nil
   local displayText = text or ""

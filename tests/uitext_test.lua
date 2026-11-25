@@ -33,6 +33,56 @@ return {
     )
   end,
 
+  test_complete_objective_shows_live_progress_and_pending_checkbox = function()
+    local TG = fresh()
+    TG.ResolveQuestTitle = function()
+      return "A Favor for Evershine", 319
+    end
+    TG.GetQuestObjectives = function()
+      return { [1] = { text = "Ice Claw Bear slain: 2/6", done = false } }
+    end
+    TG.IsElementTrackable = function()
+      return true
+    end
+    TG.IsElementDone = function()
+      return false
+    end
+    local step = {
+      elements = { { t = "cmd", tag = "complete", args = { "319", "1" }, objectiveText = "Kill Ice Claw Bear (x6)" } },
+    }
+    local entries = TG.UI.Text.entries(step)
+    env.eq(entries[1].text, "Kill Ice Claw Bear (2/6)")
+    env.eq(entries[1].state, false)
+    env.eq(entries[1].icon, nil)
+    env.eq(entries[1].bulletIcon, false)
+  end,
+
+  test_complete_objective_falls_back_to_zero_progress = function()
+    local TG = fresh()
+    TG.ResolveQuestTitle = function()
+      return nil, 319
+    end
+    TG.GetQuestObjectivesById = function()
+      return nil
+    end
+    local el = { t = "cmd", tag = "complete", args = { "319", "2" }, objectiveText = "Kill Elder Crag Boar (x8)" }
+    env.eq(TG.UI.Text.element(el), "Kill Elder Crag Boar (0/8)")
+  end,
+
+  test_complete_item_objective_shows_bag_progress = function()
+    local TG = fresh()
+    TG.GetObjectiveItemProgress = function()
+      return 19, 6
+    end
+    local el = {
+      t = "cmd",
+      tag = "complete",
+      args = { "384", "1" },
+      objectiveText = "Collect Crag Boar Rib (x6)",
+    }
+    env.eq(TG.UI.Text.element(el), "Collect Crag Boar Rib (6/6)")
+  end,
+
   test_plain_goto_is_hidden_when_step_has_tasks = function()
     local TG = fresh()
     local step = {

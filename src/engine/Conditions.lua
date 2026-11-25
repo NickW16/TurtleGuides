@@ -5,6 +5,23 @@ local Quests = TG.Engine.Quests
 local Conditions = {}
 TG.Engine.Conditions = Conditions
 
+function TG:IsSoftcoreStep(step)
+  if not step then
+    return false
+  end
+  if step._softcore == true then
+    return true
+  end
+  return step.tags ~= nil and step.tags.softcore ~= nil
+end
+
+function TG:ShouldSkipStepForHardcoreMode(step)
+  if not TG.db or not TG.db.hardcoreMode then
+    return false
+  end
+  return self:IsSoftcoreStep(step)
+end
+
 local function canReadBags()
   if not GetContainerNumSlots then
     return false
@@ -42,6 +59,95 @@ local function checkItemCountCondition(el)
     return have == want
   end
   return have >= want
+end
+
+local function itemCooldown(id)
+  if GetItemCooldown then
+    local ok, start, duration = pcall(GetItemCooldown, id)
+    if ok and start and duration and duration > 0 then
+      return start, duration
+    end
+  end
+  if not GetContainerNumSlots then
+    return nil
+  end
+  local found = false
+  for bag = 0, 4 do
+    local slots = GetContainerNumSlots(bag) or 0
+    for slot = 1, slots do
+      local itemId
+      if GetContainerItemID then
+        itemId = GetContainerItemID(bag, slot)
+      end
+      if not itemId and GetContainerItemLink then
+        local link = GetContainerItemLink(bag, slot)
+        if link and TG.GetItemIdFromLink then
+          itemId = TG:GetItemIdFromLink(link)
+        end
+      end
+      if tonumber(itemId) == id then
+        found = true
+        if GetContainerItemCooldown then
+          local start, duration = GetContainerItemCooldown(bag, slot)
+          if start and duration and duration > 0 then
+            return start, duration
+          end
+        end
+      end
+    end
+  end
+  if found then
+    return 0, 0
+  end
+  return nil
+end
+
+local function cooldownRemaining(el)
+  local a = el.args or {}
+  local id = tonumber(a[2])
+  if not id then
+    return nil
+  end
+  local kind = string.lower(tostring(a[1] or "item"))
+  local start, duration
+  if kind == "spell" then
+    if not GetSpellCooldown then
+      return nil
+    end
+    start, duration = GetSpellCooldown(id)
+  else
+    start, duration = itemCooldown(id)
+  end
+  if not start or not duration then
+    return nil
+  end
+  return (start + duration) - (GetTime and GetTime() or 0)
+end
+
+local function checkCooldownCondition(el)
+  local raw = tostring(el.args and el.args[3] or "")
+  local op, digits, suffix = string.match(raw, "^%s*([<>]?)%s*(%d+%.?%d*)%s*([ms]?)%s*$")
+  if not digits then
+    return nil
+  end
+  local need = tonumber(digits)
+  if not need then
+    return nil
+  end
+  if suffix == "m" then
+    need = need * 60
+  end
+  if need < 2 then
+    need = 2
+  end
+  local remaining = cooldownRemaining(el)
+  if remaining == nil then
+    return nil
+  end
+  if op == "<" then
+    return remaining >= need
+  end
+  return remaining <= need
 end
 
 local function checkQuestOn(id)
@@ -102,6 +208,8 @@ function TG:EvaluateConditions(step)
       local value
       if tag == "itemcount" then
         value = checkItemCountCondition(el)
+      elseif tag == "cooldown" then
+        value = checkCooldownCondition(el)
       elseif tag == "xp" and isXpCapElement(el) then
         value = checkXpCap(el)
       elseif tag == "isOnQuest" and a[1] then
@@ -198,6 +306,10 @@ function TG:ShouldSkipStepByZone(step)
 end
 
 function TG:StepSkipState(step)
+  if self.ShouldSkipStepForHardcoreMode and self:ShouldSkipStepForHardcoreMode(step) then
+    self._skipDebug = "softcore step in hardcore mode"
+    return true
+  end
   local zone, cond
   if self.ShouldSkipStepByZone then
     zone = self:ShouldSkipStepByZone(step)

@@ -30,6 +30,74 @@ return {
     env.eq(TG:IsElementDone({ t = "cmd", tag = "xp", args = { "10" } }), true)
   end,
 
+  test_complete_objective_ignores_account_quest_history = function()
+    local TG = loadEngine()
+    _G.pfQuest_history = { [319] = true }
+    TG.GetQuestTitleById = function()
+      return "A Favor for Evershine"
+    end
+    TG.GetQuestLogIndexByTitle = function()
+      return nil
+    end
+    TG.GetQuestLogIndexById = function()
+      return nil
+    end
+    local el = { t = "cmd", tag = "complete", args = { "319", "1" }, text = "" }
+    env.eq(TG:IsElementDone(el), false)
+    env.eq(TG:IsStepComplete({ elements = { el } }), false)
+    TG.cdb = { turnedIn = { [319] = true } }
+    env.eq(TG:IsElementDone(el), true)
+  end,
+
+  test_collect_objective_ignores_account_quest_history = function()
+    local TG = loadEngine()
+    _G.pfQuest_history = { [319] = true }
+    TG.GetQuestLogIndexById = function()
+      return nil
+    end
+    local el = { t = "cmd", tag = "collect", args = { "2488", "1", "319" } }
+    env.eq(TG:IsElementDone(el), false)
+    TG.cdb = { turnedIn = { [319] = true } }
+    env.eq(TG:IsElementDone(el), true)
+  end,
+
+  test_complete_item_objective_uses_bag_count = function()
+    local TG = loadEngine()
+    TG.guides = {
+      {
+        steps = {
+          {
+            elements = {
+              { tag = "collect", objectiveText = "Collect Crag Boar Rib (x6)", args = { "2886" } },
+            },
+          },
+        },
+      },
+    }
+    _G.GetContainerNumSlots = function(bag)
+      return bag == 0 and 1 or 0
+    end
+    _G.GetContainerItemLink = function()
+      return "|Hitem:2886::::::::::::|h[Crag Boar Rib]|h"
+    end
+    _G.GetContainerItemInfo = function()
+      return nil, 6
+    end
+    TG.GetQuestLogIndexByTitle = function()
+      return nil
+    end
+    TG.GetQuestLogIndexById = function()
+      return nil
+    end
+    local el = {
+      t = "cmd",
+      tag = "complete",
+      args = { "384", "1" },
+      objectiveText = "Collect Crag Boar Rib (x6)",
+    }
+    env.eq(TG:IsElementDone(el), true)
+  end,
+
   test_manual_action_blocks_completion = function()
     local TG = loadEngine()
     local step = { elements = { { t = "cmd", tag = "vendor" } } }

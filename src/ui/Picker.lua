@@ -248,8 +248,12 @@ function TG:LoadPickedGuide(index)
   if not item or item.kind ~= "guide" then
     return
   end
+  local loaded
   if self.SetGuide then
-    self:SetGuide(item.guide.key, 1, false)
+    loaded = self:SetGuide(item.guide.key, 1, false)
+  end
+  if loaded ~= false and self.FindMyPlace then
+    self:FindMyPlace(true)
   end
   if State.picker then
     State.picker:Hide()

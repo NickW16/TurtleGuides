@@ -73,6 +73,18 @@ return {
     end
   end,
 
+  test_survival_guides_have_no_softcore_or_deathskip_steps = function()
+    local TG = fresh()
+    for _, entry in ipairs(TG.rawGuides) do
+      if string.find(entry.source or "", "Survival%-", 1) then
+        local low = string.lower(entry.text)
+        if low:find("#softcore", 1, true) or low:find(".deathskip", 1, true) then
+          error("survival guide still has softcore/deathskip content: " .. entry.source, 2)
+        end
+      end
+    end
+  end,
+
   test_vanilla_import_guides_parse = function()
     local TG = fresh()
     for i, entry in ipairs(TG.rawGuides) do
@@ -103,5 +115,49 @@ return {
     if table.getn(TG.guides) == 0 then
       error("no Alliance guides indexed", 2)
     end
+  end,
+
+  test_tundra_macgrann_talk_step_has_no_backtrack_waypoints = function()
+    local TG = fresh()
+    _G.UnitFactionGroup = function()
+      return "Alliance"
+    end
+    _G.UnitRace = function()
+      return "Gnome", "Gnome"
+    end
+    _G.UnitClass = function()
+      return "Warrior", "WARRIOR"
+    end
+    TG:BuildGuideIndex()
+    local guide = TG.guideByKey["Classic Survival Alliance||6-10 Dun Morogh"]
+    env.eq(guide ~= nil, true, "survival Dun Morogh guide missing")
+    local found = false
+    for _, step in ipairs(guide.steps) do
+      local hasAccept = false
+      for _, el in ipairs(step.elements) do
+        if el.t == "cmd" and el.tag == "accept" and tostring(el.args and el.args[1]) == "312" then
+          hasAccept = true
+        end
+      end
+      if hasAccept then
+        found = true
+        local gotos = {}
+        for _, el in ipairs(step.elements) do
+          if el.t == "cmd" and el.tag == "goto" then
+            table.insert(
+              gotos,
+              tostring(el.args and el.args[1])
+                .. ","
+                .. tostring(el.args and el.args[2])
+                .. ","
+                .. tostring(el.args and el.args[3])
+            )
+          end
+        end
+        env.eq(table.getn(gotos), 1, "Tundra MacGrann step has backtrack waypoints")
+        env.eq(gotos[1], "Dun Morogh,34.577,51.652", "wrong Tundra MacGrann waypoint")
+      end
+    end
+    env.eq(found, true, "Tundra MacGrann accept step missing")
   end,
 }

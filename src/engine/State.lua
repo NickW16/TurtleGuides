@@ -39,6 +39,7 @@ Shared.MANUAL_ACTION_TAGS = {
 
 Shared.CONDITION_TAGS = {
   itemcount = true,
+  cooldown = true,
   isOnQuest = true,
   isNotOnQuest = true,
   isQuestTurnedIn = true,

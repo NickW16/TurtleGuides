@@ -65,6 +65,21 @@ return {
     env.eq(TG:GetObjectiveDone("First Quest", 1), true)
   end,
 
+  test_objectives_can_be_read_by_id = function()
+    local TG = withQuestLog(fresh())
+    _G.GetNumQuestLeaderBoards = function()
+      return 2
+    end
+    _G.GetQuestLogLeaderBoard = function(i)
+      return "Slain: " .. i .. "/8", "monster", i == 2
+    end
+    local objectives = TG:GetQuestObjectivesById(101)
+    env.eq(objectives[1].text, "Slain: 1/8")
+    env.eq(objectives[1].done, false)
+    env.eq(objectives[2].text, "Slain: 2/8")
+    env.eq(objectives[2].done, true)
+  end,
+
   test_stock_client_resolves_id_from_pfdb = function()
     local TG = fresh()
     _G.GetNumQuestLogEntries = function()

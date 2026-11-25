@@ -83,10 +83,15 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   if idx > n then
     idx = n
   end
-  if TG.db and TG.db.hardcoreMode and (not self.AutoSkipEnabled or self:AutoSkipEnabled()) then
+  if TG.db and TG.db.hardcoreMode then
+    local skipDeathskip = not self.AutoSkipEnabled or self:AutoSkipEnabled()
     while idx <= n do
       local step = guide.steps[idx]
-      if step and step._deathskip then
+      local skip = self.ShouldSkipStepForHardcoreMode and self:ShouldSkipStepForHardcoreMode(step)
+      if skipDeathskip and step and step._deathskip then
+        skip = true
+      end
+      if skip then
         idx = idx + 1
       else
         break
@@ -145,6 +150,8 @@ function TG:GetActiveAuxSteps()
       local hidden = false
       if not self:StepConditionsMet(step) then
         hidden = true
+      elseif self.ShouldSkipStepForHardcoreMode and self:ShouldSkipStepForHardcoreMode(step) then
+        hidden = true
       elseif self.ShouldSkipStepByZone and self:ShouldSkipStepByZone(step) then
         hidden = true
       elseif targetIdx and idx > targetIdx then
@@ -188,10 +195,15 @@ function TG:NextStep(manual, isSkip)
   end
   if self.currentStepIndex < table.getn(self.currentGuide.steps) then
     self.currentStepIndex = self.currentStepIndex + 1
-    if TG.db and TG.db.hardcoreMode and (not self.AutoSkipEnabled or self:AutoSkipEnabled()) then
+    if TG.db and TG.db.hardcoreMode then
+      local skipDeathskip = not self.AutoSkipEnabled or self:AutoSkipEnabled()
       while self.currentStepIndex <= table.getn(self.currentGuide.steps) do
         local step = self.currentGuide.steps[self.currentStepIndex]
-        if step and step._deathskip then
+        local skip = self.ShouldSkipStepForHardcoreMode and self:ShouldSkipStepForHardcoreMode(step)
+        if skipDeathskip and step and step._deathskip then
+          skip = true
+        end
+        if skip then
           self.currentStepIndex = self.currentStepIndex + 1
         else
           break
@@ -282,7 +294,11 @@ function TG:PrevStep()
     if TG.db and TG.db.hardcoreMode then
       while self.currentStepIndex >= 1 do
         local step = self.currentGuide.steps[self.currentStepIndex]
+        local skip = self.ShouldSkipStepForHardcoreMode and self:ShouldSkipStepForHardcoreMode(step)
         if step and step._deathskip then
+          skip = true
+        end
+        if skip then
           self.currentStepIndex = self.currentStepIndex - 1
         else
           break
