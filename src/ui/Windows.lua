@@ -45,11 +45,12 @@ local function stepContentWidth(main)
   return math.max(120, (main:GetWidth() or 225) - 13)
 end
 
-local function makeRow(parent)
+local function makeRow(parent, size)
   local row = CreateFrame("Frame", nil, parent)
-  row:SetHeight(Text.size(BODY_SIZE) + 4)
+  row.size = size or BODY_SIZE
+  row:SetHeight(Text.size(row.size) + 4)
   local text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  Text.register(text, BODY_SIZE)
+  Text.register(text, row.size)
   text:SetJustifyH("LEFT")
   text:SetJustifyV("TOP")
   if text.SetNonSpaceWrap then
@@ -64,6 +65,10 @@ local function makeRow(parent)
   itemIcon:SetWidth(10)
   itemIcon:SetHeight(10)
   row.itemIcon = itemIcon
+  local contentIcon = row:CreateTexture(nil, "OVERLAY")
+  contentIcon:SetWidth(10)
+  contentIcon:SetHeight(10)
+  row.contentIcon = contentIcon
   local check = CreateFrame("Button", nil, row)
   check:SetWidth(10)
   check:SetHeight(10)
@@ -89,21 +94,40 @@ local function makeRow(parent)
   return row
 end
 
-local function renderRow(row, text, state, el, isHeader, width, icon, iconColor, bulletIcon)
+local function renderRow(
+  row,
+  text,
+  state,
+  el,
+  isHeader,
+  width,
+  icon,
+  iconColor,
+  bulletIcon,
+  child,
+  contentIcon,
+  interactive
+)
   row.el = el
   row.kind = isHeader and "header" or "task"
   row.trackable = (el and TG.IsElementTrackable and TG:IsElementTrackable(el)) or false
-  local x = isHeader and 2 or (bulletIcon and 18 or (icon and 28 or 14))
-  local textWidth = math.max(20, width - x - 3)
-  local wrapped, lines = Text.wrap(text or "", textWidth, BODY_SIZE)
+  local x = isHeader and 2 or (child and 22 or (bulletIcon and 16 or (icon and 26 or 12)))
+  local textWidth = math.max(20, width - x - 1)
+  local position = contentIcon and string.find(text or "", "%[", 1, true) or nil
+  local displayText = text or ""
+  if position then
+    displayText = string.sub(displayText, 1, position - 1) .. "  " .. string.sub(displayText, position)
+  end
+  local wrapped, lines = Text.wrap(displayText, textWidth, row.size)
   row.text:SetWidth(textWidth)
   row.text:SetText(wrapped)
   row.text:ClearAllPoints()
   row.text:SetPoint("TOPLEFT", row, "TOPLEFT", x, -1)
-  local height = lines * Text.lineHeight(BODY_SIZE) + 1
+  local height = lines * Text.lineHeight(row.size) + 1
   if isHeader then
     row.icon:Hide()
     row.itemIcon:Hide()
+    row.contentIcon:Hide()
     row.check:Hide()
     row.text:SetTextColor(1.00, 0.82, 0.35)
     row.text:SetAlpha(1.00)
@@ -111,6 +135,42 @@ local function renderRow(row, text, state, el, isHeader, width, icon, iconColor,
   end
   row.text:SetTextColor(0.90, 0.90, 0.90)
   row.text:SetAlpha(1.00)
+  if position and contentIcon then
+    row.contentIcon:Show()
+    row.contentIcon:SetTexture(contentIcon)
+    row.contentIcon:SetVertexColor(1.00, 1.00, 1.00, 1.00)
+    row.contentIcon:ClearAllPoints()
+    row.contentIcon:SetPoint(
+      "TOPLEFT",
+      row,
+      "TOPLEFT",
+      x + Text.width(string.sub(displayText, 1, position + 1), row.size),
+      -1
+    )
+  else
+    row.contentIcon:Hide()
+  end
+  if child then
+    row.check:Hide()
+    row.icon:Hide()
+    if icon then
+      row.itemIcon:Show()
+      row.itemIcon:SetTexture(icon)
+      row.itemIcon:SetVertexColor(1.00, 1.00, 1.00, 1.00)
+      row.itemIcon:ClearAllPoints()
+      row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", 10, -2)
+    else
+      row.itemIcon:Hide()
+      row.icon:Show()
+      row.icon:SetWidth(3)
+      row.icon:SetHeight(3)
+      row.icon:ClearAllPoints()
+      row.icon:SetPoint("TOPLEFT", row, "TOPLEFT", 13, -5)
+      row.icon:SetTexture(DOT)
+      row.icon:SetVertexColor(0.60, 0.60, 0.60, 0.80)
+    end
+    return height
+  end
   if icon then
     row.itemIcon:Show()
     row.itemIcon:SetTexture(icon)
@@ -126,7 +186,11 @@ local function renderRow(row, text, state, el, isHeader, width, icon, iconColor,
   end
   if bulletIcon then
     row.icon:Hide()
-    row.check:Show()
+    if interactive then
+      row.check:Show()
+    else
+      row.check:Hide()
+    end
     row.check:SetWidth(10)
     row.check:SetHeight(10)
     row.check:ClearAllPoints()
@@ -139,7 +203,11 @@ local function renderRow(row, text, state, el, isHeader, width, icon, iconColor,
     row.icon:SetHeight(10)
     row.icon:ClearAllPoints()
     row.icon:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -2)
-    row.check:Show()
+    if interactive then
+      row.check:Show()
+    else
+      row.check:Hide()
+    end
     row.check:SetWidth(10)
     row.check:SetHeight(10)
     row.check:ClearAllPoints()
@@ -172,45 +240,66 @@ end
 local function makeSmallWindow(index)
   local frame = CreateFrame("Frame", "TurtleGuidesStep" .. index, UIParent)
   panel(frame, 0.90)
-  local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  title:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -4)
+  frame.size = (index == 1) and (BODY_SIZE + 1) or BODY_SIZE
+  local plaque = CreateFrame("Frame", nil, frame)
+  plaque:SetHeight(16)
+  plaque:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 6, -2)
+  panel(plaque, 0.96)
+  local borderMask = plaque:CreateTexture(nil, "OVERLAY")
+  borderMask:SetTexture(DOT)
+  borderMask:SetPoint("BOTTOMLEFT", plaque, "BOTTOMLEFT", 1, 1)
+  borderMask:SetPoint("BOTTOMRIGHT", plaque, "BOTTOMRIGHT", -1, 1)
+  borderMask:SetHeight(1)
+  borderMask:SetVertexColor(0.04, 0.04, 0.05, 1.00)
+  local title = plaque:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  title:SetPoint("LEFT", plaque, "LEFT", 6, 0)
   title:SetTextColor(1.00, 0.82, 0.35)
   Text.register(title, BODY_SIZE)
   frame.title = title
-  local body = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  body:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -15)
-  Text.register(body, BODY_SIZE)
-  body:SetJustifyH("LEFT")
-  body:SetJustifyV("TOP")
-  if body.SetNonSpaceWrap then
-    body:SetNonSpaceWrap(true)
+  frame.plaque = plaque
+  frame.rows = {}
+  for _ = 1, MAX_SMALL_LINES do
+    table.insert(frame.rows, makeRow(frame, frame.size))
   end
-  body:SetTextColor(0.90, 0.90, 0.90)
-  frame.body = body
   frame:Hide()
   return frame
 end
 
 local function updateSmallWindow(frame, title, entries, width)
   frame.title:SetText(title)
-  local lines, total = {}, 0
-  for _, entry in ipairs(entries) do
-    if table.getn(lines) >= MAX_SMALL_LINES then
-      break
+  frame.plaque:SetWidth(Text.width(title, BODY_SIZE) + 14)
+  local y = -2
+  local shown = entries
+  for i = 1, MAX_SMALL_LINES do
+    local row = frame.rows[i]
+    local entry = shown[i]
+    if entry then
+      row:SetWidth(width)
+      local height = renderRow(
+        row,
+        entry.text,
+        entry.state,
+        entry.el,
+        false,
+        width,
+        entry.icon,
+        entry.iconColor,
+        entry.bulletIcon,
+        entry.child,
+        entry.contentIcon,
+        true
+      )
+      row:ClearAllPoints()
+      row:SetPoint("TOPLEFT", frame, "TOPLEFT", 3, y)
+      row:SetHeight(height)
+      row:Show()
+      y = y - height - ROW_GAP
+    else
+      row:Hide()
     end
-    local marker = entry.state == true and "- [x] " or "- "
-    local wrapped, count = Text.wrap(marker .. (entry.text or ""), width - 14, BODY_SIZE)
-    table.insert(lines, wrapped)
-    total = total + count
   end
-  frame.body:SetWidth(width - 10)
-  if table.getn(lines) == 0 then
-    table.insert(lines, "- Continue")
-    total = 1
-  end
-  frame.body:SetText(table.concat(lines, "\n"))
   frame:SetWidth(width)
-  frame:SetHeight(19 + total * Text.lineHeight(BODY_SIZE))
+  frame:SetHeight(8 + math.abs(y))
 end
 
 local function iconButton(parent, texture, label, onClick, size)
@@ -550,9 +639,10 @@ function TG:UpdateUI()
     local data = smallData[i]
     if data then
       updateSmallWindow(window, data.title, data.entries, smallWidth)
+      local gap = 10
       window:ClearAllPoints()
-      window:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
-      window:SetPoint("BOTTOMRIGHT", anchor, "TOPRIGHT", 0, 2)
+      window:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, gap)
+      window:SetPoint("BOTTOMRIGHT", anchor, "TOPRIGHT", 0, gap)
       window:Show()
       anchor = window
     else
@@ -583,8 +673,20 @@ function TG:UpdateUI()
       used = used + 1
       local entry = entries[i]
       row:SetWidth(width)
-      local rowHeight =
-        renderRow(row, entry.text, entry.state, entry.el, false, width, entry.icon, entry.iconColor, entry.bulletIcon)
+      local rowHeight = renderRow(
+        row,
+        entry.text,
+        entry.state,
+        entry.el,
+        false,
+        width,
+        entry.icon,
+        entry.iconColor,
+        entry.bulletIcon,
+        entry.child,
+        entry.contentIcon,
+        false
+      )
       row:ClearAllPoints()
       row:SetPoint("TOPLEFT", main.content, "TOPLEFT", 0, y)
       row:SetHeight(rowHeight)

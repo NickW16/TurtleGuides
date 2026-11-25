@@ -54,7 +54,10 @@ return {
     local small = TG.UI.State.smalls[1]
     env.eq(small:IsShown(), true)
     env.eq(small.title.value, "Step 2")
-    env.eq(string.find(small.body.value or "", "Accept: Test", 1, true) ~= nil, true)
+    env.eq(string.find(small.rows[1].text.value or "", "Accept Test", 1, true) ~= nil, true)
+    env.eq(small.rows[1].text.font.size, 11)
+    env.eq(TG.UI.State.smalls[2].rows[1].text.font.size, 10)
+    env.eq(small.plaque ~= nil, true)
   end,
 
   test_main_window_shows_upcoming_steps = function()
