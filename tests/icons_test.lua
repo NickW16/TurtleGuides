@@ -14,6 +14,30 @@ local function fresh()
 end
 
 return {
+  test_item_icon_prefers_generated_database = function()
+    local TG = fresh()
+    _G.GetItemInfo = function()
+      error("GetItemInfo should not be needed for a known item")
+    end
+    env.eq(TG.UI.Icons.item(132090), "Interface\\ICONS\\Ability_BackStab")
+  end,
+
+  test_item_icon_uses_ninth_return_on_stock_client = function()
+    local TG = fresh()
+    _G.GetItemInfo = function()
+      return "Unknown", nil, nil, nil, nil, nil, nil, nil, "Interface\\Icons\\INV_Misc_QuestionMark", 12
+    end
+    env.eq(TG.UI.Icons.item(999999), "Interface\\Icons\\INV_Misc_QuestionMark")
+  end,
+
+  test_item_icon_handles_pfui_getiteminfo_shape = function()
+    local TG = fresh()
+    _G.GetItemInfo = function()
+      return "Unknown", "link", 1, nil, "Category", "Sub", 1
+    end
+    env.eq(TG.UI.Icons.item(999999), nil)
+  end,
+
   test_inline_textures_are_stripped_and_resolved = function()
     local TG = fresh()
     local icons = TG.UI.Icons

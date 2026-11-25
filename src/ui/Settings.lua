@@ -135,6 +135,7 @@ function TG:CreateSettings()
   end)
   local baseHide = frame.Hide
   frame.Hide = function(hiddenFrame)
+    hiddenFrame = hiddenFrame or frame
     restoreEscapeBinding()
     baseHide(hiddenFrame)
     if TG.RefreshPickerFlipper then
