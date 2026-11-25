@@ -37,7 +37,7 @@ return {
       table.insert(calls, "gc")
     end
     TG:OnInitialize()
-    env.eq(table.concat(calls, ","), "compat,guides,arrow,ui,automation,vendor,minimap,gc")
+    env.eq(table.concat(calls, ","), "compat,guides,arrow,ui,automation,vendor,minimap")
   end,
 
   test_player_login_event_registered = function()

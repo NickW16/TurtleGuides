@@ -182,9 +182,6 @@ function TG:BuildIndexWith(parseFn)
     table.sort(list, sortGuides)
   end
   table.sort(self.guides, sortGuides)
-  if self.CollectGarbage then
-    self:CollectGarbage()
-  end
 end
 
 function TG:BuildGuideIndex()

@@ -34,6 +34,7 @@ eventFrame:SetScript("OnEvent", function()
 end)
 
 TG.updaters = {}
+TG._updaterErrors = TG._updaterErrors or {}
 
 function TG:AddUpdater(name, interval, fn)
   self.updaters[name] = { interval = interval, elapsed = 0, fn = fn }
@@ -59,11 +60,21 @@ end)
 
 eventFrame:SetScript("OnUpdate", function()
   local elapsed = arg1
-  for _, updater in pairs(TG.updaters) do
+  local due = {}
+  for name, updater in pairs(TG.updaters) do
     updater.elapsed = updater.elapsed + elapsed
     if updater.elapsed >= updater.interval then
       updater.elapsed = 0
-      updater.fn(updater.interval)
+      table.insert(due, { name = name, fn = updater.fn, interval = updater.interval })
+    end
+  end
+  for _, item in ipairs(due) do
+    local ok, err = pcall(item.fn, item.interval)
+    if not ok and not TG._updaterErrors[item.name] then
+      TG._updaterErrors[item.name] = true
+      if TG.Print then
+        TG:Print("updater " .. item.name .. " failed: " .. tostring(err))
+      end
     end
   end
 end)

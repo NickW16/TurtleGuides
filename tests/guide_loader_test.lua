@@ -2,9 +2,9 @@ local env = dofile("tests/env.lua")
 
 local guideText = [[
 #name 1-12 Test Zone
-#group Turtle Guides (A)
+#group Turtle Test Guides
 #classic
-#defaultfor Orc
+#defaultfor Undead/Mage
 << Horde
 step
 .accept 1 >> Accept Test Quest
@@ -37,11 +37,11 @@ return {
     local TG = fresh()
     TG:RegisterGuideText(guideText, "test.lua")
     TG:BuildGuideMetaIndex()
-    local guide = TG.guideByKey["Turtle Guides (A)||1-12 Test Zone"]
+    local guide = TG.guideByKey["Turtle Test Guides||1-12 Test Zone"]
     env.eq(guide ~= nil, true)
     env.eq(guide.name, "1-12 Test Zone")
     env.eq(guide.category, "Turtle Survival")
-    env.eq(guide.faction, "Alliance")
+    env.eq(guide.faction, "Horde")
     env.eq(table.getn(guide.steps), 0)
     env.eq(guide._fullyParsed, false)
     env.eq(guide._rawBytes > 0, true)
@@ -84,12 +84,41 @@ return {
     env.eq(table.getn(TG.guides[1].steps), 2)
   end,
 
+  test_background_loader_skips_opposite_faction = function()
+    local TG = fresh()
+    TG:RegisterGuideText(
+      [[
+#name 1-12 Alliance Test
+#group Alliance Guides
+#classic
+#defaultfor Human
+step
+.accept 1 >> Accept Alliance Quest
+]],
+      "alliance.lua"
+    )
+    TG:RegisterGuideText(
+      [[
+#name 1-12 Horde Test
+#group Horde Guides
+#classic
+#defaultfor Undead
+step
+.accept 2 >> Accept Horde Quest
+]],
+      "horde.lua"
+    )
+    TG:LoadAllGuides()
+    env.eq(table.getn(TG._guideLoader.queue), 1)
+    env.eq(TG._guideLoader.queue[1].faction, "Horde")
+  end,
+
   test_set_guide_parses_on_demand = function()
     local TG = fresh()
     TG:RegisterGuideText(guideText, "test.lua")
     TG:BuildGuideMetaIndex()
     env.load("src/engine/State.lua", "src/engine/Navigation.lua")
-    env.eq(TG:SetGuide("Turtle Guides (A)||1-12 Test Zone", 1, true), true)
+    env.eq(TG:SetGuide("Turtle Test Guides||1-12 Test Zone", 1, true), true)
     env.eq(table.getn(TG.currentGuide.steps), 2)
     env.eq(TG.currentGuide._fullyParsed, true)
   end,

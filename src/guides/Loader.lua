@@ -108,9 +108,14 @@ function TG:StartGuideLoader()
   if self._guideLoader then
     return
   end
+  local player = self:PlayerInfo()
   local queue = {}
   for _, guide in ipairs(self.guides or {}) do
-    if not guide._fullyParsed and guide._rawBytes <= MAX_BACKGROUND_BYTES then
+    if
+      not guide._fullyParsed
+      and guide._rawBytes <= MAX_BACKGROUND_BYTES
+      and (not self.GuideMatchesPlayer or self:GuideMatchesPlayer(guide, player))
+    then
       table.insert(queue, guide)
     end
   end
