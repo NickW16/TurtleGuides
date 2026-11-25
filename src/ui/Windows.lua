@@ -37,12 +37,13 @@ local function panel(frame, alpha)
     edgeSize = 1,
     insets = { left = 1, right = 1, top = 1, bottom = 1 },
   })
-  frame:SetBackdropColor(0.04, 0.04, 0.05, alpha or 0.85)
-  frame:SetBackdropBorderColor(0.28, 0.28, 0.30, 0.90)
+  frame:SetBackdropColor(0.06, 0.06, 0.06, alpha or 0.90)
+  frame:SetBackdropBorderColor(0.40, 0.36, 0.30, 0.90)
 end
 
 local function stepContentWidth(main)
-  return math.max(120, (main:GetWidth() or 225) - 13)
+  local barWidth = (main.scrollbar and main.scrollbar.width) or 8
+  return math.max(120, (main:GetWidth() or 225) - 9 - barWidth)
 end
 
 local function makeRow(parent, size)
@@ -69,6 +70,21 @@ local function makeRow(parent, size)
   contentIcon:SetWidth(10)
   contentIcon:SetHeight(10)
   row.contentIcon = contentIcon
+  local headerLine = row:CreateTexture(nil, "ARTWORK")
+  headerLine:SetTexture(DOT)
+  headerLine:SetHeight(1)
+  headerLine:SetPoint("TOPLEFT", row, "TOPLEFT", 0, 0)
+  headerLine:SetPoint("TOPRIGHT", row, "TOPRIGHT", 0, 0)
+  headerLine:SetVertexColor(0.85, 0.85, 0.88, 0.15)
+  headerLine:Hide()
+  row.headerLine = headerLine
+  local stepNum = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  Text.register(stepNum, 9)
+  stepNum:SetJustifyH("RIGHT")
+  stepNum:SetPoint("BOTTOMRIGHT", row, "BOTTOMRIGHT", -2, 1)
+  stepNum:SetTextColor(0.65, 0.65, 0.70)
+  stepNum:Hide()
+  row.stepNum = stepNum
   local check = CreateFrame("Button", nil, row)
   check:SetWidth(10)
   check:SetHeight(10)
@@ -106,13 +122,22 @@ local function renderRow(
   bulletIcon,
   child,
   contentIcon,
-  interactive
+  interactive,
+  stepNum,
+  topLine
 )
   row.el = el
   row.kind = isHeader and "header" or "task"
   row.trackable = (el and TG.IsElementTrackable and TG:IsElementTrackable(el)) or false
+  if stepNum then
+    row.stepNum:SetText(tostring(stepNum))
+    row.stepNum:Show()
+  else
+    row.stepNum:Hide()
+  end
+  local topPad = (topLine and not isHeader) and 2 or 0
   local x = isHeader and 2 or (child and 22 or (bulletIcon and 16 or (icon and 26 or 12)))
-  local textWidth = math.max(20, width - x - 1)
+  local textWidth = math.max(20, width - x - 1 - (stepNum and 18 or 0))
   local position = contentIcon and string.find(text or "", "%[", 1, true) or nil
   local displayText = text or ""
   if position then
@@ -122,16 +147,29 @@ local function renderRow(
   row.text:SetWidth(textWidth)
   row.text:SetText(wrapped)
   row.text:ClearAllPoints()
-  row.text:SetPoint("TOPLEFT", row, "TOPLEFT", x, -1)
-  local height = lines * Text.lineHeight(row.size) + 1
+  row.text:SetPoint("TOPLEFT", row, "TOPLEFT", x, -1 - topPad)
+  local height = lines * Text.lineHeight(row.size) + topPad
   if isHeader then
     row.icon:Hide()
     row.itemIcon:Hide()
     row.contentIcon:Hide()
     row.check:Hide()
-    row.text:SetTextColor(1.00, 0.82, 0.35)
-    row.text:SetAlpha(1.00)
+    row.headerLine:ClearAllPoints()
+    row.headerLine:SetPoint("TOPLEFT", row, "TOPLEFT", 0, 0)
+    row.headerLine:SetPoint("TOPRIGHT", row, "TOPRIGHT", 0, 0)
+    row.headerLine:Show()
+    row.text:SetTextColor(0.58, 0.58, 0.62)
+    row.text:SetAlpha(0.90)
     return height
+  end
+  row.text:SetAlpha(1.00)
+  if topLine then
+    row.headerLine:ClearAllPoints()
+    row.headerLine:SetPoint("TOPLEFT", row, "TOPLEFT", 0, 0)
+    row.headerLine:SetPoint("TOPRIGHT", row, "TOPRIGHT", 0, 0)
+    row.headerLine:Show()
+  else
+    row.headerLine:Hide()
   end
   row.text:SetTextColor(0.90, 0.90, 0.90)
   row.text:SetAlpha(1.00)
@@ -145,7 +183,7 @@ local function renderRow(
       row,
       "TOPLEFT",
       x + Text.width(string.sub(displayText, 1, position + 1), row.size),
-      -1
+      -1 - topPad
     )
   else
     row.contentIcon:Hide()
@@ -158,14 +196,14 @@ local function renderRow(
       row.itemIcon:SetTexture(icon)
       row.itemIcon:SetVertexColor(1.00, 1.00, 1.00, 1.00)
       row.itemIcon:ClearAllPoints()
-      row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", 10, -2)
+      row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", 10, -2 - topPad)
     else
       row.itemIcon:Hide()
       row.icon:Show()
       row.icon:SetWidth(3)
       row.icon:SetHeight(3)
       row.icon:ClearAllPoints()
-      row.icon:SetPoint("TOPLEFT", row, "TOPLEFT", 13, -5)
+      row.icon:SetPoint("TOPLEFT", row, "TOPLEFT", 13, -5 - topPad)
       row.icon:SetTexture(DOT)
       row.icon:SetVertexColor(0.60, 0.60, 0.60, 0.80)
     end
@@ -180,7 +218,7 @@ local function renderRow(
     end
     row.itemIcon:SetVertexColor(unpack(tint))
     row.itemIcon:ClearAllPoints()
-    row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", bulletIcon and 3 or 16, -2)
+    row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", bulletIcon and 3 or 16, -2 - topPad)
   else
     row.itemIcon:Hide()
   end
@@ -194,7 +232,7 @@ local function renderRow(
     row.check:SetWidth(10)
     row.check:SetHeight(10)
     row.check:ClearAllPoints()
-    row.check:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -2)
+    row.check:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -2 - topPad)
     return height
   end
   if row.trackable then
@@ -202,7 +240,7 @@ local function renderRow(
     row.icon:SetWidth(10)
     row.icon:SetHeight(10)
     row.icon:ClearAllPoints()
-    row.icon:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -2)
+    row.icon:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -2 - topPad)
     if interactive then
       row.check:Show()
     else
@@ -211,7 +249,7 @@ local function renderRow(
     row.check:SetWidth(10)
     row.check:SetHeight(10)
     row.check:ClearAllPoints()
-    row.check:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -2)
+    row.check:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -2 - topPad)
     if state == true then
       row.icon:SetTexture(CHECK)
       row.icon:SetVertexColor(0.40, 1.00, 0.40, 1.00)
@@ -230,7 +268,7 @@ local function renderRow(
     row.icon:SetWidth(3)
     row.icon:SetHeight(3)
     row.icon:ClearAllPoints()
-    row.icon:SetPoint("TOPLEFT", row, "TOPLEFT", 7, -5)
+    row.icon:SetPoint("TOPLEFT", row, "TOPLEFT", 7, -5 - topPad)
     row.icon:SetTexture(DOT)
     row.icon:SetVertexColor(0.60, 0.60, 0.60, 0.80)
   end
@@ -243,17 +281,17 @@ local function makeSmallWindow(index)
   frame.size = (index == 1) and (BODY_SIZE + 1) or BODY_SIZE
   local plaque = CreateFrame("Frame", nil, frame)
   plaque:SetHeight(16)
-  plaque:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 6, -2)
+  plaque:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 6, -10)
   panel(plaque, 0.96)
   local borderMask = plaque:CreateTexture(nil, "OVERLAY")
   borderMask:SetTexture(DOT)
   borderMask:SetPoint("BOTTOMLEFT", plaque, "BOTTOMLEFT", 1, 1)
   borderMask:SetPoint("BOTTOMRIGHT", plaque, "BOTTOMRIGHT", -1, 1)
   borderMask:SetHeight(1)
-  borderMask:SetVertexColor(0.04, 0.04, 0.05, 1.00)
+  borderMask:SetVertexColor(0.05, 0.07, 0.11, 1.00)
   local title = plaque:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  title:SetPoint("LEFT", plaque, "LEFT", 6, 0)
-  title:SetTextColor(1.00, 0.82, 0.35)
+  title:SetPoint("LEFT", plaque, "LEFT", 8, 0)
+  title:SetTextColor(0.85, 0.85, 0.88)
   Text.register(title, BODY_SIZE)
   frame.title = title
   frame.plaque = plaque
@@ -267,8 +305,8 @@ end
 
 local function updateSmallWindow(frame, title, entries, width)
   frame.title:SetText(title)
-  frame.plaque:SetWidth(Text.width(title, BODY_SIZE) + 14)
-  local y = -2
+  frame.plaque:SetWidth(Text.width(title, BODY_SIZE) + 18)
+  local y = -10
   local shown = entries
   for i = 1, MAX_SMALL_LINES do
     local row = frame.rows[i]
@@ -299,7 +337,7 @@ local function updateSmallWindow(frame, title, entries, width)
     end
   end
   frame:SetWidth(width)
-  frame:SetHeight(8 + math.abs(y))
+  frame:SetHeight(4 + math.abs(y))
 end
 
 local function iconButton(parent, texture, label, onClick, size)
@@ -310,7 +348,7 @@ local function iconButton(parent, texture, label, onClick, size)
   button:SetPushedTexture(texture)
   local icon = button.GetNormalTexture and button:GetNormalTexture() or nil
   if icon and icon.SetVertexColor then
-    icon:SetVertexColor(1.00, 0.82, 0.35, 1.00)
+    icon:SetVertexColor(0.85, 0.85, 0.88, 1.00)
   end
   button:SetScript("OnEnter", function()
     if not GameTooltip then
@@ -341,7 +379,7 @@ function TG:SetMainWindowMinimized(value)
   local children = { main.scroll, main.resizer }
   if minimized then
     main._tgSavedHeight = main:GetHeight()
-    main:SetHeight(36)
+    main:SetHeight(40)
     for _, child in ipairs(children) do
       if child then
         child:Hide()
@@ -363,7 +401,7 @@ function TG:SetMainWindowMinimized(value)
     main.minimizeBtn:SetPushedTexture(texture)
     local icon = main.minimizeBtn.GetNormalTexture and main.minimizeBtn:GetNormalTexture() or nil
     if icon and icon.SetVertexColor then
-      icon:SetVertexColor(1.00, 0.82, 0.35, 1.00)
+      icon:SetVertexColor(0.85, 0.85, 0.88, 1.00)
     end
   end
   if not minimized then
@@ -405,44 +443,96 @@ function TG:InitUI()
     end
   end)
 
+  local topbar = main:CreateTexture(nil, "BORDER")
+  topbar:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\BarTexture")
+  topbar:SetPoint("TOPLEFT", main, "TOPLEFT", 1, -1)
+  topbar:SetPoint("TOPRIGHT", main, "TOPRIGHT", -1, -1)
+  topbar:SetHeight(24)
+  topbar:SetVertexColor(0.92, 0.90, 0.86, 1.00)
+  main.topbar = topbar
+
+  local topbarLine = main:CreateTexture(nil, "ARTWORK")
+  topbarLine:SetTexture(DOT)
+  topbarLine:SetPoint("TOPLEFT", main, "TOPLEFT", 1, -25)
+  topbarLine:SetPoint("TOPRIGHT", main, "TOPRIGHT", -1, -25)
+  topbarLine:SetHeight(1)
+  topbarLine:SetVertexColor(0.85, 0.85, 0.88, 0.08)
+
+  local classBtn = CreateFrame("Frame", nil, main)
+  classBtn:SetWidth(28)
+  classBtn:SetHeight(28)
+  classBtn:SetPoint("TOPLEFT", main, "TOPLEFT", 0, 0)
+  local classBg = classBtn:CreateTexture(nil, "OVERLAY")
+  classBg:SetAllPoints(classBtn)
+  classBg:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\SquircleFrame")
+  local classIcon = classBtn:CreateTexture(nil, "ARTWORK")
+  classIcon:SetPoint("TOPLEFT", classBtn, "TOPLEFT", 3, -3)
+  classIcon:SetPoint("BOTTOMRIGHT", classBtn, "BOTTOMRIGHT", -3, 3)
+  local classToken
+  if UnitClass then
+    local _, token = UnitClass("player")
+    classToken = token
+  end
+  local coords = CLASS_ICON_TCOORDS and classToken and CLASS_ICON_TCOORDS[classToken]
+  if coords then
+    classIcon:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
+    if coords[5] then
+      classIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4], coords[5], coords[6], coords[7], coords[8])
+    else
+      classIcon:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
+    end
+  elseif classToken and classToken ~= "" then
+    classIcon:SetTexture("Interface\\Icons\\ClassIcon_" .. classToken)
+    classIcon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+  else
+    classIcon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+    classIcon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+  end
+  main.classIcon = classIcon
+  main.classBtn = classBtn
+
   local title = main:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  title:SetPoint("TOPLEFT", main, "TOPLEFT", 6, -4)
+  title:SetPoint("TOPLEFT", main, "TOPLEFT", 32, -6)
+  title:SetPoint("RIGHT", main, "RIGHT", -24, 0)
+  title:SetJustifyH("LEFT")
   title:SetText("TurtleGuide")
-  title:SetTextColor(1.00, 0.82, 0.35)
-  Text.register(title, BODY_SIZE)
+  title:SetTextColor(0.90, 0.90, 0.92)
+  Text.register(title, 12)
   main.title = title
 
-  local closeBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\Close", "Hide", function()
-    main:Hide()
-    if TG.HideStepWindows then
-      TG:HideStepWindows()
-    end
-  end, 10)
-  closeBtn:SetPoint("TOPRIGHT", main, "TOPRIGHT", -4, -5)
-
-  local minimizeBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp", "Minimize", function()
-    TG:SetMainWindowMinimized(not main._tgMinimized)
-  end, 12)
-  minimizeBtn:SetPoint("RIGHT", closeBtn, "LEFT", -5, 1)
-  main.minimizeBtn = minimizeBtn
-
-  local guidesBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\Magnifier", "Guides", function()
+  local settingsBtn = CreateFrame("Button", nil, main)
+  settingsBtn:SetWidth(14)
+  settingsBtn:SetHeight(14)
+  settingsBtn:SetPoint("TOPRIGHT", main, "TOPRIGHT", -6, -6)
+  local settingsIcon = settingsBtn:CreateTexture(nil, "ARTWORK")
+  settingsIcon:SetAllPoints(settingsBtn)
+  settingsIcon:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\Cog_Filled")
+  settingsIcon:SetVertexColor(0.95, 0.85, 0.45)
+  settingsBtn:SetScript("OnClick", function()
     if TG.ShowGuidePicker then
       TG:ShowGuidePicker()
     end
-  end, 12)
-  guidesBtn:SetPoint("RIGHT", minimizeBtn, "LEFT", -5, 0)
-
-  local settingsBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\Cog", "Settings", function()
-    if TG.ShowSettings then
-      TG:ShowSettings()
+  end)
+  settingsBtn:SetScript("OnEnter", function()
+    settingsIcon:SetVertexColor(1.00, 0.92, 0.55)
+    if GameTooltip then
+      GameTooltip:SetOwner(settingsBtn, "ANCHOR_LEFT")
+      GameTooltip:SetText("Guides")
+      GameTooltip:Show()
     end
-  end, 12)
-  settingsBtn:SetPoint("RIGHT", guidesBtn, "LEFT", -5, 0)
+  end)
+  settingsBtn:SetScript("OnLeave", function()
+    settingsIcon:SetVertexColor(0.95, 0.85, 0.45)
+    if GameTooltip then
+      GameTooltip:Hide()
+    end
+  end)
   main.settingsBtn = settingsBtn
 
+  main.minimizeBtn = nil
+
   local scroll = CreateFrame("ScrollFrame", "TurtleGuidesStepScroll", main)
-  scroll:SetPoint("TOPLEFT", main, "TOPLEFT", 5, -19)
+  scroll:SetPoint("TOPLEFT", main, "TOPLEFT", 5, -27)
   scroll:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -4, 16)
   local content = CreateFrame("Frame", nil, scroll)
   content:SetWidth(stepContentWidth(main))
@@ -455,41 +545,41 @@ function TG:InitUI()
     table.insert(rows, makeRow(content))
   end
 
+  local footer = main:CreateTexture(nil, "BORDER")
+  footer:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\BarTexture")
+  footer:SetPoint("BOTTOMLEFT", main, "BOTTOMLEFT", 1, 1)
+  footer:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -1, 1)
+  footer:SetHeight(16)
+  footer:SetVertexColor(0.92, 0.90, 0.86, 1.00)
+
   local progress = main:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   progress:SetPoint("BOTTOMLEFT", main, "BOTTOMLEFT", 6, 3)
   progress:SetText("")
-  progress:SetTextColor(1.00, 0.82, 0.35)
+  progress:SetTextColor(0.85, 0.85, 0.88)
   Text.register(progress, BODY_SIZE)
   main.progress = progress
 
   local guideName = main:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   guideName:SetPoint("BOTTOMLEFT", main, "BOTTOMLEFT", 42, 3)
-  guideName:SetPoint("RIGHT", main, "RIGHT", -80, 0)
+  guideName:SetPoint("RIGHT", main, "RIGHT", -54, 0)
   guideName:SetJustifyH("LEFT")
   guideName:SetText("")
   guideName:SetTextColor(0.75, 0.75, 0.75)
   Text.register(guideName, BODY_SIZE)
   main.guideName = guideName
 
-  local nextBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ArrowRight", "Next step", function()
+  local nextBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ArrowRight_Fantasy", "Next step", function()
     if TG.NextStep then
       TG:NextStep(true)
     end
   end, 12)
   nextBtn:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -10, 1)
-  local prevBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ArrowLeft", "Previous step", function()
+  local prevBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ArrowLeft_Fantasy", "Previous step", function()
     if TG.PrevStep then
       TG:PrevStep()
     end
   end, 12)
   prevBtn:SetPoint("RIGHT", nextBtn, "LEFT", -2, 0)
-
-  local version = main:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  version:SetPoint("RIGHT", prevBtn, "LEFT", -6, 1)
-  version:SetText("tg " .. (TG.version or ""))
-  version:SetTextColor(0.62, 0.62, 0.66)
-  Text.register(version, 8)
-  main.version = version
 
   local resizer = CreateFrame("Button", nil, main)
   resizer:SetWidth(12)
@@ -602,8 +692,8 @@ function TG:UpdateUI()
   local function layoutFooter()
     local width = (main.progress.GetStringWidth and main.progress:GetStringWidth()) or 24
     main.guideName:ClearAllPoints()
-    main.guideName:SetPoint("BOTTOMLEFT", main, "BOTTOMLEFT", 6 + width + 12, 3)
-    main.guideName:SetPoint("RIGHT", main, "RIGHT", -80, 0)
+    main.guideName:SetPoint("BOTTOMLEFT", main, "BOTTOMLEFT", 6 + width + 8, 3)
+    main.guideName:SetPoint("RIGHT", main, "RIGHT", -54, 0)
   end
   local guide = self.currentGuide
   if not guide then
@@ -654,20 +744,39 @@ function TG:UpdateUI()
   local used, y = 0, -2
   local last = math.min(total, index + MAX_STEPS)
   for stepIndex = index + 1, last do
-    if used + 1 + MAX_TASKS > MAX_ROWS then
-      break
-    end
-    local header = rows[used + 1]
-    used = used + 1
-    header:SetWidth(width)
-    local height = renderRow(header, "Step " .. stepIndex, "note", nil, true, width)
-    header:ClearAllPoints()
-    header:SetPoint("TOPLEFT", main.content, "TOPLEFT", 0, y)
-    header:SetHeight(height)
-    header:Show()
-    y = y - height - ROW_GAP
     local entries = Text.entries(steps[stepIndex])
     local count = math.min(table.getn(entries), MAX_TASKS)
+    if count == 0 then
+      count = 1
+      entries = { { text = "", state = "note" } }
+    end
+    if used + count + 1 > MAX_ROWS then
+      break
+    end
+    local headerRow = rows[used + 1]
+    used = used + 1
+    headerRow:SetWidth(width)
+    local headerHeight = renderRow(
+      headerRow,
+      "Step " .. stepIndex,
+      nil,
+      nil,
+      true,
+      width,
+      nil,
+      nil,
+      nil,
+      nil,
+      nil,
+      false,
+      nil,
+      false
+    )
+    headerRow:ClearAllPoints()
+    headerRow:SetPoint("TOPLEFT", main.content, "TOPLEFT", 0, y)
+    headerRow:SetHeight(headerHeight)
+    headerRow:Show()
+    y = y - headerHeight - ROW_GAP
     for i = 1, count do
       local row = rows[used + 1]
       used = used + 1
@@ -685,6 +794,8 @@ function TG:UpdateUI()
         entry.bulletIcon,
         entry.child,
         entry.contentIcon,
+        false,
+        nil,
         false
       )
       row:ClearAllPoints()

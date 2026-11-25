@@ -18,8 +18,8 @@ local function panel(frame)
     edgeSize = 1,
     insets = { left = 1, right = 1, top = 1, bottom = 1 },
   })
-  frame:SetBackdropColor(0.04, 0.04, 0.05, 0.95)
-  frame:SetBackdropBorderColor(0.28, 0.28, 0.30, 0.90)
+  frame:SetBackdropColor(0.06, 0.06, 0.06, 0.95)
+  frame:SetBackdropBorderColor(0.40, 0.36, 0.30, 0.90)
 end
 
 local function moveSelection(delta)
@@ -99,7 +99,7 @@ local function makePickerRow(picker, i)
   chevron:SetWidth(12)
   chevron:SetHeight(12)
   chevron:SetPoint("LEFT", row, "LEFT", 2, 0)
-  chevron:SetVertexColor(1.00, 0.82, 0.35)
+  chevron:SetVertexColor(0.85, 0.85, 0.88)
   row.chevron = chevron
   row:SetScript("OnClick", function()
     if row.index then
@@ -148,8 +148,24 @@ function TG:CreateGuidePicker()
   local title = picker:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   title:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -6)
   title:SetText("Guides")
-  title:SetTextColor(1.00, 0.82, 0.35)
+  title:SetTextColor(0.85, 0.85, 0.88)
   Text.register(title, 10)
+
+  local settingsBtn = CreateFrame("Button", nil, picker)
+  settingsBtn:SetWidth(10)
+  settingsBtn:SetHeight(10)
+  settingsBtn:SetNormalTexture("Interface\\AddOns\\TurtleGuides\\Media\\Cog")
+  settingsBtn:SetPushedTexture("Interface\\AddOns\\TurtleGuides\\Media\\Cog")
+  local settingsIcon = settingsBtn.GetNormalTexture and settingsBtn:GetNormalTexture() or nil
+  if settingsIcon and settingsIcon.SetVertexColor then
+    settingsIcon:SetVertexColor(0.85, 0.85, 0.88)
+  end
+  settingsBtn:SetPoint("LEFT", title, "RIGHT", 6, 0)
+  settingsBtn:SetScript("OnClick", function()
+    if TG.ShowSettings then
+      TG:ShowSettings()
+    end
+  end)
 
   local close = CreateFrame("Button", nil, picker)
   close:SetWidth(9)
@@ -158,7 +174,7 @@ function TG:CreateGuidePicker()
   close:SetPushedTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
   local closeIcon = close.GetNormalTexture and close:GetNormalTexture() or nil
   if closeIcon and closeIcon.SetVertexColor then
-    closeIcon:SetVertexColor(1.00, 0.82, 0.35)
+    closeIcon:SetVertexColor(0.85, 0.85, 0.88)
   end
   close:SetPoint("TOPRIGHT", picker, "TOPRIGHT", -6, -6)
   close:SetScript("OnClick", function()
@@ -170,7 +186,7 @@ function TG:CreateGuidePicker()
   fieldBox:SetHeight(22)
   fieldBox:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -24)
   fieldBox:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8" })
-  fieldBox:SetBackdropColor(0.10, 0.10, 0.12, 0.95)
+  fieldBox:SetBackdropColor(0.10, 0.10, 0.10, 0.95)
   picker.fieldBox = fieldBox
 
   local search = CreateFrame("EditBox", "TurtleGuidesPickerSearch", picker)
@@ -305,7 +321,7 @@ function TG:RefreshGuidePicker()
     if item then
       if item.kind == "header" then
         row.text:SetText(item.label)
-        row.text:SetTextColor(1.00, 0.82, 0.35)
+        row.text:SetTextColor(0.85, 0.85, 0.88)
         row.text:ClearAllPoints()
         row.text:SetPoint("LEFT", row, "LEFT", 16, 0)
         row.chevron:SetTexture(
@@ -322,7 +338,7 @@ function TG:RefreshGuidePicker()
           .. (item.guide.name or "")
         row.text:SetText(label)
         if i == selected then
-          row.text:SetTextColor(1.00, 0.82, 0.35)
+          row.text:SetTextColor(0.85, 0.85, 0.88)
         elseif item.rec then
           row.text:SetTextColor(0.50, 0.78, 0.95)
         else

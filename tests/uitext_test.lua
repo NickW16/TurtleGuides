@@ -13,9 +13,9 @@ local function fresh()
 end
 
 return {
-  test_text_element_strips_colors = function()
+  test_text_element_preserves_colors = function()
     local TG = fresh()
-    env.eq(TG.UI.Text.element({ t = "text", text = "|cffff0000Hello|r world" }), "Hello world")
+    env.eq(TG.UI.Text.element({ t = "text", text = "|cffff0000Hello|r world" }), "|cffff0000Hello|r world")
   end,
 
   test_accept_and_collect_elements = function()
@@ -29,7 +29,7 @@ return {
     end
     env.eq(
       TG.UI.Text.element({ t = "cmd", tag = "collect", args = { "42", "5" }, text = "Bear Fur" }),
-      "Collect: Bear Fur 2/5"
+      "Collect: |cffffd100Bear Fur|r 2/5"
     )
   end,
 

@@ -14,8 +14,8 @@ local function panel(frame)
     edgeSize = 1,
     insets = { left = 1, right = 1, top = 1, bottom = 1 },
   })
-  frame:SetBackdropColor(0.04, 0.04, 0.05, 0.95)
-  frame:SetBackdropBorderColor(0.28, 0.28, 0.30, 0.90)
+  frame:SetBackdropColor(0.06, 0.06, 0.06, 0.95)
+  frame:SetBackdropBorderColor(0.40, 0.36, 0.30, 0.90)
 end
 
 local function textButton(parent, label, width, onClick)
@@ -25,7 +25,7 @@ local function textButton(parent, label, width, onClick)
   local text = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   text:SetPoint("CENTER", button, "CENTER", 0, 0)
   text:SetText(label)
-  text:SetTextColor(1.00, 0.82, 0.35)
+  text:SetTextColor(0.85, 0.85, 0.88)
   Text.register(text, 10)
   button.text = text
   button:SetScript("OnClick", onClick)
@@ -98,7 +98,7 @@ function TG:CreateSettings()
   local title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   title:SetPoint("TOPLEFT", frame, "TOPLEFT", 6, -5)
   title:SetText("Settings")
-  title:SetTextColor(1.00, 0.82, 0.35)
+  title:SetTextColor(0.85, 0.85, 0.88)
   Text.register(title, 10)
   frame.title = title
 
@@ -109,7 +109,7 @@ function TG:CreateSettings()
   close:SetPushedTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
   local closeIcon = close.GetNormalTexture and close:GetNormalTexture() or nil
   if closeIcon and closeIcon.SetVertexColor then
-    closeIcon:SetVertexColor(1.00, 0.82, 0.35)
+    closeIcon:SetVertexColor(0.85, 0.85, 0.88)
   end
   close:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -4, -6)
   close:SetScript("OnClick", function()
@@ -185,7 +185,7 @@ function TG:CreateSettings()
   plus:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -6, fontY + 2)
   frame.fontValue = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   frame.fontValue:SetPoint("RIGHT", minus, "LEFT", -4, 0)
-  frame.fontValue:SetTextColor(1.00, 0.82, 0.35)
+  frame.fontValue:SetTextColor(0.85, 0.85, 0.88)
   Text.register(frame.fontValue, 10)
 end
 

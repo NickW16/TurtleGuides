@@ -22,6 +22,39 @@ end
 
 Text.strip = strip
 
+local NPC_COLOR = "|cff00ff00"
+local ITEM_COLOR = "|cffffd100"
+
+local function display(text)
+  if not text or text == "" then
+    return ""
+  end
+  if TG.cleanRxpColors then
+    text = TG.cleanRxpColors(text)
+  end
+  text = string.gsub(text, "|T.-|t", "")
+  text = string.gsub(text, "%[([^%]]+)%]", function(name)
+    if string.find(name, "|cff", 1, true) or string.find(name, "|cRXP_", 1, true) then
+      return "[" .. name .. "]"
+    end
+    if not string.find(name, "%a") then
+      return "[" .. name .. "]"
+    end
+    return "[" .. ITEM_COLOR .. name .. "|r]"
+  end)
+  return trim(text)
+end
+
+local function colorName(name, color)
+  if not name or name == "" then
+    return name
+  end
+  if string.find(name, "|cff", 1, true) or string.find(name, "|cRXP_", 1, true) then
+    return name
+  end
+  return color .. name .. "|r"
+end
+
 local function questName(id, text)
   local name = strip(text)
   name = string.gsub(name, "^Accept%s+", "")
@@ -70,7 +103,7 @@ function Text.element(el)
     return nil
   end
   if el.t == "text" then
-    local text = Icons.clean(el.text)
+    local text = display(el.text)
     return text ~= "" and text or nil
   end
   if el.t ~= "cmd" then
@@ -78,7 +111,7 @@ function Text.element(el)
   end
   local tag = el.tag or ""
   local args = el.args or {}
-  local inline = Icons.clean(el.text)
+  local inline = display(el.text)
   if tag == "target" or tag == "mob" or tag == "kill" then
     return inline ~= "" and inline or nil
   end
@@ -89,7 +122,7 @@ function Text.element(el)
     local id = tonumber(args[1])
     local need = tonumber(args[2]) or 1
     local have = (id and TG.GetItemCount) and TG:GetItemCount(id) or 0
-    return "Collect: " .. itemName(id, el.text) .. " " .. countText(have, need)
+    return "Collect: " .. colorName(itemName(id, el.text), ITEM_COLOR) .. " " .. countText(have, need)
   end
   if inline ~= "" then
     return inline
@@ -99,12 +132,12 @@ function Text.element(el)
   elseif tag == "turnin" then
     return "Turn in: " .. questName(args[1])
   elseif tag == "complete" then
-    if el.objectiveText and Icons.clean(el.objectiveText) ~= "" then
-      return "Complete: " .. Icons.clean(el.objectiveText)
+    if el.objectiveText and strip(el.objectiveText) ~= "" then
+      return "Complete: " .. display(el.objectiveText)
     end
     return "Complete: " .. questName(args[1])
   elseif tag == "itemcount" then
-    return "Have: " .. itemName(args[1])
+    return "Have: " .. colorName(itemName(args[1]), ITEM_COLOR)
   elseif tag == "xp" then
     local level = tonumber(args[1])
     if TG.ParseXpArg then
@@ -122,7 +155,7 @@ function Text.element(el)
     return "Vendor"
   elseif tag == "use" or tag == "destroy" then
     local label = (tag == "use") and "Use: " or "Destroy: "
-    return label .. itemName(args[1])
+    return label .. colorName(itemName(args[1]), ITEM_COLOR)
   end
   return nil
 end
@@ -143,7 +176,9 @@ function Text.entries(step)
         iconColor = Icons.COMPLETE_COLOR
       end
       local child = false
-      if previous and (string.sub(previous.text, -1) == ":" or previous.child) and string.sub(text, 1, 1) == "[" then
+      local plainText = strip(text)
+      local prevPlain = previous and strip(previous.text) or ""
+      if previous and (string.sub(prevPlain, -1) == ":" or previous.child) and string.sub(plainText, 1, 1) == "[" then
         child = true
       end
       table.insert(out, {
@@ -185,15 +220,21 @@ function Text.entries(step)
     end
   end
   if table.getn(out) == 0 then
-    local first = elements[1]
-    if first and first.t == "cmd" then
-      local args = first.args or {}
-      if first.tag == "destroy" then
-        add("Destroy: " .. itemName(args[1]), "note", nil, first)
-      elseif first.tag == "use" then
-        add("Use: " .. itemName(args[1]), "note", nil, first)
-      elseif first.tag == "goto" and args[1] then
-        add("Go to " .. tostring(args[1]), "note", nil, first)
+    for _, el in ipairs(elements) do
+      if el.t == "cmd" then
+        local text = Text.element(el)
+        if text then
+          add(text, "note", nil, el)
+          break
+        end
+      end
+    end
+  end
+  if table.getn(out) == 0 then
+    for _, el in ipairs(elements) do
+      if el.t == "cmd" and el.tag == "goto" and el.args and el.args[1] then
+        add("Go to " .. tostring(el.args[1]), "note", nil, el)
+        break
       end
     end
   end
@@ -238,8 +279,19 @@ local function getMeasureFont()
   return measureFont
 end
 
+local function stripCodes(text)
+  if not text or text == "" then
+    return ""
+  end
+  text = string.gsub(text, "|cRXP_%w+_", "")
+  text = string.gsub(text, "|c%x%x%x%x%x%x%x%x", "")
+  text = string.gsub(text, "|r", "")
+  text = string.gsub(text, "|T.-|t", "")
+  return text
+end
+
 local function widthOf(font, text)
-  local measured = Icons.measure(text)
+  local measured = stripCodes(text)
   font:SetText(measured)
   if font.GetStringWidth then
     return font:GetStringWidth() or 0
@@ -247,9 +299,52 @@ local function widthOf(font, text)
   return string.len(measured) * 5
 end
 
-local function wrapLine(font, text, maxWidth, result)
+local function splitLines(text)
+  local lines = {}
+  local start = 1
+  while true do
+    local s, e = string.find(text, "\n", start)
+    if not s then
+      table.insert(lines, string.sub(text, start))
+      break
+    end
+    table.insert(lines, string.sub(text, start, s - 1))
+    start = e + 1
+  end
+  return lines
+end
+
+local function wordsOf(text)
+  local words = {}
+  local pos = 1
+  local length = string.len(text)
+  while pos <= length do
+    local s, e = string.find(text, "%S+", pos)
+    if not s then
+      break
+    end
+    table.insert(words, string.sub(text, s, e))
+    pos = e + 1
+  end
+  return words
+end
+
+local function charsOf(text)
+  local chars = {}
+  for i = 1, string.len(text) do
+    table.insert(chars, string.sub(text, i, i))
+  end
+  return chars
+end
+
+local function wrapSegment(font, segment, maxWidth, result)
+  local words = wordsOf(segment)
+  if table.getn(words) == 0 then
+    table.insert(result, "")
+    return
+  end
   local current = ""
-  for word in string.gmatch(text, "%S+") do
+  for _, word in ipairs(words) do
     local candidate = (current == "") and word or (current .. " " .. word)
     if widthOf(font, candidate) <= maxWidth then
       current = candidate
@@ -261,12 +356,11 @@ local function wrapLine(font, text, maxWidth, result)
         current = word
       else
         local chunk = ""
-        for i = 1, string.len(word) do
-          local char = string.sub(word, i, i)
-          local nextChunk = chunk .. char
+        for _, ch in ipairs(charsOf(word)) do
+          local nextChunk = chunk .. ch
           if chunk ~= "" and widthOf(font, nextChunk) > maxWidth then
             table.insert(result, chunk)
-            chunk = char
+            chunk = ch
           else
             chunk = nextChunk
           end
@@ -287,12 +381,14 @@ function Text.wrap(text, maxWidth, fontSize)
   if plain == "" then
     return "", 1
   end
+  local displayText = text or ""
+  displayText = string.gsub(displayText, "|T.-|t", "")
   if not maxWidth or maxWidth < 1 then
-    return plain, 1
+    return trim(displayText), 1
   end
   local result = {}
-  for line in string.gmatch(plain .. "\n", "([^\n]*)\n") do
-    wrapLine(font, line, maxWidth, result)
+  for _, segment in ipairs(splitLines(displayText)) do
+    wrapSegment(font, segment, maxWidth, result)
   end
   if table.getn(result) == 0 then
     table.insert(result, "")

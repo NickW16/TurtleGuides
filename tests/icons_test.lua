@@ -32,7 +32,7 @@ return {
     local TG = fresh()
     local text =
       TG.UI.Text.element({ t = "cmd", tag = "train", args = { "6673" }, text = "Train |T132333:0|t[Battle Shout]" })
-    env.eq(text, "Train [Battle Shout]")
+    env.eq(text, "Train [|cffffd100Battle Shout|r]")
   end,
 
   test_quest_vendor_mob_and_talk_icons = function()

@@ -48,8 +48,6 @@ return {
     local TG = fresh()
     withGuide(TG)
     TG:InitUI()
-    env.eq(TG.UI.State.main.title.value, "Guide")
-    env.eq(TG.UI.State.main.version.value, "tg 0.1.0")
     env.eq(TG.UI.State.main.guideName.value, "Fast Route")
     local small = TG.UI.State.smalls[1]
     env.eq(small:IsShown(), true)
@@ -66,21 +64,24 @@ return {
     TG:InitUI()
     local joined = ""
     for _, row in ipairs(TG.UI.Windows.rows()) do
-      joined = joined .. "\n" .. (row.text.value or "")
+      if row:IsShown() then
+        joined = joined .. "\n" .. (row.text.value or "")
+      end
     end
     env.eq(string.find(joined, "Step 3", 1, true) ~= nil, true)
     env.eq(string.find(joined, "step 3", 1, true) ~= nil, true)
-    env.eq(string.find(joined, "step 2", 1, true), nil)
+    env.eq(string.find(joined, "Step 2", 1, true), nil)
   end,
 
-  test_main_rows_indent_tasks_below_headers = function()
+  test_main_rows_show_step_number_at_end_of_block = function()
     local TG = fresh()
     withGuide(TG)
     TG:InitUI()
     local rows = TG.UI.Windows.rows()
     env.eq(rows[1].kind, "header")
+    env.eq(rows[1].text.value, "Step 3")
     env.eq(rows[2].kind, "task")
-    env.eq(rows[1].text.width > rows[2].text.width, true)
+    env.eq(string.find(rows[2].text.value or "", "step 3", 1, true) ~= nil, true)
     env.eq(TG.UI.State.main.content:GetHeight() > 20, true)
   end,
 
@@ -90,7 +91,7 @@ return {
     TG:InitUI()
     local main = TG.UI.State.main
     TG:SetMainWindowMinimized(true)
-    env.eq(main:GetHeight(), 36)
+    env.eq(main:GetHeight(), 40)
     env.eq(main.scroll:IsShown(), false)
     env.eq(string.find(main.progress.value or "", "/", 1, true) ~= nil, true)
     env.eq(TG.UI.State.smalls[1]:IsShown(), true)

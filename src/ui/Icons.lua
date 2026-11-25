@@ -20,7 +20,7 @@ local BUY_ICON = "Interface\\Cursor\\Buy"
 Icons.QUEST_ICON = AVAILABLE_ICON
 Icons.TURNIN_ICON = ACTIVE_ICON
 Icons.COMPLETE_ICON = COMPLETE_ICON
-Icons.COMPLETE_COLOR = { 1.00, 0.82, 0.35 }
+Icons.COMPLETE_COLOR = { 0.85, 0.85, 0.88 }
 Icons.CHAT_ICON = TALK_ICON
 
 function Icons.isBullet(texture)
