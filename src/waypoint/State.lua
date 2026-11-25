@@ -97,8 +97,7 @@ function State.sample()
 
   local wx, wy, pinstance = TG:PlayerWorldPos()
   local tx, ty, tinstance = TG:ZoneWorldPos(target.zone, target.x, target.y)
-  local wrongInstance = pinstance and tinstance and pinstance ~= -1
-    and tinstance ~= -1 and pinstance ~= tinstance
+  local wrongInstance = pinstance and tinstance and pinstance ~= -1 and tinstance ~= -1 and pinstance ~= tinstance
 
   local zone, px, py
   if not (wx and tx) or wrongInstance then

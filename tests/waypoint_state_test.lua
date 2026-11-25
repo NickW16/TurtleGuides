@@ -55,9 +55,11 @@ return {
     end
     _G.C_Map = {
       GetWorldPosFromMapPos = function()
-        return 0, { GetXY = function()
-          return 20, 10
-        end }
+        return 0, {
+          GetXY = function()
+            return 20, 10
+          end,
+        }
       end,
     }
     TG.Arrow.State.set("Dun Morogh", 50, 60)
@@ -78,9 +80,11 @@ return {
     end
     _G.C_Map = {
       GetWorldPosFromMapPos = function()
-        return 1, { GetXY = function()
-          return 20, 10
-        end }
+        return 1, {
+          GetXY = function()
+            return 20, 10
+          end,
+        }
       end,
     }
     TG.Arrow.State.set("Dun Morogh", 50, 60)
@@ -105,9 +109,11 @@ return {
     end
     _G.C_Map = {
       GetWorldPosFromMapPos = function()
-        return 0, { GetXY = function()
-          return 0, 0
-        end }
+        return 0, {
+          GetXY = function()
+            return 0, 0
+          end,
+        }
       end,
     }
     TG.Arrow.State.set("Dun Morogh", 50, 60)

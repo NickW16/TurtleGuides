@@ -61,9 +61,11 @@ return {
     local TG = fresh()
     _G.C_Map = {
       GetWorldPosFromMapPos = function()
-        return 1, { GetXY = function()
-          return 30, 20
-        end }
+        return 1, {
+          GetXY = function()
+            return 30, 20
+          end,
+        }
       end,
     }
     local x, y, instance = TG:WorldPosFromMapPos(1432, 50, 60)
@@ -91,9 +93,11 @@ return {
     end
     _G.C_Map = {
       GetWorldPosFromMapPos = function()
-        return 1, { GetXY = function()
-          return 20, 10
-        end }
+        return 1, {
+          GetXY = function()
+            return 20, 10
+          end,
+        }
       end,
     }
     local dist, reason = TG:WorldDistanceToWaypoint("Dun Morogh", 50, 60)
@@ -103,7 +107,7 @@ return {
       return 20, 10, 1
     end
     TG:ClearWorldPosCache()
-    local dist = TG:WorldDistanceToWaypoint("Dun Morogh", 50, 60)
-    env.eq(type(dist), "number")
+    local sameDist = TG:WorldDistanceToWaypoint("Dun Morogh", 50, 60)
+    env.eq(type(sameDist), "number")
   end,
 }

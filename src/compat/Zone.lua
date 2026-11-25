@@ -205,8 +205,7 @@ function TG:WorldDistanceToWaypoint(zone, x, y)
   if not px or not tx then
     return nil
   end
-  if pinstance and tinstance and pinstance ~= -1 and tinstance ~= -1
-    and pinstance ~= tinstance then
+  if pinstance and tinstance and pinstance ~= -1 and tinstance ~= -1 and pinstance ~= tinstance then
     return nil, "travel"
   end
   local dx, dy = tx - px, ty - py

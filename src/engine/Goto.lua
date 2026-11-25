@@ -246,10 +246,9 @@ function TG:CheckGotoAdvance()
   end
   self._gotoIndex[stepKey] = idx
 
-  local g = gotos[idx]
   selectNearestGoto(self, gotos, stepKey, idx, reached)
   idx = self._gotoIndex[stepKey] or idx
-  g = gotos[idx]
+  local g = gotos[idx]
 
   local reachedIdx
   for i, candidate in ipairs(gotos) do
