@@ -20,13 +20,4 @@ return {
     env.eq(col, 1)
     env.eq(row, 1)
   end,
-
-  test_color_when_facing_target = function()
-    env.reset()
-    local TG = env.load("src/Core.lua", "src/compat/Runtime.lua", "src/waypoint/Geometry.lua")
-    local red, green, blue = TG.Arrow.Geometry.color(0)
-    env.eq(red, 0)
-    env.eq(green, 1)
-    env.eq(blue, 0.1)
-  end,
 }

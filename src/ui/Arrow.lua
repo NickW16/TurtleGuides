@@ -5,15 +5,19 @@ local State = TG.Arrow.State
 
 local SHEET = {
   texture = "Interface\\AddOns\\TurtleGuides\\Media\\Arrow",
-  turns = 64,
-  perRow = 8,
   w = 1 / 8,
   h = 1 / 8,
-  width = 52,
-  height = 52,
+  width = 48,
+  height = 48,
 }
 
-local frame, pointer, titleText, distText, zoneText, driver
+local DIAL_SHEET = {
+  texture = "Interface\\AddOns\\TurtleGuides\\Media\\CompassDial",
+  w = 1 / 8,
+  h = 1 / 8,
+}
+
+local frame, ring, dial, pointer, distText, driver
 
 local function point(dx, dy)
   local facing = GetPlayerFacing and GetPlayerFacing()
@@ -27,34 +31,54 @@ local function point(dx, dy)
   local index = Geometry.cell(rel)
   local col, row = Geometry.cellCoords(index)
   pointer:SetTexCoord(col * SHEET.w, (col + 1) * SHEET.w, row * SHEET.h, (row + 1) * SHEET.h)
-  pointer:SetVertexColor(Geometry.color(rel))
   pointer:Show()
   return true
 end
 
-local function update()
-  local waypoint = State.get()
-  if not frame or not waypoint or not (TG.db and TG.db.showArrow) then
+local function arrowVisible()
+  return frame and State.get() and TG.db and TG.db.showArrow
+end
+
+local function updateDial()
+  if not arrowVisible() then
+    return
+  end
+  local facing = GetPlayerFacing and GetPlayerFacing()
+  if not facing then
+    return
+  end
+  local index = Geometry.cell(-facing)
+  local col, row = Geometry.cellCoords(index)
+  dial:SetTexCoord(col * DIAL_SHEET.w, (col + 1) * DIAL_SHEET.w, row * DIAL_SHEET.h, (row + 1) * DIAL_SHEET.h)
+end
+
+local function updatePointer()
+  if not arrowVisible() then
     if frame then
       frame:Hide()
     end
     return
   end
   frame:Show()
-  if titleText then
-    titleText:SetText(waypoint.title or "")
-  end
-  local dx, dy, yards, sameZone = State.direction()
-  if zoneText then
-    zoneText:SetText(sameZone and "" or (waypoint.zone or ""))
-  end
-  if distText then
-    distText:SetText(yards and string.format("%.0f yd", yards) or "~")
-  end
   if pointer then
     pointer:Show()
   end
+  local dx, dy = State.direction()
   point(dx, dy)
+end
+
+local function updateDistance()
+  if not arrowVisible() then
+    return
+  end
+  local _, _, yards = State.direction()
+  distText:SetText(yards and string.format("%.0f yd", yards) or "~")
+end
+
+local function update()
+  updateDial()
+  updatePointer()
+  updateDistance()
 end
 
 local function build()
@@ -63,7 +87,7 @@ local function build()
   end
   frame = CreateFrame("Frame", "TurtleGuidesArrow", UIParent)
   frame:SetWidth(220)
-  frame:SetHeight(96)
+  frame:SetHeight(72)
   if not TG.db.arrowFrame then
     TG.db.arrowFrame = {}
   end
@@ -85,42 +109,47 @@ local function build()
   frame:SetFrameStrata("MEDIUM")
   frame:SetClampedToScreen(true)
 
-  pointer = frame:CreateTexture(nil, "ARTWORK")
+  ring = frame:CreateTexture(nil, "BORDER")
+  ring:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\CompassRing")
+  ring:SetWidth(SHEET.width)
+  ring:SetHeight(SHEET.height)
+  ring:SetPoint("TOP", frame, "TOP", 0, 0)
+
+  dial = frame:CreateTexture(nil, "ARTWORK")
+  dial:SetTexture(DIAL_SHEET.texture)
+  dial:SetWidth(SHEET.width)
+  dial:SetHeight(SHEET.height)
+  dial:SetPoint("TOP", frame, "TOP", 0, 0)
+  dial:SetTexCoord(0, DIAL_SHEET.w, 0, DIAL_SHEET.h)
+
+  pointer = frame:CreateTexture(nil, "OVERLAY")
   pointer:SetTexture(SHEET.texture)
   pointer:SetWidth(SHEET.width)
   pointer:SetHeight(SHEET.height)
   pointer:SetPoint("TOP", frame, "TOP", 0, 0)
   pointer:SetTexCoord(0, SHEET.w, 0, SHEET.h)
 
-  titleText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-  titleText:SetPoint("TOP", pointer, "BOTTOM", 0, -2)
-  titleText:SetWidth(220)
-
   distText = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  distText:SetPoint("TOP", titleText, "BOTTOM", 0, -2)
-
-  zoneText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  zoneText:SetPoint("TOP", distText, "BOTTOM", 0, -2)
-  zoneText:SetWidth(200)
-  zoneText:SetJustifyH("CENTER")
+  distText:SetPoint("TOP", pointer, "BOTTOM", 0, -2)
 
   frame:Hide()
 
   driver = CreateFrame("Frame", "TurtleGuidesArrowDriver")
   driver.wait = 0
   driver:SetScript("OnUpdate", function()
+    updateDial()
+    updatePointer()
     this.wait = this.wait + arg1
-    if this.wait < 0.05 then
+    if this.wait < 0.1 then
       return
     end
     this.wait = 0
-    update()
+    updateDistance()
   end)
 end
 
 function TG:InitArrow()
   build()
-  self:AddUpdater("arrow", 0.1, function() end)
   self:UpdateArrowVisibility()
 end
 
@@ -138,9 +167,6 @@ end
 function TG:SetWaypoint(zone, x, y, title, radius)
   State.set(zone, x, y, title, radius)
   if frame then
-    if titleText then
-      titleText:SetText(State.get() and State.get().title or "")
-    end
     TG:UpdateArrowVisibility()
   end
 end

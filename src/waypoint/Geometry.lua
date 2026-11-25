@@ -27,8 +27,3 @@ end
 function Geometry.cellCoords(index)
   return math.mod(index, PER_ROW), math.floor(index / PER_ROW)
 end
-
-function Geometry.color(rel)
-  local off = math.abs(math.mod(rel + 3 * math.pi, 2 * math.pi) - math.pi) / math.pi
-  return math.min(1, off * 2), math.min(1, (1 - off) * 2), 0.1
-end
