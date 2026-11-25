@@ -20,7 +20,7 @@ return {
 
   test_accept_and_collect_elements = function()
     local TG = fresh()
-    env.eq(TG.UI.Text.element({ t = "cmd", tag = "accept", args = { "1" }, text = "Accept Foo" }), "Accept: Foo")
+    env.eq(TG.UI.Text.element({ t = "cmd", tag = "accept", args = { "1" }, text = "Accept Foo" }), "Accept Foo")
     TG.GetItemCount = function()
       return 2
     end
@@ -44,6 +44,35 @@ return {
     local entries = TG.UI.Text.entries(step)
     env.eq(table.getn(entries), 1)
     env.eq(entries[1].text, "Talk to the innkeeper")
+  end,
+
+  test_child_item_lines_are_marked = function()
+    local TG = fresh()
+    local step = {
+      elements = {
+        {
+          t = "cmd",
+          tag = "bankwithdraw",
+          args = { "10445", "10444" },
+          text = "Withdraw the following items from your bank:",
+        },
+        { t = "text", text = "[Standard Issue Flare Gun]" },
+        { t = "text", text = "[Drawing Kit]" },
+      },
+    }
+    local entries = TG.UI.Text.entries(step)
+    env.eq(entries[1].bulletIcon, true)
+    env.eq(entries[2].child, true)
+    env.eq(entries[3].child, true)
+  end,
+
+  test_automation_only_steps_get_a_label = function()
+    local TG = fresh()
+    local destroyed = TG.UI.Text.entries({ elements = { { t = "cmd", tag = "destroy", args = { "6948" } } } })
+    env.eq(string.find(destroyed[1].text or "", "Destroy:", 1, true) ~= nil, true)
+    local gotoStep =
+      TG.UI.Text.entries({ elements = { { t = "cmd", tag = "goto", args = { "Dun Morogh", "30", "70" } } } })
+    env.eq(gotoStep[1].text, "Go to Dun Morogh")
   end,
 
   test_wrap_counts_lines = function()

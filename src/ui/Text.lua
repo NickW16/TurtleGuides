@@ -78,72 +78,53 @@ function Text.element(el)
   end
   local tag = el.tag or ""
   local args = el.args or {}
-  local text = Icons.clean(el.text)
-  if tag == "accept" then
-    return ("Accept: " .. questName(args[1], el.text))
-  elseif tag == "turnin" then
-    return ("Turn in: " .. questName(args[1], el.text))
-  elseif tag == "complete" then
-    if text ~= "" then
-      return ("Complete: " .. text)
-    end
-    if el.objectiveText and Icons.clean(el.objectiveText) ~= "" then
-      return ("Complete: " .. Icons.clean(el.objectiveText))
-    end
-    return ("Complete: " .. questName(args[1], el.text))
-  elseif tag == "collect" then
+  local inline = Icons.clean(el.text)
+  if tag == "target" or tag == "mob" or tag == "kill" then
+    return inline ~= "" and inline or nil
+  end
+  if tag == "train" or tag == "trainer" then
+    return inline ~= "" and inline or nil
+  end
+  if tag == "collect" then
     local id = tonumber(args[1])
     local need = tonumber(args[2]) or 1
     local have = (id and TG.GetItemCount) and TG:GetItemCount(id) or 0
     return "Collect: " .. itemName(id, el.text) .. " " .. countText(have, need)
-  elseif tag == "itemcount" then
-    if text ~= "" then
-      return "Have: " .. text
+  end
+  if inline ~= "" then
+    return inline
+  end
+  if tag == "accept" then
+    return "Accept: " .. questName(args[1])
+  elseif tag == "turnin" then
+    return "Turn in: " .. questName(args[1])
+  elseif tag == "complete" then
+    if el.objectiveText and Icons.clean(el.objectiveText) ~= "" then
+      return "Complete: " .. Icons.clean(el.objectiveText)
     end
+    return "Complete: " .. questName(args[1])
+  elseif tag == "itemcount" then
     return "Have: " .. itemName(args[1])
-  elseif tag == "goto" then
-    return text ~= "" and text or nil
   elseif tag == "xp" then
     local level = tonumber(args[1])
-    if text ~= "" then
-      return text
-    end
     if TG.ParseXpArg then
       local _, parsedLevel = TG:ParseXpArg(args[1])
       level = parsedLevel or level
     end
-    return (level and ("Reach level " .. level) or "Gain experience")
+    return level and ("Reach level " .. level) or "Gain experience"
   elseif tag == "hs" or tag == "hearth" then
-    return (text ~= "" and ("Hearth: " .. text) or "Hearthstone")
+    return "Hearthstone"
   elseif tag == "fly" or tag == "f" then
-    return ("Fly: " .. (text ~= "" and text or table.concat(args, " ")))
+    return "Fly: " .. table.concat(args, " ")
   elseif tag == "home" then
-    return ("Set hearthstone" .. (text ~= "" and (": " .. text) or ""))
+    return "Set hearthstone"
   elseif tag == "vendor" then
-    return ("Vendor" .. (text ~= "" and (": " .. text) or ""))
-  elseif tag == "trainer" or tag == "train" then
-    local body = text
-    if body == "" then
-      local spellId = tonumber(args[1])
-      if spellId and GetSpellInfo then
-        body = GetSpellInfo(spellId) or ""
-      end
-    end
-    if body == "" then
-      body = "Spell " .. tostring(args[1] or "?")
-    end
-    local label = string.sub(string.lower(body), 1, 5) == "train" and "" or "Train: "
-    return label .. body
-  elseif tag == "mob" or tag == "target" or tag == "kill" then
-    local name = text ~= "" and text or table.concat(args, " ")
-    return name ~= "" and ("Kill: " .. name) or nil
+    return "Vendor"
   elseif tag == "use" or tag == "destroy" then
     local label = (tag == "use") and "Use: " or "Destroy: "
-    return label .. itemName(args[1], el.text)
-  elseif tag == "cast" or tag == "link" then
-    return text ~= "" and text or nil
+    return label .. itemName(args[1])
   end
-  return text ~= "" and text or nil
+  return nil
 end
 
 function Text.entries(step)
@@ -153,13 +134,27 @@ function Text.entries(step)
   end
   local function add(text, state, el, element)
     if text and text ~= "" then
-      local icon = element and Icons.forElement(element, state) or Icons.forText(text)
+      local raw = element and element.text or text
+      local contentIcon = Icons.content(raw)
+      local icon = (element and Icons.forElement(element)) or Icons.forText(text)
+      local previous = out[table.getn(out)]
+      local iconColor
+      if icon == Icons.COMPLETE_ICON then
+        iconColor = Icons.COMPLETE_COLOR
+      end
+      local child = false
+      if previous and (string.sub(previous.text, -1) == ":" or previous.child) and string.sub(text, 1, 1) == "[" then
+        child = true
+      end
       table.insert(out, {
         text = text,
         state = state,
         el = el,
         icon = icon,
+        iconColor = iconColor,
+        contentIcon = contentIcon,
         bulletIcon = icon and Icons.isBullet(icon) or false,
+        child = child,
       })
     end
   end
@@ -190,7 +185,17 @@ function Text.entries(step)
     end
   end
   if table.getn(out) == 0 then
-    add("Continue", "note")
+    local first = elements[1]
+    if first and first.t == "cmd" then
+      local args = first.args or {}
+      if first.tag == "destroy" then
+        add("Destroy: " .. itemName(args[1]), "note", nil, first)
+      elseif first.tag == "use" then
+        add("Use: " .. itemName(args[1]), "note", nil, first)
+      elseif first.tag == "goto" and args[1] then
+        add("Go to " .. tostring(args[1]), "note", nil, first)
+      end
+    end
   end
   return out
 end
@@ -293,6 +298,13 @@ function Text.wrap(text, maxWidth, fontSize)
     table.insert(result, "")
   end
   return table.concat(result, "\n"), table.getn(result)
+end
+
+function Text.width(text, fontSize)
+  local font = getMeasureFont()
+  Text.applyFont(font, fontSize or 10)
+  font:SetText(Icons.measure(text))
+  return (font.GetStringWidth and font:GetStringWidth()) or 0
 end
 
 function Text.lineHeight(fontSize)

@@ -8,21 +8,33 @@ local SIZE = 10
 local AVAILABLE_ICON = "Interface\\GossipFrame\\AvailableQuestIcon"
 local ACTIVE_ICON = "Interface\\GossipFrame\\ActiveQuestIcon"
 local INCOMPLETE_ICON = "Interface\\GossipFrame\\IncompleteQuestIcon"
-local TALK_ICON = "Interface\\Cursor\\Speak"
+local COMPLETE_ICON = "Interface\\Buttons\\UI-CheckBox-Check"
+local FLY_ICON = "Interface\\GossipFrame\\TaxiGossipIcon"
+local HS_ICON = "Interface\\Cursor\\Innkeeper"
+local TRAIN_ICON = "Interface\\GossipFrame\\TrainerGossipIcon"
+local TALK_ICON = "Interface\\GossipFrame\\GossipGossipIcon"
 local MOB_ICON = "Interface\\Cursor\\Attack"
-local BAG_ICON = "Interface\\Cursor\\Buy"
+local BAG_ICON = "Interface\\Icons\\INV_Misc_Bag_01"
+local BUY_ICON = "Interface\\Cursor\\Buy"
 
 Icons.QUEST_ICON = AVAILABLE_ICON
 Icons.TURNIN_ICON = ACTIVE_ICON
+Icons.COMPLETE_ICON = COMPLETE_ICON
+Icons.COMPLETE_COLOR = { 1.00, 0.82, 0.35 }
 Icons.CHAT_ICON = TALK_ICON
 
 function Icons.isBullet(texture)
   return texture == AVAILABLE_ICON
     or texture == ACTIVE_ICON
     or texture == INCOMPLETE_ICON
+    or texture == COMPLETE_ICON
+    or texture == FLY_ICON
+    or texture == HS_ICON
+    or texture == TRAIN_ICON
     or texture == TALK_ICON
     or texture == MOB_ICON
     or texture == BAG_ICON
+    or texture == BUY_ICON
 end
 
 function Icons.token(texture)
@@ -49,6 +61,17 @@ end
 
 function Icons.measure(text)
   return Icons.clean(text)
+end
+
+function Icons.fromText(text)
+  if not text then
+    return nil
+  end
+  local token = string.match(text, "|T(%d+):")
+  if token and TG.ItemIcons then
+    return TG.ItemIcons[tonumber(token)]
+  end
+  return nil
 end
 
 function Icons.spell(id)
@@ -100,6 +123,23 @@ function Icons.addBracketIcons(text)
   end)
 end
 
+function Icons.content(text)
+  if not text or text == "" then
+    return nil
+  end
+  local icon = Icons.fromText(text)
+  if icon then
+    return icon
+  end
+  string.gsub(text, "%[([^]]+)%]", function(name)
+    if not icon then
+      local plain = string.gsub(string.gsub(name, "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
+      icon = TG.ItemIconNames and TG.ItemIconNames[plain] or nil
+    end
+  end)
+  return icon
+end
+
 function Icons.forText(text)
   if not text or text == "" then
     return nil
@@ -108,38 +148,50 @@ function Icons.forText(text)
   if string.find(lower, "talk", 1, true) or string.find(lower, "speak", 1, true) then
     return TALK_ICON
   end
-  local icon
-  string.gsub(text, "%[([^]]+)%]", function(name)
-    if not icon then
-      icon = Icons.itemByName(name)
-    end
-  end)
-  return icon
+  if string.find(lower, "kill", 1, true) or string.find(lower, "slay", 1, true) then
+    return MOB_ICON
+  end
+  return nil
 end
 
-function Icons.forElement(el, state)
+function Icons.forElement(el)
   if not el or el.t ~= "cmd" then
     return nil
   end
   local tag = el.tag or ""
   local id = el.args and el.args[1]
   if tag == "accept" then
-    return (state == true) and INCOMPLETE_ICON or AVAILABLE_ICON
+    return AVAILABLE_ICON
   end
-  if tag == "turnin" or tag == "complete" then
-    return (state == true) and ACTIVE_ICON or INCOMPLETE_ICON
+  if tag == "turnin" then
+    return ACTIVE_ICON
+  end
+  if tag == "complete" then
+    return COMPLETE_ICON
   end
   if tag == "vendor" or tag == "sell" then
+    return BUY_ICON
+  end
+  if tag == "bankwithdraw" or tag == "bankdeposit" then
     return BAG_ICON
   end
-  if tag == "mob" or tag == "target" or tag == "kill" then
+  if tag == "mob" or tag == "kill" then
     return MOB_ICON
   end
-  if tag == "train" or tag == "trainer" or tag == "cast" or tag == "link" then
+  if tag == "fly" or tag == "f" then
+    return FLY_ICON
+  end
+  if tag == "hs" or tag == "hearth" then
+    return HS_ICON
+  end
+  if tag == "train" or tag == "trainer" then
+    return TRAIN_ICON
+  end
+  if tag == "cast" or tag == "link" then
     return Icons.spell(id)
   end
   if tag == "collect" or tag == "use" or tag == "destroy" or tag == "itemcount" then
-    return Icons.item(id)
+    return BAG_ICON
   end
   return nil
 end
