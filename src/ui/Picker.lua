@@ -84,7 +84,7 @@ end
 
 local function makePickerRow(picker, i)
   local row = CreateFrame("Button", nil, picker.content)
-  row:SetWidth(316)
+  row:SetWidth(324)
   row:SetHeight(ROW_HEIGHT)
   row:SetPoint("TOPLEFT", picker.content, "TOPLEFT", 0, -(i - 1) * ROW_HEIGHT)
   local text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -213,7 +213,7 @@ function TG:CreateGuidePicker()
   scroll:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -52)
   scroll:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 8)
   local content = CreateFrame("Frame", nil, scroll)
-  content:SetWidth(316)
+  content:SetWidth(324)
   content:SetHeight(1)
   scroll:SetScrollChild(content)
   picker.scroll = scroll

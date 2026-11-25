@@ -23,7 +23,7 @@ local function getRange(scroll, content)
 end
 
 function Scrollbar.create(scroll, content, width)
-  width = width or 8
+  width = width or 4
   local track = CreateFrame("Frame", nil, scroll)
   track:SetWidth(width)
   track:SetPoint("TOPRIGHT", scroll, "TOPRIGHT", 0, 0)

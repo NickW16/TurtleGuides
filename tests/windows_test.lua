@@ -26,7 +26,7 @@ local function fresh()
 end
 
 local function withGuide(TG)
-  TG.currentGuide = { key = "k", name = "Guide", steps = {} }
+  TG.currentGuide = { key = "k", name = "Guide", category = "Speedrun", steps = {} }
   for i = 1, 8 do
     TG.currentGuide.steps[i] = { elements = { { t = "text", text = "step " .. i } } }
   end
@@ -47,6 +47,9 @@ return {
     local TG = fresh()
     withGuide(TG)
     TG:InitUI()
+    env.eq(TG.UI.State.main.title.value, "Guide")
+    env.eq(TG.UI.State.main.version.value, "tg 0.1.0")
+    env.eq(TG.UI.State.main.guideName.value, "Fast Route")
     local small = TG.UI.State.smalls[1]
     env.eq(small:IsShown(), true)
     env.eq(small.title.value, "Step 2")

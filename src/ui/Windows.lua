@@ -17,6 +17,17 @@ local GROUP_GAP = 4
 
 local rows = {}
 
+local function guideLabel(guide)
+  local category = guide.category or ""
+  if category == "Speedrun" then
+    return "Fast Route"
+  end
+  if string.find(category, "Survival", 1, true) then
+    return "Safe Route"
+  end
+  return guide.group or "Guide"
+end
+
 local function panel(frame, alpha)
   frame:SetBackdrop({
     bgFile = "Interface\\Buttons\\WHITE8X8",
@@ -31,7 +42,7 @@ local function panel(frame, alpha)
 end
 
 local function stepContentWidth(main)
-  return math.max(120, (main:GetWidth() or 225) - 17)
+  return math.max(120, (main:GetWidth() or 225) - 13)
 end
 
 local function makeRow(parent)
@@ -331,13 +342,13 @@ function TG:InitUI()
   local progress = main:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   progress:SetPoint("BOTTOMLEFT", main, "BOTTOMLEFT", 6, 3)
   progress:SetText("")
-  progress:SetTextColor(0.75, 0.75, 0.75)
+  progress:SetTextColor(1.00, 0.82, 0.35)
   Text.register(progress, BODY_SIZE)
   main.progress = progress
 
   local guideName = main:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   guideName:SetPoint("BOTTOMLEFT", main, "BOTTOMLEFT", 42, 3)
-  guideName:SetPoint("RIGHT", main, "RIGHT", -52, 0)
+  guideName:SetPoint("RIGHT", main, "RIGHT", -80, 0)
   guideName:SetJustifyH("LEFT")
   guideName:SetText("")
   guideName:SetTextColor(0.75, 0.75, 0.75)
@@ -356,6 +367,13 @@ function TG:InitUI()
     end
   end, 12)
   prevBtn:SetPoint("RIGHT", nextBtn, "LEFT", -2, 0)
+
+  local version = main:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  version:SetPoint("RIGHT", prevBtn, "LEFT", -6, 1)
+  version:SetText("tg " .. (TG.version or ""))
+  version:SetTextColor(0.62, 0.62, 0.66)
+  Text.register(version, 8)
+  main.version = version
 
   local resizer = CreateFrame("Button", nil, main)
   resizer:SetWidth(12)
@@ -467,6 +485,7 @@ function TG:UpdateUI()
   end
   local guide = self.currentGuide
   if not guide then
+    main.title:SetText("TurtleGuide")
     main.guideName:SetText("No guide selected")
     main.progress:SetText("")
     self:HideStepWindows()
@@ -478,12 +497,8 @@ function TG:UpdateUI()
   local index = self.currentStepIndex or 1
   local steps = guide.steps or {}
   local total = table.getn(steps)
-  local label = (guide.category or "Guide") .. " - " .. (guide.name or "")
-  local maxChars = math.max(10, math.floor(((main:GetWidth() or 200) - 92) / 5.2))
-  if string.len(label) > maxChars then
-    label = string.sub(label, 1, math.max(1, maxChars - 3)) .. "..."
-  end
-  main.guideName:SetText(label)
+  main.title:SetText((guide.name and guide.name ~= "" and guide.name) or "TurtleGuide")
+  main.guideName:SetText(guideLabel(guide))
   main.progress:SetText(index .. "/" .. total)
 
   local current = steps[index]
