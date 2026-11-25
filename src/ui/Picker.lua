@@ -204,9 +204,10 @@ function TG:CreateGuidePicker()
 
   local placeholder = picker:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   placeholder:SetPoint("TOPLEFT", fieldBox, "TOPLEFT", 16, -2)
-  placeholder:SetText("Search guides...")
-  placeholder:SetTextColor(1.00, 1.00, 1.00)
+  placeholder:SetText("Search Guides")
   Text.register(placeholder, 12)
+  placeholder:SetTextColor(0.92, 0.92, 0.94, 1.00)
+  placeholder:SetAlpha(1.00)
   picker.placeholder = placeholder
 
   local scroll = CreateFrame("ScrollFrame", "TurtleGuidesPickerScroll", picker)
@@ -245,7 +246,8 @@ function TG:RefreshGuidePicker()
     return
   end
   local query = string.lower(picker.search:GetText() or "")
-  picker.placeholder:SetText(query == "" and "Search guides..." or "")
+  picker.placeholder:SetText(query == "" and "Search Guides" or "")
+  picker.placeholder:SetTextColor(0.92, 0.92, 0.94, 1.00)
 
   local recommended = {}
   if self.SuggestGuides then
