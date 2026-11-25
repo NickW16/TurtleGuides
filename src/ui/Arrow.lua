@@ -28,7 +28,7 @@ local function point(dx, dy)
     return false
   end
   local rel = Geometry.relative(Geometry.bearing(dx, dy), facing)
-  local index = Geometry.cell(rel)
+  local index = Geometry.pointerCell(rel)
   local col, row = Geometry.cellCoords(index)
   pointer:SetTexCoord(col * SHEET.w, (col + 1) * SHEET.w, row * SHEET.h, (row + 1) * SHEET.h)
   pointer:Show()
@@ -47,7 +47,7 @@ local function updateDial()
   if not facing then
     return
   end
-  local index = Geometry.cell(-facing)
+  local index = Geometry.dialCell(facing)
   local col, row = Geometry.cellCoords(index)
   dial:SetTexCoord(col * DIAL_SHEET.w, (col + 1) * DIAL_SHEET.w, row * DIAL_SHEET.h, (row + 1) * DIAL_SHEET.h)
 end

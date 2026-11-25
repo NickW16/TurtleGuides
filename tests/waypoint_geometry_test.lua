@@ -20,4 +20,26 @@ return {
     env.eq(col, 1)
     env.eq(row, 1)
   end,
+
+  test_pointer_cell_maps_clockwise_sheet = function()
+    env.reset()
+    local TG = env.load("src/Core.lua", "src/compat/Runtime.lua", "src/waypoint/Geometry.lua")
+    local Geometry = TG.Arrow.Geometry
+    -- The rebuilt arrow sheet is rotated clockwise from its first frame.
+    env.eq(Geometry.pointerCell(0), 0)
+    env.eq(Geometry.pointerCell(-math.pi / 2), 16)
+    env.eq(Geometry.pointerCell(math.pi), 32)
+    env.eq(Geometry.pointerCell(math.pi / 2), 48)
+  end,
+
+  test_dial_cell_maps_clockwise_sheet = function()
+    env.reset()
+    local TG = env.load("src/Core.lua", "src/compat/Runtime.lua", "src/waypoint/Geometry.lua")
+    local Geometry = TG.Arrow.Geometry
+    -- Facing east puts north on the left, which is dial frame 48 on this sheet.
+    env.eq(Geometry.dialCell(0), 0)
+    env.eq(Geometry.dialCell(-math.pi / 2), 48)
+    env.eq(Geometry.dialCell(math.pi / 2), 16)
+    env.eq(Geometry.dialCell(math.pi), 32)
+  end,
 }

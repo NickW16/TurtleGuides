@@ -19,6 +19,15 @@ local function fresh()
   return TG
 end
 
+local function expectFrame(texture, index)
+  local col = math.mod(index, 8)
+  local row = math.floor(index / 8)
+  env.eq(texture.coords[1], col / 8)
+  env.eq(texture.coords[2], (col + 1) / 8)
+  env.eq(texture.coords[3], row / 8)
+  env.eq(texture.coords[4], (row + 1) / 8)
+end
+
 return {
   test_init_builds_frames = function()
     local TG = fresh()
@@ -116,6 +125,48 @@ return {
     _G.arg1 = 0.1
     env.scripts.OnUpdate()
     env.eq(env.texts[1].value ~= nil, true)
+  end,
+
+  test_pointer_uses_clockwise_arrow_frames = function()
+    local TG = fresh()
+    TG:InitArrow()
+    TG:SetWaypoint("Dun Morogh", 50, 50, "Test")
+    _G.GetZoneText = function()
+      return "Dun Morogh"
+    end
+    _G.GetPlayerMapPosition = function()
+      return 0.5, 0.6
+    end
+    local facing = 0
+    _G.GetPlayerFacing = function()
+      return facing
+    end
+    TG:ArrowUpdate()
+    expectFrame(env.textures[3], 0)
+    facing = -math.pi / 2
+    TG:ArrowUpdate()
+    expectFrame(env.textures[3], 48)
+  end,
+
+  test_dial_uses_clockwise_dial_frames = function()
+    local TG = fresh()
+    TG:InitArrow()
+    TG:SetWaypoint("Dun Morogh", 50, 60, "Test")
+    _G.GetZoneText = function()
+      return "Dun Morogh"
+    end
+    _G.GetPlayerMapPosition = function()
+      return 0.5, 0.5
+    end
+    local facing = 0
+    _G.GetPlayerFacing = function()
+      return facing
+    end
+    TG:ArrowUpdate()
+    expectFrame(env.textures[2], 0)
+    facing = -math.pi / 2
+    TG:ArrowUpdate()
+    expectFrame(env.textures[2], 48)
   end,
 
   test_clear_waypoint_hides_frame = function()

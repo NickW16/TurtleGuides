@@ -27,3 +27,14 @@ end
 function Geometry.cellCoords(index)
   return math.mod(index, PER_ROW), math.floor(index / PER_ROW)
 end
+
+-- The rebuilt arrow and dial sheets are wound clockwise: a higher cell index
+-- rotates the sprite clockwise. bearing()/cell() grow the other way, so both
+-- sprite lookups need the angle negated.
+function Geometry.pointerCell(relativeBearing)
+  return Geometry.cell(-relativeBearing)
+end
+
+function Geometry.dialCell(facing)
+  return Geometry.cell(facing)
+end
