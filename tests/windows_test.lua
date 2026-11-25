@@ -96,6 +96,16 @@ return {
     env.eq(TG.UI.State.main.content:GetHeight() > 20, true)
   end,
 
+  test_wrapped_row_height_fits_measured_text = function()
+    local TG = fresh()
+    withGuide(TG)
+    TG.currentGuide.steps[3].elements = { { t = "text", text = string.rep("word ", 60) } }
+    TG:InitUI()
+    local row = TG.UI.Windows.rows()[2]
+    env.eq(string.find(row.text.value or "", "\n") ~= nil, true)
+    env.eq(row.height > row.text:GetStringHeight(), true)
+  end,
+
   test_minimize_collapses_to_top_bar = function()
     local TG = fresh()
     withGuide(TG)

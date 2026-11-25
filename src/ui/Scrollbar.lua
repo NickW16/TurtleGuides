@@ -64,7 +64,16 @@ function Scrollbar.create(scroll, content, width)
     thumb:SetFrameLevel(scroll:GetFrameLevel() + 2)
   end
 
-  local bar = { scroll = scroll, content = content, track = track, thumb = thumb, width = width, up = up, down = down, btnH = btnH }
+  local bar = {
+    scroll = scroll,
+    content = content,
+    track = track,
+    thumb = thumb,
+    width = width,
+    up = up,
+    down = down,
+    btnH = btnH,
+  }
 
   local function trackViewH()
     local h = (scroll:GetHeight() or 0) - (btnH * 2)

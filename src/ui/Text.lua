@@ -22,7 +22,6 @@ end
 
 Text.strip = strip
 
-local NPC_COLOR = "|cff00ff00"
 local ITEM_COLOR = "|cffffd100"
 
 local function display(text)
@@ -416,7 +415,7 @@ local function wrapSegment(font, segment, maxWidth, result)
         current = word
       else
         local chunk = ""
-        for _, ch in ipairs(charsOf(word)) do
+        for _, ch in ipairs(charsOf(stripCodes(word))) do
           local nextChunk = chunk .. ch
           if chunk ~= "" and widthOf(font, nextChunk) > maxWidth then
             table.insert(result, chunk)

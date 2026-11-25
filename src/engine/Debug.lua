@@ -161,9 +161,9 @@ function TG:DebugCurrentStep()
         hasReq = true
         local state = self:IsElementDone(el)
         local source = self._tgDoneSource or "unknown"
-        local title
+        local title, id
         if el.tag ~= "collect" and el.tag ~= "xp" then
-          title = self:ResolveQuestTitle(el)
+          title, id = self:ResolveQuestTitle(el)
         end
         add(
           "  objective "

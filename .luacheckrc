@@ -9,9 +9,11 @@ globals = {
   -- api functions
   "AcceptQuest", "BuyMerchantItem", "ClearCursor", "CompleteQuest",
   "ContainerFrame_GetFrameID", "ContainerFrameItemButton_OnClick", "CreateFrame",
-  "GetActiveTitle", "GetBindLocation", "GetContainerItemInfo", "GetContainerItemLink",
-  "GetContainerNumSlots", "GetCursorInfo", "GetCursorPosition", "GetGossipActiveQuests",
-  "GetGossipAvailableQuests", "GetInventoryItemID", "GetInventoryItemLink", "GetItemInfo",
+  "GetActiveTitle", "GetBindLocation", "GetContainerItemCooldown", "GetContainerItemID",
+  "GetContainerItemInfo", "GetContainerItemLink", "GetContainerNumSlots", "GetCursorInfo",
+  "GetCursorPosition", "GetGossipActiveQuests", "GetGossipAvailableQuests", "GetItemCooldown",
+  "GetInventoryItemID", "GetInventoryItemLink", "GetItemInfo", "GetQuestLink",
+  "GetQuestLinkForLogIndex", "GetSpellCooldown",
   "GetLocale", "GetMapInfo", "GetMerchantItemInfo", "GetMerchantNumItems",
   "GetNumActiveQuests", "GetNumAvailableQuests", "GetNumQuestChoices",
   "GetNumQuestLeaderBoards", "GetNumQuestLogEntries", "GetPlayerFacing",
@@ -23,13 +25,17 @@ globals = {
   "UnitLevel", "UnitName", "UnitRace", "UnitSex", "UnitXP", "UnitXPMax", "UseContainerItem",
 
   -- frames, constants, and implicit event variables
-  "C_Map", "CreateVector2D", "DEFAULT_CHAT_FRAME", "GameTooltip", "GetCursorPosition", "INVSLOT_LAST_EQUIPPED", "MerchantFrame", "Minimap", "ToggleDropDownMenu", "UIDropDownMenu_AddButton", "UIDropDownMenu_CreateInfo", "UIDropDownMenu_Initialize", "UIDropDownMenu_SetText", "UIDropDownMenu_SetWidth",
-  "Minimap", "NUM_TAXI_BUTTONS", "SlashCmdList", "TaxiFrame", "UIParent", "WorldMapFrame",
-  "UnitPosition", "arg1", "arg2", "arg3", "arg4", "arg5", "event", "this", "table.getn", "math.mod",
+  "C_Map", "C_QuestLog", "ClassTrainerFrame", "CreateVector2D", "DEFAULT_CHAT_FRAME",
+  "GameFontHighlightSmall", "GameTooltip", "GetBindingAction", "GetCursorPosition",
+  "INVSLOT_LAST_EQUIPPED", "MerchantFrame", "Minimap", "SetBinding", "ToggleDropDownMenu",
+  "UIDropDownMenu_AddButton", "UIDropDownMenu_CreateInfo", "UIDropDownMenu_Initialize",
+  "UIDropDownMenu_SetText", "UIDropDownMenu_SetWidth", "NUM_TAXI_BUTTONS", "SlashCmdList",
+  "TaxiFrame", "UIParent", "WorldMapFrame", "UnitPosition", "arg1", "arg2", "arg3", "arg4",
+  "arg5", "event", "this", "table.getn", "math.mod",
 
   -- addon globals and optional integrations
   "RXPGuides", "SLASH_TURTLEGUIDES1", "SLASH_TURTLEGUIDES2", "STANDARD_TEXT_FONT", "TurtleGuidesCharDB",
-  "TurtleGuidesDB", "pfDB", "pfQuest_history",
+  "TurtleGuidesDB", "pfDB", "pfDatabase", "pfQuest_history",
 }
 
 files["src/guides/*.lua"] = { ignore = { "613" }, max_line_length = false }

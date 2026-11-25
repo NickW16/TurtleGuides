@@ -62,7 +62,8 @@ return {
 
   test_softcore_tag_marks_step = function()
     local TG = fresh()
-    local guide = TG.Parser.ParseGuide([[
+    local guide = TG.Parser.ParseGuide(
+      [[
 #name Test Guide
 #group Classic
 step
@@ -71,7 +72,9 @@ step
 step
 #hardcore
 .goto 1432,20,30
-]], "test.lua")
+]],
+      "test.lua"
+    )
     env.eq(guide.steps[1]._softcore, true)
     env.eq(guide.steps[2]._softcore, false)
   end,

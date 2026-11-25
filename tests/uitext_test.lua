@@ -165,4 +165,12 @@ return {
     env.eq(string.find(wrapped, "\n") ~= nil, true)
     env.eq(lines > 1, true)
   end,
+
+  test_wrap_does_not_split_color_codes = function()
+    local TG = fresh()
+    local wrapped, lines = TG.UI.Text.wrap("|cffffd100Supercalifragilisticexpialidocious|r", 30, 9)
+    env.eq(lines > 1, true)
+    env.eq(string.find(wrapped, "|cff", 1, true), nil)
+    env.eq(string.find(wrapped, "|r", 1, true), nil)
+  end,
 }

@@ -3,6 +3,7 @@ local testFiles = {
   "tests/applies_test.lua",
   "tests/automation_test.lua",
   "tests/commands_test.lua",
+  "tests/docked_settings_test.lua",
   "tests/vanilla_import_test.lua",
   "tests/context_test.lua",
   "tests/elements_test.lua",

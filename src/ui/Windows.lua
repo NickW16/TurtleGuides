@@ -160,7 +160,8 @@ local function renderRow(
   row.text:SetText(wrapped)
   row.text:ClearAllPoints()
   row.text:SetPoint("TOPLEFT", row, "TOPLEFT", x, -1 - topPad)
-  local height = lines * Text.lineHeight(row.size) + topPad
+  local measured = (row.text.GetStringHeight and row.text:GetStringHeight()) or 0
+  local height = math.max(measured + 2 + topPad, lines * Text.lineHeight(row.size) + topPad)
   if isHeader then
     row.icon:Hide()
     row.itemIcon:Hide()
@@ -511,9 +512,15 @@ function TG:InitUI()
   Text.register(title, 12)
   main.title = title
 
-  local minimizeBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp_Button", "Minimize", function()
-    TG:SetMainWindowMinimized(not (State.main and State.main._tgMinimized))
-  end, 14)
+  local minimizeBtn = iconButton(
+    main,
+    "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp_Button",
+    "Minimize",
+    function()
+      TG:SetMainWindowMinimized(not (State.main and State.main._tgMinimized))
+    end,
+    14
+  )
   minimizeBtn:SetPoint("TOPRIGHT", main, "TOPRIGHT", -6, -6)
   main.minimizeBtn = minimizeBtn
 
@@ -554,13 +561,13 @@ function TG:InitUI()
   Text.register(guideName, BODY_SIZE)
   main.guideName = guideName
 
-  local nextBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ScrollRight", "Next step", function()
+  local nextBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronRight", "Next step", function()
     if TG.NextStep then
       TG:NextStep(true)
     end
   end, 12)
   nextBtn:SetPoint("BOTTOMRIGHT", main, "BOTTOMRIGHT", -10, 2)
-  local prevBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\ScrollLeft", "Previous step", function()
+  local prevBtn = iconButton(main, "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronLeft", "Previous step", function()
     if TG.PrevStep then
       TG:PrevStep()
     end
@@ -771,22 +778,8 @@ function TG:UpdateUI()
     local headerRow = rows[used + 1]
     used = used + 1
     headerRow:SetWidth(width)
-    local headerHeight = renderRow(
-      headerRow,
-      "Step " .. stepIndex,
-      nil,
-      nil,
-      true,
-      width,
-      nil,
-      nil,
-      nil,
-      nil,
-      nil,
-      false,
-      nil,
-      false
-    )
+    local headerHeight =
+      renderRow(headerRow, "Step " .. stepIndex, nil, nil, true, width, nil, nil, nil, nil, nil, false, nil, false)
     headerRow:ClearAllPoints()
     headerRow:SetPoint("TOPLEFT", main.content, "TOPLEFT", 0, y)
     headerRow:SetHeight(headerHeight)

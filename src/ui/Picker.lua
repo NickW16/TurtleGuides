@@ -4,6 +4,8 @@ local State = TG.UI.State
 local Text = TG.UI.Text
 
 local ROW_HEIGHT = 16
+local BAR = "Interface\\AddOns\\TurtleGuides\\Media\\BarTexture"
+local DOT = "Interface\\Buttons\\WHITE8X8"
 
 local results = {}
 local selected = 1
@@ -64,14 +66,14 @@ local function handleKey(key)
   elseif key == "ENTER" then
     TG:LoadPickedGuide(selected)
   elseif key == "ESCAPE" and State.picker then
+    if State.settings then
+      State.settings:Hide()
+    end
     State.picker:Hide()
   end
 end
 
 function TG:ShowGuidePicker()
-  if State.settings then
-    State.settings:Hide()
-  end
   if not State.picker then
     self:CreateGuidePicker()
   end
@@ -80,6 +82,25 @@ function TG:ShowGuidePicker()
   if State.picker.search.SetFocus then
     State.picker.search:SetFocus()
   end
+  if self.ShowSettings then
+    self:ShowSettings()
+  end
+  if self.RefreshPickerFlipper then
+    self:RefreshPickerFlipper()
+  end
+end
+
+function TG:RefreshPickerFlipper()
+  local picker = State.picker
+  if not picker or not picker.flipper then
+    return
+  end
+  local settings = State.settings
+  local shown = settings and settings:IsShown() and true or false
+  picker.flipper.arrow:SetTexture(
+    shown and "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronRight"
+      or "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronLeft"
+  )
 end
 
 local function makePickerRow(picker, i)
@@ -138,6 +159,9 @@ function TG:CreateGuidePicker()
   end)
   picker:SetScript("OnDragStop", function()
     this:StopMovingOrSizing()
+    if TG.AnchorSettings and State.settings and State.settings:IsShown() then
+      TG:AnchorSettings()
+    end
   end)
   picker:SetScript("OnKeyDown", function()
     handleKey(arg1)
@@ -145,31 +169,63 @@ function TG:CreateGuidePicker()
   panel(picker)
   picker:Hide()
 
-  local title = picker:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  title:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -6)
-  title:SetText("Guides")
-  title:SetTextColor(0.85, 0.85, 0.88)
-  Text.register(title, 10)
+  local topbar = picker:CreateTexture(nil, "BORDER")
+  topbar:SetTexture(BAR)
+  topbar:SetPoint("TOPLEFT", picker, "TOPLEFT", 1, -1)
+  topbar:SetPoint("TOPRIGHT", picker, "TOPRIGHT", -1, -1)
+  topbar:SetHeight(24)
+  topbar:SetVertexColor(0.92, 0.90, 0.86, 1.00)
 
-  local settingsBtn = CreateFrame("Button", nil, picker)
-  settingsBtn:SetWidth(10)
-  settingsBtn:SetHeight(10)
-  settingsBtn:SetNormalTexture("Interface\\AddOns\\TurtleGuides\\Media\\Cog")
-  settingsBtn:SetPushedTexture("Interface\\AddOns\\TurtleGuides\\Media\\Cog")
-  local settingsIcon = settingsBtn.GetNormalTexture and settingsBtn:GetNormalTexture() or nil
-  if settingsIcon and settingsIcon.SetVertexColor then
-    settingsIcon:SetVertexColor(0.85, 0.85, 0.88)
-  end
-  settingsBtn:SetPoint("LEFT", title, "RIGHT", 6, 0)
-  settingsBtn:SetScript("OnClick", function()
-    if TG.ShowSettings then
-      TG:ShowSettings()
+  local topbarLine = picker:CreateTexture(nil, "ARTWORK")
+  topbarLine:SetTexture(DOT)
+  topbarLine:SetPoint("TOPLEFT", picker, "TOPLEFT", 1, -25)
+  topbarLine:SetPoint("TOPRIGHT", picker, "TOPRIGHT", -1, -25)
+  topbarLine:SetHeight(1)
+  topbarLine:SetVertexColor(0.85, 0.85, 0.88, 0.08)
+
+  local footer = picker:CreateTexture(nil, "BORDER")
+  footer:SetTexture(BAR)
+  footer:SetPoint("BOTTOMLEFT", picker, "BOTTOMLEFT", 1, 1)
+  footer:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -1, 1)
+  footer:SetHeight(16)
+  footer:SetVertexColor(0.92, 0.90, 0.86, 1.00)
+
+  local title = picker:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  title:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -7)
+  title:SetText("Guides")
+  title:SetTextColor(0.85, 0.75, 0.40)
+  Text.register(title, 12)
+
+  local flipper = CreateFrame("Button", "TurtleGuidesPickerFlipper", picker)
+  flipper:SetWidth(12)
+  flipper:SetHeight(30)
+  flipper:SetPoint("TOPLEFT", picker, "TOPLEFT", -12, -48)
+  flipper:SetBackdrop({
+    bgFile = "Interface\\Buttons\\WHITE8X8",
+    edgeFile = "Interface\\Buttons\\WHITE8X8",
+    tile = true,
+    tileSize = 4,
+    edgeSize = 1,
+    insets = { left = 1, right = 1, top = 1, bottom = 1 },
+  })
+  flipper:SetBackdropColor(0.06, 0.06, 0.06, 0.95)
+  flipper:SetBackdropBorderColor(0.40, 0.36, 0.30, 0.90)
+  local flipperArrow = flipper:CreateTexture(nil, "ARTWORK")
+  flipperArrow:SetWidth(12)
+  flipperArrow:SetHeight(12)
+  flipperArrow:SetPoint("CENTER", flipper, "CENTER", 0, 0)
+  flipperArrow:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\NavChevronLeft")
+  flipper.arrow = flipperArrow
+  flipper:SetScript("OnClick", function()
+    if TG.ToggleSettingsDocked then
+      TG:ToggleSettingsDocked()
     end
   end)
+  picker.flipper = flipper
 
   local close = CreateFrame("Button", nil, picker)
-  close:SetWidth(9)
-  close:SetHeight(9)
+  close:SetWidth(12)
+  close:SetHeight(12)
   close:SetNormalTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
   close:SetPushedTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
   local closeIcon = close.GetNormalTexture and close:GetNormalTexture() or nil
@@ -178,13 +234,16 @@ function TG:CreateGuidePicker()
   end
   close:SetPoint("TOPRIGHT", picker, "TOPRIGHT", -6, -6)
   close:SetScript("OnClick", function()
+    if State.settings then
+      State.settings:Hide()
+    end
     picker:Hide()
   end)
 
   local fieldBox = CreateFrame("Frame", nil, picker)
   fieldBox:SetWidth(324)
   fieldBox:SetHeight(22)
-  fieldBox:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -24)
+  fieldBox:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -32)
   fieldBox:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8" })
   fieldBox:SetBackdropColor(0.10, 0.10, 0.10, 0.95)
   picker.fieldBox = fieldBox
@@ -227,8 +286,8 @@ function TG:CreateGuidePicker()
   picker.placeholder = placeholder
 
   local scroll = CreateFrame("ScrollFrame", "TurtleGuidesPickerScroll", picker)
-  scroll:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -52)
-  scroll:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 8)
+  scroll:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -60)
+  scroll:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 20)
   local content = CreateFrame("Frame", nil, scroll)
   content:SetWidth(324)
   content:SetHeight(1)
@@ -254,6 +313,9 @@ function TG:LoadPickedGuide(index)
   end
   if loaded ~= false and self.FindMyPlace then
     self:FindMyPlace(true)
+  end
+  if State.settings then
+    State.settings:Hide()
   end
   if State.picker then
     State.picker:Hide()

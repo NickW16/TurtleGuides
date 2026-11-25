@@ -34,7 +34,11 @@ local function questTitleFromDb(id)
     end
   end
   for key, tbl in pairs(qdb) do
-    if type(key) == "string" and type(tbl) == "table" and (string.find(key, "enUS", 1, true) or string.find(key, locale, 1, true)) then
+    if
+      type(key) == "string"
+      and type(tbl) == "table"
+      and (string.find(key, "enUS", 1, true) or string.find(key, locale, 1, true))
+    then
       title = extractDbTitle(tbl[id])
       if title then
         return title
