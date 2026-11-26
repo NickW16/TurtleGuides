@@ -1,3 +1,7 @@
+-- guide data adapted from RestedXP Guides by RestedXP (RXPGuides).
+-- source: https://github.com/RestedXP/RXPGuides
+-- licensed under CC BY-NC-SA 4.0: https://creativecommons.org/licenses/by-nc-sa/4.0/
+-- modified for Turtle WoW 1.12.1, with syntax and route adjustments.
 -- Classic survival guide data for Turtle WoW 1.12.1.
 -- luacheck: ignore 621
 local TG = _G.TurtleGuides
