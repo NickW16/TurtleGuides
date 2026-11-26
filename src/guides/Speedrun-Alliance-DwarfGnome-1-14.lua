@@ -2996,6 +2996,7 @@ step
     .goto Dun Morogh,39.5,43.0,0
     .goto Dun Morogh,41.5,36.0,0
     >>Kill |cRXP_ENEMY_Frostmane Seers|r. Loot them for their |cRXP_LOOT_Shimmerweed|r
+    >>|cRXP_WARN_Be careful not to overpull, These mobs deal high damage.|r
     >>Open the |cRXP_PICK_Shimmerweed Baskets|r on the ground. Loot them for their |cRXP_LOOT_Shimmerweed|r
     .complete 315,1 --Collect Shimmerweed (x6)
     .mob Frostmane Seer
@@ -3081,7 +3082,7 @@ step << !Mage !Warlock
     .goto Dun Morogh,38.517,53.927
     >>Open |cRXP_PICK_MacGrann's Meat Locker|r. Loot it for |cRXP_LOOT_MacGrann's Dried Meats|r
     >>|cRXP_WARN_Wait until |cRXP_ENEMY_Old Icebeard|r patrols out of the Cave. Once he patrols out of the Cave you can enter and loot|r |cRXP_PICK_MacGrann's Meat Locker|r
-    .link https://www.youtube.com/watch?v=o55Y3LjgKoE >> |cRXP_WARN_Click here for video reference|r
+    >>|cRXP_WARN_Alternatively, you can find a group to kill him|r
     .complete 312,1 --MacGrann's Dried Meats (1)
 step << Mage/Warlock
     .goto Dun Morogh,38.517,53.927
