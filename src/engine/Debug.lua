@@ -89,6 +89,20 @@ function TG:DebugCurrentStep()
   end
 
   add("Debug guide: " .. (guide.name or guide.key or "?") .. " step " .. idx .. "/" .. table.getn(guide.steps or {}))
+  add("  guide key: " .. tostring(guide.key or "?"))
+  local cursor = self.cdb and self.cdb.guideCursors and self.cdb.guideCursors[guide.key] or self.cdb and self.cdb.stepIndex
+  add("  saved cursor: " .. tostring(cursor or "none"))
+  if step then
+    add(
+      "  step index: "
+        .. tostring(step.index or idx)
+        .. (step.label and (" label=" .. tostring(step.label)) or "")
+        .. (step.completewith and (" completewith=" .. tostring(step.completewith)) or "")
+        .. (step.sticky and " sticky" or "")
+        .. (step.optional and " optional" or "")
+        .. (step.requires and (" requires=" .. tostring(step.requires)) or "")
+    )
+  end
   if not step then
     add("Debug: no step object.")
   elseif not step.elements then
@@ -108,6 +122,10 @@ function TG:DebugCurrentStep()
       if string.len(text) > 120 then
         text = string.sub(text, 1, 120) .. "..."
       end
+      local ids = ""
+      if el.questIds and table.getn(el.questIds) > 0 then
+        ids = table.concat(el.questIds, ",")
+      end
       add(
         "  ["
           .. i
@@ -115,10 +133,18 @@ function TG:DebugCurrentStep()
           .. tostring(el.t or "?")
           .. " tag="
           .. tostring(el.tag or "")
+          .. " source="
+          .. tostring(el.sourceTag or "")
           .. " args={"
           .. args
-          .. "} text="
+          .. "} ids={"
+          .. ids
+          .. "}"
+          .. (el.skipIfMissing and " skipIfMissing" or "")
+          .. (el.reverse and " reverse" or "")
+          .. " text="
           .. tostring(text)
+          .. (el.objectiveText and (" objective=" .. tostring(el.objectiveText)) or "")
       )
     end
   end
@@ -175,6 +201,27 @@ function TG:DebugCurrentStep()
             .. ")"
             .. (title and (" (" .. title .. ")") or "")
         )
+        if id or title then
+          local evidence = self:GetQuestEvidence(id, title)
+          if evidence then
+            add(
+              "    ledger: id="
+                .. tostring(evidence.id)
+                .. " title="
+                .. tostring(evidence.title)
+                .. " inLog="
+                .. tostring(evidence.inLog)
+                .. " complete="
+                .. tostring(evidence.complete)
+                .. " turnedIn="
+                .. tostring(evidence.turnedIn)
+                .. " logIndex="
+                .. tostring(evidence.logIndex)
+            )
+          else
+            add("    ledger: no evidence")
+          end
+        end
         if el.tag == "complete" then
           local objNum = el.args and tonumber(el.args[2])
           local objectives
@@ -229,8 +276,14 @@ function TG:DebugCurrentStep()
   end
 
   if step then
+    add("  step complete: " .. tostring(self:IsStepComplete(step)))
     local skipState = self.StepSkipState and self:StepSkipState(step)
     add("  skip gate: " .. tostring(skipState) .. (self._skipDebug and (" (" .. self._skipDebug .. ")") or ""))
+    add(
+      "  stepSkip: "
+        .. tostring(step.stepSkip)
+        .. (step.stepSkipReason and (" (" .. tostring(step.stepSkipReason) .. ")") or "")
+    )
   end
   if TG.db and TG.db.disableAutoSkip then
     add("  auto-skip disabled in settings")

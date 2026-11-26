@@ -29,6 +29,31 @@ local TAG_ALIASES = {
   mob = "mob",
   kill = "mob",
   money = "money",
+  isonquest = "isOnQuest",
+  isnotonquest = "isNotOnQuest",
+  isquestturnedin = "isQuestTurnedIn",
+  isquestavailable = "isQuestAvailable",
+  isquestcomplete = "isQuestComplete",
+}
+
+local REVERSE_TAGS = {
+  isquestnotcomplete = "isQuestComplete",
+  isquestnotavailable = "isQuestAvailable",
+}
+
+local QUEST_ID_TAGS = {
+  accept = true,
+  turnin = true,
+  complete = true,
+  collect = true,
+}
+
+local QUEST_CONDITION_TAGS = {
+  isOnQuest = true,
+  isNotOnQuest = true,
+  isQuestTurnedIn = true,
+  isQuestAvailable = true,
+  isQuestComplete = true,
 }
 
 function TG.Parser.applies(text)
@@ -48,6 +73,57 @@ local function parseArgs(argstr)
     table.insert(args, strtrim(arg))
   end
   return args
+end
+
+local function addQuestId(ids, value, skipIfMissing)
+  local id = tonumber(value)
+  if not id then
+    return false
+  end
+  if id < 0 then
+    skipIfMissing.value = true
+    id = -id
+  end
+  table.insert(ids, id)
+  return true
+end
+
+local function parseQuestMetadata(el, tag, args, sourceTag)
+  local ids = {}
+  local skipIfMissing = { value = false }
+  local reverse = false
+  local tlow = string.lower(tag)
+
+  if REVERSE_TAGS[tlow] then
+    tag = REVERSE_TAGS[tlow]
+    reverse = true
+  elseif tag == "collect" then
+    if args[3] then
+      addQuestId(ids, args[3], skipIfMissing)
+    end
+  elseif QUEST_ID_TAGS[tlow] and args[1] then
+    addQuestId(ids, args[1], skipIfMissing)
+  elseif QUEST_CONDITION_TAGS[tag] then
+    for _, arg in ipairs(args) do
+      local low = string.lower(tostring(arg))
+      if low == "reverse" or low == "!" then
+        reverse = true
+      elseif low == "skip" then
+        skipIfMissing.value = true
+      else
+        addQuestId(ids, arg, skipIfMissing)
+      end
+    end
+  end
+
+  if string.sub(sourceTag, -1) == "!" then
+    skipIfMissing.value = true
+  end
+
+  el.tag = tag
+  el.questIds = ids
+  el.skipIfMissing = skipIfMissing.value
+  el.reverse = reverse
 end
 
 function TG.Parser.parseElementLine(line, commentText)
@@ -76,7 +152,9 @@ function TG.Parser.parseElementLine(line, commentText)
     rest = rest or ""
     local tlow = string.lower(tag)
     local sourceTag = tlow
-    tag = TAG_ALIASES[tlow] or tag
+    if not REVERSE_TAGS[tlow] then
+      tag = TAG_ALIASES[tlow] or tag
+    end
 
     local textInline, objectiveText
     local ppos = string.find(rest, ">>", 1, true)
@@ -87,7 +165,7 @@ function TG.Parser.parseElementLine(line, commentText)
     if commentText and commentText ~= "" and (tlow == "complete" or tlow == "collect" or tlow == "itemcount") then
       objectiveText = commentText
     end
-    return {
+    local el = {
       t = "cmd",
       tag = tag,
       sourceTag = sourceTag,
@@ -96,6 +174,8 @@ function TG.Parser.parseElementLine(line, commentText)
       objectiveText = objectiveText,
       cond = cond,
     }
+    parseQuestMetadata(el, tag, el.args, sourceTag)
+    return el
   end
 
   if string.sub(base, 1, 1) == "#" then

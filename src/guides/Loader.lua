@@ -92,6 +92,7 @@ function TG:EnsureGuideParsed(guide)
   if parsed then
     guide.meta = parsed.meta
     guide.steps = parsed.steps
+    guide.labels = parsed.labels or {}
     guide.name = parsed.name
     guide.group = parsed.group
     guide.subgroup = parsed.subgroup

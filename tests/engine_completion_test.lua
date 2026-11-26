@@ -108,4 +108,45 @@ return {
     TG:SignalManualAction("vendor")
     env.eq(TG:IsStepComplete(step), true)
   end,
+
+  test_skip_if_missing_turnin_and_complete = function()
+    local TG = loadEngine()
+    local turnin = {
+      t = "cmd",
+      tag = "turnin",
+      args = { "-414" },
+      text = "Turn in Stout to Kadrell",
+      questIds = { 414 },
+      skipIfMissing = true,
+    }
+    local complete = {
+      t = "cmd",
+      tag = "complete",
+      args = { "-386", "1" },
+      questIds = { 386 },
+      skipIfMissing = true,
+    }
+    env.eq(TG:IsElementDone(turnin), true)
+    env.eq(TG:IsElementDone(complete), true)
+  end,
+
+  test_skip_if_missing_waits_while_quest_is_in_log = function()
+    local TG = loadEngine()
+    _G.GetNumQuestLogEntries = function()
+      return 1
+    end
+    _G.GetQuestLogTitle = function()
+      return "Stout to Kadrell", 1, nil, false, false, nil, nil, 414
+    end
+    TG:InvalidateQuestLedger()
+    local el = {
+      t = "cmd",
+      tag = "turnin",
+      args = { "-414" },
+      text = "Turn in Stout to Kadrell",
+      questIds = { 414 },
+      skipIfMissing = true,
+    }
+    env.eq(TG:IsElementDone(el), false)
+  end,
 }

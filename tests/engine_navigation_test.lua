@@ -128,4 +128,41 @@ return {
     TG:FindMyPlace(true)
     env.eq(TG.currentStepIndex, 3)
   end,
+
+  test_saved_cursor_is_per_guide_and_explicit_step_wins = function()
+    local TG = loadEngine()
+    local a = {
+      key = "A",
+      name = "A",
+      steps = {
+        { elements = { { t = "text", text = "a1" } } },
+        { elements = { { t = "text", text = "a2" } } },
+        { elements = { { t = "text", text = "a3" } } },
+      },
+    }
+    local b = {
+      key = "B",
+      name = "B",
+      steps = {
+        { elements = { { t = "text", text = "b1" } } },
+        { elements = { { t = "text", text = "b2" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = {}
+    TG.guideByKey = { A = a, B = b }
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+
+    env.eq(TG:SetGuide("A", 2, true, true), true)
+    env.eq(TG.cdb.guideCursors.A, 2)
+    env.eq(TG:SetGuide("B", 2, true, true), true)
+    env.eq(TG.cdb.guideCursors.B, 2)
+
+    env.eq(TG:SetGuide("A", 1, true, true), true)
+    env.eq(TG.currentStepIndex, 2)
+    env.eq(TG:SetGuide("A", 3, true, true), true)
+    env.eq(TG.currentStepIndex, 3)
+    env.eq(TG.cdb.guideCursors.A, 3)
+  end,
 }

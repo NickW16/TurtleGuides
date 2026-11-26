@@ -37,7 +37,7 @@ local function parseGuide(text, source)
     return nil, "empty"
   end
   local lines = splitLines(text)
-  local guide = { source = source, meta = {}, steps = {}, raw = nil }
+  local guide = { source = source, meta = {}, steps = {}, labels = {}, raw = nil }
   local headerDone = false
   local currentStep = nil
   local ctx = Context.player()
@@ -58,7 +58,13 @@ local function parseGuide(text, source)
       end
       if not currentStep._skip then
         if table.getn(currentStep.elements) > 0 or currentStep.label or currentStep.completewith then
+          currentStep.index = table.getn(guide.steps) + 1
+          currentStep.stepSkip = nil
+          currentStep.stepSkipReason = nil
           table.insert(guide.steps, currentStep)
+          if currentStep.label and currentStep.label ~= "" then
+            guide.labels[currentStep.label] = currentStep.index
+          end
         end
       end
     end
@@ -162,6 +168,15 @@ local function parseGuide(text, source)
     end
   end
   pushStep()
+
+  for i, step in ipairs(guide.steps) do
+    step.index = i
+    if step.completewith == "next" then
+      step.completewithIndex = i + 1
+    elseif step.completewith and guide.labels[step.completewith] then
+      step.completewithIndex = guide.labels[step.completewith]
+    end
+  end
 
   finalizeMeta(guide, source)
 

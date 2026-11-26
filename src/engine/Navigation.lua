@@ -13,6 +13,16 @@ function TG:CurrentStep()
   return guide.steps[self.currentStepIndex]
 end
 
+function TG:SaveGuideCursor()
+  if not self.currentGuide or not self.cdb then
+    return
+  end
+  self.cdb.guideCursors = self.cdb.guideCursors or {}
+  self.cdb.guideCursors[self.currentGuide.key] = self.currentStepIndex
+  self.cdb.currentGuideKey = self.currentGuide.key
+  self.cdb.stepIndex = self.currentStepIndex
+end
+
 function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   if not key then
     return false
@@ -27,6 +37,9 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   if self.ClearManualCheckHold then
     self:ClearManualCheckHold()
   end
+  if self.ClearStepSkipStates then
+    self:ClearStepSkipStates(guide)
+  end
   if self.currentGuide and self.ClearManualElementStates then
     for _, step in ipairs(self.currentGuide.steps or {}) do
       self:ClearManualElementStates(step)
@@ -37,7 +50,14 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   if n < 1 then
     n = 1
   end
-  local idx = tonumber(stepIndex) or 1
+  local numericStep = tonumber(stepIndex)
+  local idx = numericStep or 1
+  local savedCursor = self.cdb and self.cdb.guideCursors and self.cdb.guideCursors[key]
+  savedCursor = tonumber(savedCursor)
+  local hasSavedCursor = savedCursor and savedCursor >= 1 and savedCursor <= n
+  if hasSavedCursor and (not numericStep or numericStep == 1) then
+    idx = savedCursor
+  end
 
   if self.cdb then
     if not self.cdb.completedByGuide then
@@ -51,7 +71,7 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
     end
   end
 
-  if (not stepIndex or stepIndex == 1) and self.cdb and not noAutoDetect then
+  if (not numericStep or numericStep == 1) and not hasSavedCursor and self.cdb and not noAutoDetect then
     local completed = self.cdb.completedByGuide[key] or {}
     local hasCompleted = next(completed) ~= nil
     if hasCompleted then
@@ -105,10 +125,7 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
     end
   end
   self.currentStepIndex = idx
-  if self.cdb then
-    self.cdb.currentGuideKey = key
-    self.cdb.stepIndex = self.currentStepIndex
-  end
+  self:SaveGuideCursor()
   if self.ResetManualSignals then
     self:ResetManualSignals()
   end
@@ -139,7 +156,11 @@ function TG:GetActiveAuxSteps()
     if i < idx and (step.sticky or step.completewith) then
       local targetIdx
       if step.completewith then
-        if step.completewith == "next" then
+        if step.completewithIndex then
+          targetIdx = step.completewithIndex
+        elseif guide.labels and guide.labels[step.completewith] then
+          targetIdx = guide.labels[step.completewith]
+        elseif step.completewith == "next" then
           targetIdx = i + 1
         else
           for j, other in ipairs(guide.steps) do
@@ -217,7 +238,7 @@ function TG:NextStep(manual, isSkip)
       self:Print("Guide complete.")
       return
     end
-    self.cdb.stepIndex = self.currentStepIndex
+    self:SaveGuideCursor()
     self._gotoIndex = {}
     if self.ResetManualSignals then
       self:ResetManualSignals()
@@ -243,13 +264,13 @@ function TG:NextStep(manual, isSkip)
       local nextKey = guide.next
       if self.guideByKey and self.guideByKey[nextKey] then
         self:Print("Loading next guide: " .. nextKey)
-        self:SetGuide(nextKey, 1, false, true)
+        self:SetGuide(nextKey, nil, false, true)
         return
       end
       for key, value in pairs(self.guideByKey or {}) do
         if string.find(key, nextKey, 1, true) or string.find(value.name or "", nextKey, 1, true) then
           self:Print("Loading next guide: " .. (value.name or key))
-          self:SetGuide(key, 1, false, true)
+          self:SetGuide(key, nil, false, true)
           return
         end
       end
@@ -315,7 +336,7 @@ function TG:PrevStep()
     if arriving and self.ClearManualElementStates then
       self:ClearManualElementStates(arriving)
     end
-    self.cdb.stepIndex = self.currentStepIndex
+    self:SaveGuideCursor()
     self._gotoIndex = {}
     if self.ResetManualSignals then
       self:ResetManualSignals()
@@ -356,6 +377,17 @@ local function findQuestEvidence(el)
   end
   if not id and not title then
     return nil
+  end
+
+  local evidence = TG.GetQuestEvidence and TG:GetQuestEvidence(id, title) or nil
+  if evidence then
+    return {
+      id = evidence.id,
+      title = evidence.title,
+      inLog = evidence.inLog == true,
+      complete = evidence.complete == true,
+      turnedIn = evidence.turnedIn == true,
+    }
   end
 
   local inLog = false
@@ -469,9 +501,7 @@ function TG:FindMyPlace(quiet)
   end
 
   self.currentStepIndex = pos
-  if self.cdb then
-    self.cdb.stepIndex = pos
-  end
+  self:SaveGuideCursor()
   self._gotoIndex = {}
   self._wasStepComplete = nil
   self._autoNavTime = nil

@@ -194,4 +194,85 @@ return {
     env.eq(TG:StepSkipState(step), false)
     env.eq(TG:ShouldAutoSkipStep(step), false)
   end,
+
+  test_multi_id_on_quest_uses_any_id = function()
+    local TG = fresh()
+    _G.GetTime = function()
+      return 10
+    end
+    TG._recentAccept[3364] = 10
+    local step = {
+      elements = { { t = "cmd", tag = "isOnQuest", args = { "218", "3364" }, questIds = { 218, 3364 } } },
+    }
+    env.eq(TG:EvaluateConditions(step), true)
+    env.eq(TG:StepSkipState(step), false)
+  end,
+
+  test_is_not_on_quest_inverts_multi_id_result = function()
+    local TG = fresh()
+    _G.GetTime = function()
+      return 10
+    end
+    _G.GetNumQuestLogEntries = function()
+      return 1
+    end
+    _G.GetQuestLogTitle = function()
+      return "Other Quest", 1, nil, false, false, nil, nil, 999
+    end
+    local step = {
+      elements = { { t = "cmd", tag = "isNotOnQuest", args = { "218", "3364" }, questIds = { 218, 3364 } } },
+    }
+    env.eq(TG:EvaluateConditions(step), true)
+    TG._recentAccept[218] = 10
+    env.eq(TG:EvaluateConditions(step), false)
+  end,
+
+  test_reverse_flag_inverts_quest_condition = function()
+    local TG = fresh()
+    TG.cdb = {}
+    TG:MarkQuestTurnedIn(414)
+    local step = {
+      elements = { { t = "cmd", tag = "isQuestTurnedIn", args = { "414" }, questIds = { 414 }, reverse = true } },
+    }
+    env.eq(TG:EvaluateConditions(step), false)
+    env.eq(TG:StepSkipState(step), true)
+  end,
+
+  test_unknown_quest_gate_times_out_into_skip = function()
+    local TG = fresh()
+    local now = 0
+    _G.GetTime = function()
+      return now
+    end
+    _G.GetNumQuestLogEntries = function()
+      error("unavailable")
+    end
+    local step = {
+      index = 7,
+      elements = { { t = "cmd", tag = "isOnQuest", args = { "99" }, questIds = { 99 } } },
+    }
+    TG.currentGuide = { key = "Test||Guide", steps = { step } }
+    env.eq(TG:StepSkipState(step), nil)
+    now = TG.Engine.Shared.UNKNOWN_STATE_TIMEOUT + 1
+    env.eq(TG:StepSkipState(step), true)
+    env.eq(step.stepSkip, true)
+    env.eq(string.find(tostring(step.stepSkipReason), "timed out", 1, true) ~= nil, true)
+  end,
+
+  test_unknown_zone_gate_times_out_without_skipping = function()
+    local TG = fresh()
+    local now = 0
+    _G.GetTime = function()
+      return now
+    end
+    local step = {
+      index = 8,
+      elements = { { t = "cmd", tag = "zoneskip", args = { "Dun Morogh" } } },
+    }
+    TG.currentGuide = { key = "Test||Guide", steps = { step } }
+    env.eq(TG:StepSkipState(step), nil)
+    now = TG.Engine.Shared.UNKNOWN_STATE_TIMEOUT + 1
+    env.eq(TG:StepSkipState(step), false)
+    env.eq(step.stepSkip, false)
+  end,
 }

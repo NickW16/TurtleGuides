@@ -76,6 +76,9 @@ end
 
 function TG:OnQuestLogUpdate()
   self._questLogSeeded = true
+  if self.InvalidateQuestLedger then
+    self:InvalidateQuestLedger()
+  end
   self:ScanQuestTurnins()
   self:CheckAdvance("event")
   self:MarkUIDirty()

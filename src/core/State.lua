@@ -29,6 +29,7 @@ local defaults = {
   char = {
     currentGuideKey = nil,
     stepIndex = 1,
+    guideCursors = {},
     completedSteps = {},
     turnedIn = {},
     junk = {},
@@ -59,7 +60,9 @@ function TG:ResetGuide()
     return
   end
   self.currentStepIndex = 1
-  if self.cdb then
+  if self.SaveGuideCursor then
+    self:SaveGuideCursor()
+  elseif self.cdb then
     self.cdb.stepIndex = 1
   end
   if self.UpdateUI then

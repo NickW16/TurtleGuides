@@ -127,4 +127,56 @@ return {
     env.eq(TG._turnedInTitles.Foo, nil)
     env.eq(TG:IsQuestTurnedIn(42), false)
   end,
+
+  test_ledger_prefers_id_over_title = function()
+    local TG = fresh()
+    TG.cdb = {}
+    _G.GetNumQuestLogEntries = function()
+      return 2
+    end
+    _G.GetQuestLogTitle = function(i)
+      if i == 1 then
+        return "Different Title", 1, nil, false, false, nil, nil, 42
+      end
+      return "Right Title", 1, nil, false, false, nil, nil, 99
+    end
+    TG:InvalidateQuestLedger()
+
+    local byId = TG:GetQuestEvidence(42, "Right Title")
+    env.eq(byId.id, 42)
+    env.eq(byId.title, "Different Title")
+    env.eq(byId.inLog, true)
+
+    local byTitle = TG:GetQuestEvidence(nil, "Right Title")
+    env.eq(byTitle.id, 99)
+    env.eq(byTitle.title, "Right Title")
+  end,
+
+  test_element_quest_ids_fallback_normalizes_negative_id = function()
+    local TG = fresh()
+    local el = { args = { "-414" } }
+    local ids = TG:GetElementQuestIds(el)
+    env.eq(ids[1], 414)
+    el.questIds = { 414 }
+    env.eq(TG:GetElementQuestIds(el)[1], 414)
+  end,
+
+  test_ledger_survives_id_lookup_errors = function()
+    local TG = fresh()
+    TG.cdb = {}
+    _G.GetNumQuestLogEntries = function()
+      return 1
+    end
+    _G.GetQuestLogTitle = function()
+      return "Foo", 1, nil, false, false, nil, nil, 42
+    end
+    TG.GetQuestIdsForLogIndex = function()
+      error("id api unavailable")
+    end
+    local ok = pcall(function()
+      return TG:GetQuestLedger()
+    end)
+    env.eq(ok, true)
+    env.eq(TG:GetQuestLedger().canReadIds, false)
+  end,
 }

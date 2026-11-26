@@ -5,6 +5,26 @@ local strtrim = TG.Util.strtrim
 local Quests = {}
 TG.Engine.Quests = Quests
 
+local Ledger = {}
+TG.Engine.QuestLedger = Ledger
+
+local function titleKey(title)
+  if not title or title == "" then
+    return nil
+  end
+  return string.lower(title)
+end
+
+local function ensureIdRecord(ledger, id, title)
+  local rec = ledger.byId[id]
+  if not rec then
+    rec = { id = id, title = title, inLog = false, complete = false, logIndex = nil }
+    ledger.byId[id] = rec
+    table.insert(ledger.logIds, id)
+  end
+  return rec
+end
+
 function Quests.canReadQuestIds()
   if not GetNumQuestLogEntries or not GetQuestLogTitle or not TG.GetQuestIdsForLogIndex then
     return false
@@ -33,8 +53,188 @@ function Quests.recentlyAccepted(id)
   return (GetTime() - t) <= Shared.RECENT_ACCEPT_WINDOW
 end
 
+function TG:InvalidateQuestLedger()
+  self._questLedgerDirty = true
+end
+
+function TG:RefreshQuestLedger()
+  local ledger = {
+    byId = {},
+    byTitle = {},
+    logIds = {},
+    turnedIn = {},
+    accountTurnedIn = {},
+    turnedInTitles = {},
+    recent = {},
+    canReadIds = false,
+  }
+  local okRead, canRead = pcall(Quests.canReadQuestIds)
+  ledger.canReadIds = okRead and canRead or false
+
+  for id in pairs(self.cdb and self.cdb.turnedIn or {}) do
+    local numeric = tonumber(id)
+    if numeric then
+      ledger.turnedIn[numeric] = true
+      ensureIdRecord(ledger, numeric)
+    end
+  end
+  if type(pfQuest_history) == "table" then
+    for id in pairs(pfQuest_history) do
+      local numeric = tonumber(id)
+      if numeric then
+        ledger.accountTurnedIn[numeric] = true
+        ensureIdRecord(ledger, numeric)
+      end
+    end
+  end
+  for id in pairs(self._recentAccept or {}) do
+    local numeric = tonumber(id)
+    if numeric then
+      ledger.recent[numeric] = true
+      ensureIdRecord(ledger, numeric)
+    end
+  end
+  for title in pairs(self._turnedInTitles or {}) do
+    local key = titleKey(title)
+    if key then
+      ledger.turnedInTitles[key] = true
+    end
+  end
+
+  local n = 0
+  if GetNumQuestLogEntries then
+    local okCount, count = pcall(GetNumQuestLogEntries)
+    if okCount and type(count) == "number" then
+      n = count
+    end
+  end
+  for i = 1, n do
+    if GetQuestLogTitle then
+      local okTitle, title, _, _, isHeader, isComplete = pcall(GetQuestLogTitle, i)
+      if okTitle and title and not isHeader then
+        local complete = isComplete == 1 or isComplete == -1
+        local key = titleKey(title)
+        local titleRec = ledger.byTitle[key]
+        if not titleRec then
+          titleRec = { title = title, ids = {}, inLog = false, complete = false, logIndex = nil }
+          ledger.byTitle[key] = titleRec
+        end
+        titleRec.inLog = true
+        titleRec.logIndex = titleRec.logIndex or i
+        titleRec.complete = titleRec.complete or complete
+
+        local okIds, ids = pcall(function()
+          return self.GetQuestIdsForLogIndex and self:GetQuestIdsForLogIndex(i)
+        end)
+        if not okIds then
+          ids = nil
+        end
+        for _, rawId in ipairs(ids or {}) do
+          local id = tonumber(rawId)
+          if id then
+            local rec = ledger.byId[id]
+            if not rec then
+              rec = { id = id, title = title, inLog = false, complete = false, logIndex = nil }
+              ledger.byId[id] = rec
+              table.insert(ledger.logIds, id)
+            end
+            rec.inLog = true
+            rec.logIndex = rec.logIndex or i
+            rec.complete = rec.complete or complete
+            local seen = false
+            for _, existing in ipairs(titleRec.ids) do
+              if existing == id then
+                seen = true
+                break
+              end
+            end
+            if not seen then
+              table.insert(titleRec.ids, id)
+            end
+          end
+        end
+      end
+    end
+  end
+
+  self._questLedger = ledger
+  self._questLedgerDirty = false
+  return ledger
+end
+
+function TG:GetQuestLedger()
+  if self._questLedgerDirty or not self._questLedger then
+    return self:RefreshQuestLedger()
+  end
+  return self._questLedger
+end
+
+function TG:GetQuestEvidence(id, title)
+  local ledger = self:GetQuestLedger()
+  local numericId = tonumber(id)
+  local rec = numericId and ledger.byId[numericId] or nil
+  local key = titleKey(title)
+  local titleRec = key and ledger.byTitle[key] or nil
+  if not rec and titleRec and titleRec.ids[1] then
+    rec = ledger.byId[titleRec.ids[1]]
+  end
+  if not rec and not titleRec then
+    return nil
+  end
+
+  local result = {
+    id = rec and rec.id or (titleRec and titleRec.ids[1] or nil),
+    title = (rec and rec.title) or (titleRec and titleRec.title) or title,
+    inLog = false,
+    complete = false,
+    turnedIn = false,
+    logIndex = nil,
+  }
+  if rec then
+    result.inLog = rec.inLog == true
+    result.complete = rec.complete == true
+    result.logIndex = rec.logIndex
+  end
+  if titleRec then
+    result.inLog = result.inLog or titleRec.inLog == true
+    result.complete = result.complete or titleRec.complete == true
+    result.logIndex = result.logIndex or titleRec.logIndex
+    result.title = result.title or titleRec.title
+  end
+  if result.id then
+    local numeric = tonumber(result.id)
+    result.turnedIn = not result.inLog
+      and (
+        ledger.turnedIn[numeric]
+        or ledger.accountTurnedIn[numeric]
+        or (self.cdb and self.cdb.turnedIn and self.cdb.turnedIn[numeric])
+        or (type(pfQuest_history) == "table" and pfQuest_history[numeric])
+      )
+      or false
+  end
+  if key and not result.inLog and ledger.turnedInTitles[key] then
+    result.turnedIn = true
+  end
+  return result
+end
+
+function TG:GetElementQuestIds(el)
+  if el and el.questIds and table.getn(el.questIds) > 0 then
+    return el.questIds
+  end
+  local ids = {}
+  if el then
+    local id = tonumber(el.args and el.args[1])
+    if id then
+      table.insert(ids, math.abs(id))
+    end
+  end
+  return ids
+end
+
 function TG:ResolveQuestTitle(el)
-  local id = el.args and tonumber(el.args[1])
+  local ids = self:GetElementQuestIds(el)
+  local id = ids[1]
   local title
   if el.text and el.text ~= "" then
     title = el.text
@@ -158,6 +358,7 @@ function TG:OnQuestAccepted(questLogIndex)
     self._turnedInTitles[title] = nil
     self._turninCandidates[title] = nil
   end
+  self:InvalidateQuestLedger()
 end
 
 function TG:IsQuestTurnedIn(id)
@@ -165,16 +366,14 @@ function TG:IsQuestTurnedIn(id)
   if not id then
     return false
   end
-  if self.GetQuestLogIndexById and self:GetQuestLogIndexById(id) then
+  local evidence = self:GetQuestEvidence(id)
+  if not evidence then
     return false
   end
-  if pfQuest_history and pfQuest_history[id] then
-    return true
+  if evidence.inLog then
+    return false
   end
-  if self.cdb and self.cdb.turnedIn and self.cdb.turnedIn[id] then
-    return true
-  end
-  return false
+  return evidence.turnedIn == true
 end
 
 function TG:MarkQuestTurnedIn(id, title)
@@ -185,9 +384,11 @@ function TG:MarkQuestTurnedIn(id, title)
   if title then
     self._turnedInTitles[title] = true
   end
+  self:InvalidateQuestLedger()
 end
 
 function TG:ScanQuestTurnins()
+  self:InvalidateQuestLedger()
   local present = {}
   local n = GetNumQuestLogEntries()
   for i = 1, n do
@@ -211,4 +412,8 @@ function TG:ScanQuestTurnins()
       self._pendingTurnin[title] = nil
     end
   end
+end
+
+Ledger.refresh = function(self)
+  return TG:RefreshQuestLedger()
 end

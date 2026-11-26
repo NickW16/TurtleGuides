@@ -98,4 +98,33 @@ step
     env.eq(second.args[2], "40")
     env.eq(second.gotoZone, "Dun Morogh")
   end,
+
+  test_step_index_labels_and_skip_bookkeeping = function()
+    local TG = fresh()
+    local guide = TG.Parser.ParseGuide(
+      [[
+#name Test Guide
+#group Classic
+step
+#label Foo
+.accept 1
+step
+#completewith Foo
+.accept 2
+step
+#completewith next
+.accept 3
+step
+.accept 4
+]],
+      "test.lua"
+    )
+    env.eq(guide.steps[1].index, 1)
+    env.eq(guide.steps[2].index, 2)
+    env.eq(guide.steps[3].index, 3)
+    env.eq(guide.labels.Foo, 1)
+    env.eq(guide.steps[2].completewithIndex, 1)
+    env.eq(guide.steps[3].completewithIndex, 4)
+    env.eq(guide.steps[1].stepSkip, nil)
+  end,
 }

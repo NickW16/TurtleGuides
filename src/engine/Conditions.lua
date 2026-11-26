@@ -158,10 +158,14 @@ local function checkQuestOn(id)
   if Quests.recentlyAccepted(id) then
     return true
   end
+  local evidence = TG:GetQuestEvidence(id)
+  if evidence then
+    return evidence.inLog == true
+  end
   if not Quests.canReadQuestIds() then
     return nil
   end
-  return (TG.GetQuestLogIndexById and TG:GetQuestLogIndexById(id)) ~= nil
+  return false
 end
 
 local function checkQuestTurnedIn(id)
@@ -169,10 +173,62 @@ local function checkQuestTurnedIn(id)
   if not id then
     return nil
   end
-  if TG:IsQuestTurnedIn(id) then
+  local evidence = TG:GetQuestEvidence(id)
+  if evidence then
+    return evidence.turnedIn == true
+  end
+  if not Quests.canReadQuestIds() then
+    return nil
+  end
+  return false
+end
+
+local function checkQuestComplete(id)
+  id = tonumber(id)
+  if not id then
+    return nil
+  end
+  local evidence = TG:GetQuestEvidence(id)
+  if not evidence then
+    if not Quests.canReadQuestIds() then
+      return nil
+    end
+    return false
+  end
+  if evidence.complete or evidence.turnedIn then
     return true
   end
-  return nil
+  return false
+end
+
+local function elementQuestIds(el)
+  if el and el.questIds and table.getn(el.questIds) > 0 then
+    return el.questIds
+  end
+  local ids = {}
+  for _, arg in ipairs(el and el.args or {}) do
+    local id = tonumber(arg)
+    if id then
+      table.insert(ids, math.abs(id))
+    end
+  end
+  return ids
+end
+
+local function anyQuestValue(ids, fn)
+  local unknown = false
+  for _, id in ipairs(ids) do
+    local value = fn(id)
+    if value == true then
+      return true
+    elseif value == nil then
+      unknown = true
+    end
+  end
+  if unknown then
+    return nil
+  end
+  return false
 end
 
 local function isXpCapElement(el)
@@ -202,9 +258,11 @@ end
 function TG:EvaluateConditions(step)
   local unknown = false
   self._skipDebug = nil
+  self._unknownConditionTags = {}
   for _, el in ipairs(step.elements or {}) do
     if el.t == "cmd" and (Shared.CONDITION_TAGS[el.tag] or isXpCapElement(el)) then
-      local tag, a = el.tag, (el.args or {})
+      local tag = el.tag
+      local ids = elementQuestIds(el)
       local value
       if tag == "itemcount" then
         value = checkItemCountCondition(el)
@@ -212,44 +270,32 @@ function TG:EvaluateConditions(step)
         value = checkCooldownCondition(el)
       elseif tag == "xp" and isXpCapElement(el) then
         value = checkXpCap(el)
-      elseif tag == "isOnQuest" and a[1] then
-        value = checkQuestOn(a[1])
-      elseif tag == "isNotOnQuest" and a[1] then
-        local on = checkQuestOn(a[1])
+      elseif tag == "isOnQuest" and ids[1] then
+        value = anyQuestValue(ids, checkQuestOn)
+      elseif tag == "isNotOnQuest" and ids[1] then
+        local on = anyQuestValue(ids, checkQuestOn)
         if on ~= nil then
           value = not on
         end
-      elseif tag == "isQuestTurnedIn" and a[1] then
-        value = checkQuestTurnedIn(a[1])
-      elseif tag == "isQuestAvailable" and a[1] then
-        local done = checkQuestTurnedIn(a[1])
+      elseif tag == "isQuestTurnedIn" and ids[1] then
+        value = anyQuestValue(ids, checkQuestTurnedIn)
+      elseif tag == "isQuestAvailable" and ids[1] then
+        local done = anyQuestValue(ids, checkQuestTurnedIn)
         if done ~= nil then
           value = not done
         end
-      elseif tag == "isQuestComplete" and tonumber(a[1]) then
-        local id = tonumber(a[1])
-        local on = checkQuestOn(id)
-        if on == true then
-          local idx = TG.GetQuestLogIndexById and TG:GetQuestLogIndexById(id)
-          local done
-          if idx and GetQuestLogTitle then
-            local _, _, _, _, _, d = GetQuestLogTitle(idx)
-            done = d
-          end
-          if done == 1 then
-            value = true
-          elseif done == 0 then
-            value = false
-          end
-        elseif on == false then
-          value = checkQuestTurnedIn(id)
-        end
+      elseif tag == "isQuestComplete" and ids[1] then
+        value = anyQuestValue(ids, checkQuestComplete)
+      end
+      if value ~= nil and el.reverse then
+        value = not value
       end
       if value == false then
         self._skipDebug = "condition " .. tostring(tag) .. " not met"
         return false
       elseif value == nil then
         unknown = true
+        self._unknownConditionTags[tag] = true
         self._skipDebug = "condition " .. tostring(tag) .. " unreadable"
       end
     end
@@ -270,6 +316,7 @@ function TG:ShouldSkipStepByZone(step)
     return false
   end
   local unknown = false
+  self._unknownZone = false
   for _, el in ipairs(step.elements) do
     if el.t == "cmd" and (el.tag == "zoneskip" or el.tag == "subzoneskip") then
       local name = el.args and el.args[1]
@@ -299,15 +346,68 @@ function TG:ShouldSkipStepByZone(step)
     end
   end
   if unknown then
+    self._unknownZone = true
     return nil
   end
   self._skipDebug = nil
   return false
 end
 
+local function unknownStepKey(self, step)
+  if step.index and self.currentGuide then
+    return tostring(self.currentGuide.key or "") .. ":" .. tostring(step.index)
+  end
+  return tostring(step)
+end
+
+function TG:ResolveUnknownStepSkip(step, reason)
+  if not step then
+    return nil
+  end
+  self._unknownGateSince = self._unknownGateSince or {}
+  local key = unknownStepKey(self, step)
+  local now = GetTime and GetTime() or 0
+  local since = self._unknownGateSince[key]
+  if not since then
+    since = now
+    self._unknownGateSince[key] = since
+  end
+  if now - since < Shared.UNKNOWN_STATE_TIMEOUT then
+    self._skipDebug = "unreadable " .. tostring(reason) .. " - holding"
+    return nil
+  end
+  local questUnknown = false
+  for tag in pairs(self._unknownConditionTags or {}) do
+    if Shared.UNKNOWN_QUEST_GATES[tag] then
+      questUnknown = true
+      break
+    end
+  end
+  self._skipDebug = "unreadable "
+    .. tostring(reason)
+    .. " timed out; "
+    .. (questUnknown and "treating prerequisite as missing" or "keeping step")
+  return questUnknown
+end
+
+function TG:ClearStepSkipStates(guide)
+  for _, step in ipairs(guide and guide.steps or {}) do
+    step.stepSkip = nil
+    step.stepSkipReason = nil
+  end
+  self._unknownGateSince = {}
+end
+
 function TG:StepSkipState(step)
+  self._skipDebug = nil
+  self._unknownConditionTags = {}
+  self._unknownZone = false
   if self.ShouldSkipStepForHardcoreMode and self:ShouldSkipStepForHardcoreMode(step) then
     self._skipDebug = "softcore step in hardcore mode"
+    if step then
+      step.stepSkip = true
+      step.stepSkipReason = self._skipDebug
+    end
     return true
   end
   local zone, cond
@@ -315,18 +415,28 @@ function TG:StepSkipState(step)
     zone = self:ShouldSkipStepByZone(step)
   end
   if zone == true then
+    if step then
+      step.stepSkip = true
+      step.stepSkipReason = self._skipDebug
+    end
     return true
   end
   if self.EvaluateConditions then
     cond = self:EvaluateConditions(step)
   end
+  local state
   if cond == false then
-    return true
+    state = true
+  elseif zone == nil or cond == nil then
+    state = self:ResolveUnknownStepSkip(step, zone == nil and "zone skip" or "condition")
+  else
+    state = false
   end
-  if zone == nil or cond == nil then
-    return nil
+  if step then
+    step.stepSkip = state
+    step.stepSkipReason = self._skipDebug or nil
   end
-  return false
+  return state
 end
 
 function TG:AutoSkipEnabled()
@@ -341,3 +451,6 @@ Conditions.canReadBags = canReadBags
 Conditions.checkItemCountCondition = checkItemCountCondition
 Conditions.checkQuestOn = checkQuestOn
 Conditions.checkQuestTurnedIn = checkQuestTurnedIn
+Conditions.checkQuestComplete = checkQuestComplete
+Conditions.elementQuestIds = elementQuestIds
+Conditions.anyQuestValue = anyQuestValue

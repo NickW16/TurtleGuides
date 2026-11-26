@@ -1,6 +1,7 @@
 -- live objective detection and step completion
 local TG = _G.TurtleGuides
 local Shared = TG.Engine.Shared
+local Quests = TG.Engine.Quests
 local strtrim = TG.Util.strtrim
 local Completion = {}
 TG.Engine.Completion = Completion
@@ -31,48 +32,40 @@ function TG:DetectElementDone(el)
   local tag = el.tag
   if tag == "accept" then
     local title, id = self:ResolveQuestTitle(el)
-    if title and self:IsQuestInLog(title) then
+    local evidence = self:GetQuestEvidence(id, title)
+    if evidence and (evidence.inLog or evidence.turnedIn) then
       return true
     end
-    if id and self.GetQuestLogIndexById and self:GetQuestLogIndexById(id) then
-      return true
-    end
-    if id and self._recentAccept then
-      local recent = self._recentAccept[id]
-      if recent and (GetTime and GetTime() or 0) - recent < Shared.RECENT_ACCEPT_WINDOW then
-        return true
-      end
-    end
-    if id and self.IsQuestTurnedIn and self:IsQuestTurnedIn(id) then
+    if id and Quests.recentlyAccepted(id) then
       return true
     end
     return false
   elseif tag == "turnin" then
     local title, id = self:ResolveQuestTitle(el)
-    if id and self.IsQuestTurnedIn and self:IsQuestTurnedIn(id) then
+    local evidence = self:GetQuestEvidence(id, title)
+    if evidence and evidence.turnedIn then
       return true
     end
-    if title and self._turnedInTitles and self._turnedInTitles[title] then
+    if el.skipIfMissing and (not evidence or not evidence.inLog) then
       return true
-    end
-    if title and not self:IsQuestInLog(title) then
-      if id and pfQuest_history and pfQuest_history[id] then
-        return true
-      end
-      return false
     end
     return false
   elseif tag == "complete" then
     local title, id = self:ResolveQuestTitle(el)
     local objNum = el.args and tonumber(el.args[2])
-    if characterQuestTurnedIn(self, id, title) then
+    local evidence = self:GetQuestEvidence(id, title)
+    local characterDone = characterQuestTurnedIn(self, id, title)
+    if el.skipIfMissing and (not evidence or (not evidence.inLog and not characterDone)) then
+      return true
+    end
+    if characterDone then
       return true
     end
     if itemObjectiveSatisfied(self, el) then
       return true
     end
-    local logIdx
-    if title and self.GetQuestLogIndexByTitle then
+    local logIdx = evidence and evidence.logIndex or nil
+    if not logIdx and title and self.GetQuestLogIndexByTitle then
       logIdx = self:GetQuestLogIndexByTitle(title)
     end
     if not logIdx and id and self.GetQuestLogIndexById then
