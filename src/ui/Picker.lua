@@ -286,7 +286,7 @@ local function makePickerRow(picker, i)
   chevron:SetWidth(12)
   chevron:SetHeight(12)
   chevron:SetPoint("LEFT", row, "LEFT", 2, 0)
-  chevron:SetVertexColor(0.85, 0.85, 0.88)
+  chevron:SetVertexColor(0.82, 0.82, 0.82)
   row.chevron = chevron
   row:SetScript("OnClick", function()
     if row.index then
@@ -612,9 +612,10 @@ function TG:RefreshGuidePicker()
     if item then
       if item.kind == "header" then
         row.text:SetText(item.label)
-        row.text:SetTextColor(0.85, 0.85, 0.88)
+        row.text:SetTextColor(ACTIVE_COLOR[1], ACTIVE_COLOR[2], ACTIVE_COLOR[3])
         row.text:ClearAllPoints()
         row.text:SetPoint("LEFT", row, "LEFT", 16, 0)
+        row.chevron:SetVertexColor(0.82, 0.82, 0.82)
         row.chevron:SetTexture(
           item.hidden and "Interface\\AddOns\\TurtleGuides\\Media\\ChevronDown_Flat"
             or "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp_Flat"
