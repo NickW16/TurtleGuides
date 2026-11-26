@@ -50,7 +50,7 @@ return {
     TG:ArrowUpdate()
     env.eq(env.texts[1].value, "100 yd")
     env.eq(env.textures[3].coords ~= nil, true)
-    env.eq(env.textures[3].color, nil)
+    env.eq(env.textures[3].color ~= nil, true)
   end,
 
   test_driver_updates_pointer_every_frame = function()

@@ -17,7 +17,38 @@ local DIAL_SHEET = {
   h = 1 / 8,
 }
 
+local ARROW_COLORS = {
+  { key = "royal", r = 0.30, g = 0.50, b = 1.00 },
+  { key = "purple", r = 0.72, g = 0.45, b = 1.00 },
+  { key = "red", r = 1.00, g = 0.35, b = 0.35 },
+  { key = "green", r = 0.35, g = 0.90, b = 0.45 },
+  { key = "gold", r = 1.00, g = 0.82, b = 0.25 },
+  { key = "white", r = 1.00, g = 1.00, b = 1.00 },
+}
+
 local frame, ring, dial, pointer, distText, driver
+
+function TG:ArrowColors()
+  return ARROW_COLORS
+end
+
+function TG:GetArrowColor()
+  local key = TG.db and TG.db.arrowColor or "royal"
+  for _, c in ipairs(ARROW_COLORS) do
+    if c.key == key then
+      return c
+    end
+  end
+  return ARROW_COLORS[1]
+end
+
+function TG:ApplyArrowColor()
+  if not pointer then
+    return
+  end
+  local c = self:GetArrowColor()
+  pointer:SetVertexColor(c.r, c.g, c.b, 1)
+end
 
 local function point(dx, dy)
   local facing = GetPlayerFacing and GetPlayerFacing()
@@ -128,6 +159,7 @@ local function build()
   pointer:SetHeight(SHEET.height)
   pointer:SetPoint("TOP", frame, "TOP", 0, 0)
   pointer:SetTexCoord(0, SHEET.w, 0, SHEET.h)
+  TG:ApplyArrowColor()
 
   distText = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   distText:SetPoint("TOP", pointer, "BOTTOM", 0, -2)

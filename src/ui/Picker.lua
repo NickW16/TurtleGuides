@@ -1,17 +1,19 @@
--- spotlight style guide picker with a custom search field
 local TG = _G.TurtleGuides
 local State = TG.UI.State
 local Text = TG.UI.Text
 
 local ROW_HEIGHT = 16
-local WINDOW_W = 400
+local WINDOW_W = 280
 local WINDOW_H = 360
+local FOOTER_H = 16
+local SCROLLBAR_W = 8
 local BAR = "Interface\\AddOns\\TurtleGuides\\Media\\BarTexture"
 local DOT = "Interface\\Buttons\\WHITE8X8"
-local FLIP_W = 10
-local SIDEBAR_W = 96
 local TITLE_COLOR = { 0.85, 0.85, 0.88 }
+local MUTED = { 0.70, 0.70, 0.72 }
 local ACTIVE_COLOR = { 0.85, 0.75, 0.40 }
+local GITHUB_URL = "https://github.com/NickW16/TurtleGuides"
+local KOFI_URL = "https://ko-fi.com/vittv"
 
 local savedEscape
 local escapeBound = false
@@ -60,39 +62,104 @@ local function panel(frame)
   frame:SetBackdropBorderColor(0.40, 0.36, 0.30, 0.90)
 end
 
-local function applyMenuLayout(picker, sidebarShown)
-  local x = sidebarShown and (2 + SIDEBAR_W + 2) or 14
-  local width = WINDOW_W - x - 8
-  picker.fieldBox:SetPoint("TOPLEFT", picker, "TOPLEFT", x, -32)
+local function showLinkPopup(url)
+  local popup = State.linkPopup
+  if not popup then
+    popup = CreateFrame("Frame", "TurtleGuidesLinkPopup", UIParent)
+    State.linkPopup = popup
+    popup:SetWidth(320)
+    popup:SetHeight(72)
+    popup:SetPoint("CENTER", UIParent, "CENTER", 0, 40)
+    popup:SetFrameStrata("DIALOG")
+    panel(popup)
+    popup:EnableMouse(true)
+    popup:Hide()
+
+    local label = popup:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    label:SetPoint("TOPLEFT", popup, "TOPLEFT", 8, -8)
+    label:SetText("Copy link")
+    label:SetTextColor(TITLE_COLOR[1], TITLE_COLOR[2], TITLE_COLOR[3])
+    Text.register(label, 10)
+
+    local close = CreateFrame("Button", nil, popup)
+    close:SetWidth(16)
+    close:SetHeight(16)
+    close:SetPoint("TOPRIGHT", popup, "TOPRIGHT", -4, -3)
+    close:SetBackdrop({
+      bgFile = "Interface\\Buttons\\WHITE8X8",
+      edgeFile = "Interface\\Buttons\\WHITE8X8",
+      tile = true,
+      tileSize = 4,
+      edgeSize = 1,
+      insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    })
+    close:SetBackdropColor(0, 0, 0, 0)
+    close:SetBackdropBorderColor(0.40, 0.36, 0.30, 0.90)
+    local closeIcon = close:CreateTexture(nil, "ARTWORK")
+    closeIcon:SetWidth(10)
+    closeIcon:SetHeight(10)
+    closeIcon:SetPoint("CENTER", close, "CENTER", 0, 0)
+    closeIcon:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
+    closeIcon:SetVertexColor(0.85, 0.75, 0.40, 1)
+    close:SetScript("OnEnter", function()
+      closeIcon:SetVertexColor(1.00, 0.92, 0.55, 1)
+    end)
+    close:SetScript("OnLeave", function()
+      closeIcon:SetVertexColor(0.85, 0.75, 0.40, 1)
+    end)
+    close:SetScript("OnClick", function()
+      popup:Hide()
+    end)
+
+    local box = CreateFrame("EditBox", "TurtleGuidesLinkBox", popup)
+    box:SetPoint("TOPLEFT", popup, "TOPLEFT", 8, -28)
+    box:SetPoint("BOTTOMRIGHT", popup, "BOTTOMRIGHT", -8, 8)
+    box:SetAutoFocus(false)
+    box:SetTextInsets(6, 6, 0, 0)
+    box:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8" })
+    box:SetBackdropColor(0.10, 0.10, 0.10, 0.95)
+    if box.SetTextColor then
+      box:SetTextColor(0.95, 0.95, 0.95)
+    end
+    if box.SetFont then
+      Text.register(box, 11)
+    end
+    box:SetScript("OnEscapePressed", function()
+      popup:Hide()
+    end)
+    box:SetScript("OnEditFocusGained", function()
+      this:HighlightText()
+    end)
+    popup.box = box
+  end
+  popup.box:SetText(url or "")
+  popup:Show()
+  if popup.box.SetFocus then
+    popup.box:SetFocus()
+  end
+  popup.box:HighlightText()
+end
+
+local function applyMenuLayout(picker)
+  local width = WINDOW_W - 16
+  picker.fieldBox:ClearAllPoints()
+  picker.fieldBox:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -32)
   picker.fieldBox:SetWidth(width)
   picker.search:SetWidth(width - 28)
-  picker.scroll:SetPoint("TOPLEFT", picker, "TOPLEFT", x, -60)
-  picker.content:SetWidth(width)
+  picker.scroll:ClearAllPoints()
+  picker.scroll:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -60)
+  picker.scroll:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 8 + FOOTER_H)
+  local contentW = width - SCROLLBAR_W
+  picker.content:SetWidth(contentW)
   for _, row in ipairs(picker.rows or {}) do
-    row:SetWidth(width)
+    row:SetWidth(contentW)
   end
   local settings = State.settings
   if settings then
-    settings:SetPoint("TOPLEFT", picker, "TOPLEFT", x, -32)
-    settings:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 8)
+    settings:ClearAllPoints()
+    settings:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -32)
+    settings:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 8 + FOOTER_H)
   end
-  if picker.sidebar then
-    if sidebarShown then
-      picker.sidebar:Show()
-    else
-      picker.sidebar:Hide()
-    end
-  end
-  if picker.flipper then
-    picker.flipper:SetPoint("LEFT", picker, "LEFT", sidebarShown and x - FLIP_W or 1, 0)
-    if picker.flipper.arrow then
-      picker.flipper.arrow:SetTexture(
-        sidebarShown and "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronRight_Flat"
-          or "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronLeft_Flat"
-      )
-    end
-  end
-  picker._sidebarShown = sidebarShown and true or false
 end
 
 local function moveSelection(delta)
@@ -164,15 +231,16 @@ function TG:ShowMenu(view)
       State.settings:Show()
     end
   end
+  picker._view = guides and "guides" or "settings"
   if picker.title then
-    picker.title:SetText("TurtleGuides 0.1.0")
+    picker.title:SetText("TurtleGuides")
   end
-  for _, button in ipairs(picker.sidebarButtons or {}) do
-    local active = (guides and button.view == "guides") or (not guides and button.view == "settings")
-    local color = active and ACTIVE_COLOR or TITLE_COLOR
-    button.text:SetTextColor(color[1], color[2], color[3])
+  for _, tab in ipairs(picker.viewTabs or {}) do
+    local active = tab.view == picker._view
+    local color = active and ACTIVE_COLOR or MUTED
+    tab.text:SetTextColor(color[1], color[2], color[3])
   end
-  applyMenuLayout(picker, picker._sidebarShown)
+  applyMenuLayout(picker)
   picker:Show()
   captureEscape(picker.close)
   if guides then
@@ -197,29 +265,15 @@ function TG:ShowSettings()
   self:ShowMenu("settings")
 end
 
-function TG:ToggleSidebar()
+function TG:ToggleMenuView()
   local picker = State.picker
-  if not picker then
-    return
-  end
-  applyMenuLayout(picker, not picker._sidebarShown)
-end
-
-function TG:ToggleSettingsDocked()
-  self:ToggleSidebar()
-end
-
-function TG:RefreshPickerFlipper()
-  local picker = State.picker
-  if not picker then
-    return
-  end
-  applyMenuLayout(picker, picker._sidebarShown)
+  local view = picker and picker._view == "settings" and "guides" or "settings"
+  self:ShowMenu(view)
 end
 
 local function makePickerRow(picker, i)
   local row = CreateFrame("Button", nil, picker.content)
-  row:SetWidth(WINDOW_W - 16)
+  row:SetWidth(WINDOW_W - 16 - SCROLLBAR_W)
   row:SetHeight(ROW_HEIGHT)
   row:SetPoint("TOPLEFT", picker.content, "TOPLEFT", 0, -(i - 1) * ROW_HEIGHT)
   local text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -234,7 +288,7 @@ local function makePickerRow(picker, i)
   chevron:SetWidth(12)
   chevron:SetHeight(12)
   chevron:SetPoint("LEFT", row, "LEFT", 2, 0)
-  chevron:SetVertexColor(0.85, 0.85, 0.88)
+  chevron:SetVertexColor(0.82, 0.82, 0.82)
   row.chevron = chevron
   row:SetScript("OnClick", function()
     if row.index then
@@ -257,6 +311,10 @@ end
 function TG:CreateGuidePicker()
   local picker = CreateFrame("Frame", "TurtleGuidesPickerFrame", UIParent)
   State.picker = picker
+  picker:SetFrameStrata("HIGH")
+  if picker.SetToplevel then
+    picker:SetToplevel(true)
+  end
   picker:SetWidth(WINDOW_W)
   picker:SetHeight(WINDOW_H)
   picker:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
@@ -290,47 +348,17 @@ function TG:CreateGuidePicker()
 
   local title = picker:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   title:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -5)
-  title:SetText("TurtleGuides 0.1.0")
+  title:SetText("TurtleGuides")
   title:SetTextColor(TITLE_COLOR[1], TITLE_COLOR[2], TITLE_COLOR[3])
   Text.register(title, 12)
   picker.title = title
 
-  local sidebar = CreateFrame("Frame", nil, picker)
-  sidebar:SetWidth(SIDEBAR_W)
-  sidebar:SetPoint("TOPLEFT", picker, "TOPLEFT", 2, -26)
-  sidebar:SetPoint("BOTTOMLEFT", picker, "BOTTOMLEFT", 2, 8)
-  sidebar:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8" })
-  sidebar:SetBackdropColor(0.09, 0.09, 0.10, 0.95)
-  picker.sidebar = sidebar
-  picker._sidebarShown = true
-  picker.sidebarButtons = {}
-
-  local function sidebarButton(label, y, view)
-    local button = CreateFrame("Button", nil, sidebar)
-    button:SetWidth(SIDEBAR_W - 4)
-    button:SetHeight(16)
-    button:SetPoint("TOPLEFT", sidebar, "TOPLEFT", 2, y)
-    local text = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    text:SetPoint("LEFT", button, "LEFT", 2, 0)
-    text:SetText(label)
-    text:SetTextColor(TITLE_COLOR[1], TITLE_COLOR[2], TITLE_COLOR[3])
-    Text.register(text, 10)
-    button.text = text
-    button.view = view
-    button:SetScript("OnClick", function()
-      TG:ShowMenu(view)
-    end)
-    table.insert(picker.sidebarButtons, button)
-    return button
-  end
-  sidebarButton("Guides", -4, "guides")
-  sidebarButton("Settings", -22, "settings")
-
-  local flipper = CreateFrame("Button", "TurtleGuidesPickerFlipper", picker)
-  flipper:SetWidth(FLIP_W)
-  flipper:SetHeight(28)
-  flipper:SetPoint("LEFT", picker, "LEFT", 1, 0)
-  flipper:SetBackdrop({
+  local close = CreateFrame("Button", "TurtleGuidesMenuCloseButton", picker)
+  picker.close = close
+  close:SetWidth(16)
+  close:SetHeight(16)
+  close:SetPoint("TOPRIGHT", picker, "TOPRIGHT", -4, -3)
+  close:SetBackdrop({
     bgFile = "Interface\\Buttons\\WHITE8X8",
     edgeFile = "Interface\\Buttons\\WHITE8X8",
     tile = true,
@@ -338,33 +366,107 @@ function TG:CreateGuidePicker()
     edgeSize = 1,
     insets = { left = 1, right = 1, top = 1, bottom = 1 },
   })
-  flipper:SetBackdropColor(0.06, 0.06, 0.06, 0.95)
-  flipper:SetBackdropBorderColor(0.40, 0.36, 0.30, 0.90)
-  local flipperArrow = flipper:CreateTexture(nil, "ARTWORK")
-  flipperArrow:SetWidth(FLIP_W)
-  flipperArrow:SetHeight(FLIP_W)
-  flipperArrow:SetPoint("CENTER", flipper, "CENTER", 0, 0)
-  flipperArrow:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\NavChevronRight_Flat")
-  flipper.arrow = flipperArrow
-  flipper:SetScript("OnClick", function()
-    TG:ToggleSidebar()
+  close:SetBackdropColor(0, 0, 0, 0)
+  close:SetBackdropBorderColor(0.40, 0.36, 0.30, 0.90)
+  local closeIcon = close:CreateTexture(nil, "ARTWORK")
+  closeIcon:SetWidth(10)
+  closeIcon:SetHeight(10)
+  closeIcon:SetPoint("CENTER", close, "CENTER", 0, 0)
+  closeIcon:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
+  closeIcon:SetVertexColor(0.85, 0.75, 0.40, 1)
+  close.icon = closeIcon
+  close:SetScript("OnEnter", function()
+    closeIcon:SetVertexColor(1.00, 0.92, 0.55, 1)
   end)
-  picker.flipper = flipper
-
-  local close = CreateFrame("Button", "TurtleGuidesMenuCloseButton", picker)
-  picker.close = close
-  close:SetWidth(12)
-  close:SetHeight(12)
-  close:SetNormalTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
-  close:SetPushedTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
-  local closeIcon = close.GetNormalTexture and close:GetNormalTexture() or nil
-  if closeIcon and closeIcon.SetVertexColor then
-    closeIcon:SetVertexColor(0.85, 0.85, 0.88)
-  end
-  close:SetPoint("TOPRIGHT", picker, "TOPRIGHT", -6, -6)
+  close:SetScript("OnLeave", function()
+    closeIcon:SetVertexColor(0.85, 0.75, 0.40, 1)
+  end)
   close:SetScript("OnClick", function()
     TG:HideMenu()
   end)
+
+  local function viewTab(label, view, anchor, x)
+    local button = CreateFrame("Button", nil, picker)
+    button:SetHeight(14)
+    button:SetPoint("RIGHT", anchor, "LEFT", x, 0)
+    local text = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    text:SetPoint("RIGHT", button, "RIGHT", 0, 0)
+    text:SetText(label)
+    text:SetTextColor(MUTED[1], MUTED[2], MUTED[3])
+    Text.register(text, 10)
+    button.text = text
+    button:SetWidth(math.max(40, (text:GetStringWidth() or 40) + 2))
+    button:SetScript("OnClick", function()
+      TG:ShowMenu(view)
+    end)
+    button.view = view
+    return button
+  end
+
+  picker.settingsTab = viewTab("Settings", "settings", close, -8)
+  picker.guidesTab = viewTab("Guides", "guides", picker.settingsTab, -8)
+  picker.viewTabs = { picker.guidesTab, picker.settingsTab }
+
+  local footerBg = picker:CreateTexture(nil, "BORDER")
+  footerBg:SetTexture(BAR)
+  footerBg:SetPoint("BOTTOMLEFT", picker, "BOTTOMLEFT", 1, 1)
+  footerBg:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -1, 1)
+  footerBg:SetHeight(FOOTER_H)
+  footerBg:SetVertexColor(0.92, 0.90, 0.86, 1.00)
+
+  local footerLine = picker:CreateTexture(nil, "ARTWORK")
+  footerLine:SetTexture(DOT)
+  footerLine:SetPoint("BOTTOMLEFT", picker, "BOTTOMLEFT", 1, FOOTER_H)
+  footerLine:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -1, FOOTER_H)
+  footerLine:SetHeight(1)
+  footerLine:SetVertexColor(0.85, 0.85, 0.88, 0.08)
+
+  local function footerLink(name, label, texturePath, x, onClick)
+    local button = CreateFrame("Button", nil, picker)
+    button:SetHeight(14)
+    button:SetPoint("BOTTOMLEFT", picker, "BOTTOMLEFT", x, 1)
+    local icon = button:CreateTexture(nil, "ARTWORK")
+    icon:SetWidth(12)
+    icon:SetHeight(12)
+    icon:SetPoint("LEFT", button, "LEFT", 0, 0)
+    icon:SetTexture(texturePath)
+    icon:SetVertexColor(0.80, 0.80, 0.82, 1)
+
+    local text = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    text:SetPoint("LEFT", icon, "RIGHT", 4, 0)
+    text:SetText(label)
+    text:SetTextColor(MUTED[1], MUTED[2], MUTED[3])
+    Text.register(text, 10)
+
+    button:SetWidth(16 + math.max(28, (text:GetStringWidth() or 28) + 2))
+    button.icon = icon
+    button.label = text
+    button.name = name
+    button:SetScript("OnEnter", function()
+      icon:SetVertexColor(1, 1, 1, 1)
+      text:SetTextColor(1, 1, 1)
+    end)
+    button:SetScript("OnLeave", function()
+      icon:SetVertexColor(0.80, 0.80, 0.82, 1)
+      text:SetTextColor(MUTED[1], MUTED[2], MUTED[3])
+    end)
+    button:SetScript("OnClick", onClick)
+    return button
+  end
+
+  picker.githubButton = footerLink("GitHub", "Source", "Interface\\AddOns\\TurtleGuides\\Media\\GitHub", 8, function()
+    showLinkPopup(GITHUB_URL)
+  end)
+  picker.kofiButton = footerLink("Ko-fi", "Ko-fi", "Interface\\AddOns\\TurtleGuides\\Media\\Kofi", 72, function()
+    showLinkPopup(KOFI_URL)
+  end)
+
+  local version = picker:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  version:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 3)
+  version:SetText("v0.1.0")
+  version:SetTextColor(MUTED[1], MUTED[2], MUTED[3])
+  Text.register(version, 10)
+  picker.version = version
 
   local fieldBox = CreateFrame("Frame", nil, picker)
   fieldBox:SetWidth(WINDOW_W - 16)
@@ -403,20 +505,19 @@ function TG:CreateGuidePicker()
   end)
   picker.search = search
 
-  local placeholder = picker:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  placeholder:SetDrawLayer("OVERLAY", 2)
-  placeholder:SetPoint("TOPLEFT", fieldBox, "TOPLEFT", 16, -2)
+  local placeholder = fieldBox:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  placeholder:SetPoint("LEFT", fieldBox, "LEFT", 16, 0)
   placeholder:SetText("Search Guides")
   Text.register(placeholder, 12)
-  placeholder:SetTextColor(1.00, 1.00, 1.00, 1.00)
-  placeholder:SetAlpha(1.00)
+  placeholder:SetTextColor(0.4, 0.4, 0.4, 1)
+  placeholder:SetAlpha(1)
   picker.placeholder = placeholder
 
   local scroll = CreateFrame("ScrollFrame", "TurtleGuidesPickerScroll", picker)
   scroll:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -60)
-  scroll:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 8)
+  scroll:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 8 + FOOTER_H)
   local content = CreateFrame("Frame", nil, scroll)
-  content:SetWidth(WINDOW_W - 16)
+  content:SetWidth(WINDOW_W - 16 - SCROLLBAR_W)
   content:SetHeight(1)
   scroll:SetScrollChild(content)
   picker.scroll = scroll
@@ -455,7 +556,7 @@ function TG:RefreshGuidePicker()
   end
   local query = string.lower(picker.search:GetText() or "")
   picker.placeholder:SetText(query == "" and "Search Guides" or "")
-  picker.placeholder:SetTextColor(1.00, 1.00, 1.00, 1.00)
+  picker.placeholder:SetTextColor(0.4, 0.4, 0.4, 1)
 
   local recommended = {}
   if self.SuggestGuides then
@@ -513,9 +614,10 @@ function TG:RefreshGuidePicker()
     if item then
       if item.kind == "header" then
         row.text:SetText(item.label)
-        row.text:SetTextColor(0.85, 0.85, 0.88)
+        row.text:SetTextColor(ACTIVE_COLOR[1], ACTIVE_COLOR[2], ACTIVE_COLOR[3])
         row.text:ClearAllPoints()
         row.text:SetPoint("LEFT", row, "LEFT", 16, 0)
+        row.chevron:SetVertexColor(0.82, 0.82, 0.82)
         row.chevron:SetTexture(
           item.hidden and "Interface\\AddOns\\TurtleGuides\\Media\\ChevronDown_Flat"
             or "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp_Flat"

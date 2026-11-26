@@ -29,10 +29,10 @@ return {
     env.eq(frame:IsShown(), true)
     env.eq(table.getn(frame.rows), 10)
     local arrow = frame.rows[1]
-    env.eq(string.find(arrow.text.value or "", "[ ]", 1, true) ~= nil, true)
+    env.eq(arrow.checked, false)
     arrow.scripts.OnClick()
     env.eq(TG.db.showArrow, true)
-    env.eq(string.find(arrow.text.value or "", "[x]", 1, true) ~= nil, true)
+    env.eq(arrow.checked, true)
   end,
 
   test_font_size_buttons_change_scale = function()
@@ -64,11 +64,11 @@ return {
     local TG = fresh()
     TG:ShowMenu("guides")
     local picker = TG.UI.State.picker
-    env.eq(picker.title.value, "TurtleGuides 0.1.0")
+    env.eq(picker.title.value, "TurtleGuides")
     env.eq(picker.fieldBox:IsVisible(), true)
     env.eq(TG.UI.State.settings, nil)
     TG:ShowMenu("settings")
-    env.eq(picker.title.value, "TurtleGuides 0.1.0")
+    env.eq(picker.title.value, "TurtleGuides")
     env.eq(picker.fieldBox:IsVisible(), false)
     env.eq(TG.UI.State.settings:IsShown(), true)
   end,

@@ -6,6 +6,7 @@ local defaults = {
   profile = {
     locked = false,
     showArrow = true,
+    arrowColor = "royal",
     arrowScale = 1.0,
     disableAutoSkip = false,
     autoTurnIn = false,

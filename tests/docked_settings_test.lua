@@ -51,64 +51,41 @@ return {
     local TG = fresh()
     TG:ShowMenu("guides")
     local picker = TG.UI.State.picker
-    env.eq(picker.width, 400)
+    env.eq(picker.width, 280)
     env.eq(picker.height, 360)
   end,
 
-  test_picker_has_sidebar_flipper = function()
+  test_view_tabs_show_active_state = function()
     local TG = fresh()
     TG:ShowMenu("guides")
     local picker = TG.UI.State.picker
-    env.eq(picker.sidebar ~= nil, true)
-    env.eq(picker.flipper ~= nil, true)
-    env.eq(string.find(picker.flipper.arrow.path or "", "NavChevron", 1, true) ~= nil, true)
-  end,
-
-  test_sidebar_starts_open_and_flipper_toggles_it = function()
-    local TG = fresh()
-    TG:ShowMenu("guides")
-    local picker = TG.UI.State.picker
-    env.eq(picker.sidebar:IsVisible(), true)
-    TG:ToggleSidebar()
-    env.eq(picker.sidebar:IsVisible(), false)
-    TG:ToggleSidebar()
-    env.eq(picker.sidebar:IsVisible(), true)
-  end,
-
-  test_flipper_uses_borderless_chevrons = function()
-    local TG = fresh()
-    TG:ShowMenu("guides")
-    local arrow = TG.UI.State.picker.flipper.arrow
-    env.eq(arrow.path, "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronRight_Flat")
-    TG:ToggleSidebar()
-    env.eq(arrow.path, "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronLeft_Flat")
-  end,
-
-  test_only_active_sidebar_item_is_gold = function()
-    local TG = fresh()
-    TG:ShowMenu("guides")
-    local buttons = TG.UI.State.picker.sidebarButtons
     local colors = {}
-    for i, button in ipairs(buttons) do
-      button.text.SetTextColor = function(_, r, g, b)
-        colors[i] = { r, g, b }
+    for _, tab in ipairs(picker.viewTabs) do
+      tab.text.SetTextColor = function(_, r, g, b)
+        colors[tab.view] = { r, g, b }
       end
     end
     TG:ShowMenu("guides")
-    env.eq(colors[1][3] < colors[2][3], true)
-    TG:ShowMenu("settings")
-    env.eq(colors[2][3] < colors[1][3], true)
+    env.eq(colors.guides[3] < colors.settings[3], true)
+    env.eq(picker.fieldBox:IsVisible(), true)
+    picker.settingsTab.scripts.OnClick()
+    env.eq(colors.settings[3] < colors.guides[3], true)
+    env.eq(picker.fieldBox:IsVisible(), false)
+    env.eq(TG.UI.State.settings:IsShown(), true)
+    picker.guidesTab.scripts.OnClick()
+    env.eq(colors.guides[3] < colors.settings[3], true)
+    env.eq(picker.fieldBox:IsVisible(), true)
   end,
 
-  test_menu_keeps_topbar = function()
+  test_footer_has_links_and_version = function()
     local TG = fresh()
     TG:ShowMenu("guides")
-    local bars = 0
-    for _, texture in ipairs(env.textures) do
-      if texture.path == "Interface\\AddOns\\TurtleGuides\\Media\\BarTexture" then
-        bars = bars + 1
-      end
-    end
-    env.eq(bars >= 1, true)
+    local picker = TG.UI.State.picker
+    env.eq(picker.version.value, "v0.1.0")
+    env.eq(picker.githubButton ~= nil, true)
+    env.eq(picker.kofiButton ~= nil, true)
+    picker.githubButton.scripts.OnClick()
+    env.eq(TG.UI.State.linkPopup:IsShown(), true)
+    env.eq(TG.UI.State.linkPopup.box:GetText(), "https://github.com/NickW16/TurtleGuides")
   end,
 }
