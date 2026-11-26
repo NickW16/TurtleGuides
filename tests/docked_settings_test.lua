@@ -20,6 +20,15 @@ local function fresh()
 end
 
 return {
+  test_escape_binding_is_temporary = function()
+    local TG = fresh()
+    env.bindings.ESCAPE = "TOGGLEGAMEMENU"
+    TG:ShowMenu("guides")
+    env.eq(env.bindings.ESCAPE, "CLICK TurtleGuidesMenuCloseButton:LeftButton")
+    TG:HideMenu()
+    env.eq(env.bindings.ESCAPE, "TOGGLEGAMEMENU")
+  end,
+
   test_menu_does_not_capture_keyboard = function()
     local TG = fresh()
     TG:ShowMenu("guides")

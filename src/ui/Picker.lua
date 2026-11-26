@@ -13,6 +13,36 @@ local SIDEBAR_W = 96
 local TITLE_COLOR = { 0.85, 0.85, 0.88 }
 local ACTIVE_COLOR = { 0.85, 0.75, 0.40 }
 
+local savedEscape
+local escapeBound = false
+
+local function captureEscape(button)
+  if escapeBound or not SetBinding or not GetBindingAction then
+    return
+  end
+  local name = button and button.GetName and button:GetName()
+  if not name then
+    return
+  end
+  savedEscape = GetBindingAction("ESCAPE")
+  if SetBinding("ESCAPE", "CLICK " .. name .. ":LeftButton") ~= false then
+    escapeBound = true
+  else
+    savedEscape = nil
+  end
+end
+
+local function restoreEscape()
+  if not escapeBound then
+    return
+  end
+  if SetBinding then
+    SetBinding("ESCAPE", savedEscape or "")
+  end
+  escapeBound = false
+  savedEscape = nil
+end
+
 local results = {}
 local selected = 1
 local collapsed = {}
@@ -107,7 +137,7 @@ local function handleKey(key)
   elseif key == "ENTER" then
     TG:LoadPickedGuide(selected)
   elseif key == "ESCAPE" and State.picker then
-    State.picker:Hide()
+    TG:HideMenu()
   end
 end
 
@@ -144,10 +174,18 @@ function TG:ShowMenu(view)
   end
   applyMenuLayout(picker, picker._sidebarShown)
   picker:Show()
+  captureEscape(picker.close)
   if guides then
     self:RefreshGuidePicker()
   elseif self.RefreshSettings then
     self:RefreshSettings()
+  end
+end
+
+function TG:HideMenu()
+  restoreEscape()
+  if State.picker then
+    State.picker:Hide()
   end
 end
 
@@ -313,7 +351,8 @@ function TG:CreateGuidePicker()
   end)
   picker.flipper = flipper
 
-  local close = CreateFrame("Button", nil, picker)
+  local close = CreateFrame("Button", "TurtleGuidesMenuCloseButton", picker)
+  picker.close = close
   close:SetWidth(12)
   close:SetHeight(12)
   close:SetNormalTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
@@ -324,7 +363,7 @@ function TG:CreateGuidePicker()
   end
   close:SetPoint("TOPRIGHT", picker, "TOPRIGHT", -6, -6)
   close:SetScript("OnClick", function()
-    picker:Hide()
+    TG:HideMenu()
   end)
 
   local fieldBox = CreateFrame("Frame", nil, picker)
@@ -357,7 +396,7 @@ function TG:CreateGuidePicker()
     handleKey(arg1)
   end)
   search:SetScript("OnEscapePressed", function()
-    picker:Hide()
+    TG:HideMenu()
   end)
   search:SetScript("OnEnterPressed", function()
     TG:LoadPickedGuide(selected)
@@ -406,9 +445,7 @@ function TG:LoadPickedGuide(index)
   if State.settings then
     State.settings:Hide()
   end
-  if State.picker then
-    State.picker:Hide()
-  end
+  self:HideMenu()
 end
 
 function TG:RefreshGuidePicker()
