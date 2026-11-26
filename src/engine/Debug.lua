@@ -90,7 +90,8 @@ function TG:DebugCurrentStep()
 
   add("Debug guide: " .. (guide.name or guide.key or "?") .. " step " .. idx .. "/" .. table.getn(guide.steps or {}))
   add("  guide key: " .. tostring(guide.key or "?"))
-  local cursor = self.cdb and self.cdb.guideCursors and self.cdb.guideCursors[guide.key] or self.cdb and self.cdb.stepIndex
+  local cursor = self.cdb and self.cdb.guideCursors and self.cdb.guideCursors[guide.key]
+    or self.cdb and self.cdb.stepIndex
   add("  saved cursor: " .. tostring(cursor or "none"))
   if step then
     add(

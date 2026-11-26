@@ -204,12 +204,9 @@ function TG:GetQuestEvidence(id, title)
   if result.id then
     local numeric = tonumber(result.id)
     result.turnedIn = not result.inLog
-      and (
-        ledger.turnedIn[numeric]
-        or ledger.accountTurnedIn[numeric]
-        or (self.cdb and self.cdb.turnedIn and self.cdb.turnedIn[numeric])
-        or (type(pfQuest_history) == "table" and pfQuest_history[numeric])
-      )
+        and (ledger.turnedIn[numeric] or ledger.accountTurnedIn[numeric] or (self.cdb and self.cdb.turnedIn and self.cdb.turnedIn[numeric]) or (type(
+          pfQuest_history
+        ) == "table" and pfQuest_history[numeric]))
       or false
   end
   if key and not result.inLog and ledger.turnedInTitles[key] then
@@ -414,6 +411,6 @@ function TG:ScanQuestTurnins()
   end
 end
 
-Ledger.refresh = function(self)
+Ledger.refresh = function()
   return TG:RefreshQuestLedger()
 end
