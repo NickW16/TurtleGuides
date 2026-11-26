@@ -131,4 +131,25 @@ return {
     _G.pfDB = { quests = { loc = { [101] = "Same Title", [102] = "Same Title" } } }
     env.eq(TG:GetQuestIdForLogIndex(1), nil)
   end,
+
+  test_quest_objective_matches_guide_comment_text = function()
+    local TG = withQuestLog(fresh())
+    _G.GetNumQuestLeaderBoards = function()
+      return 2
+    end
+    _G.GetQuestLogLeaderBoard = function(i)
+      if i == 1 then
+        return "Explore Frostmane Hold", "event", false
+      end
+      return "Frostmane Headhunters slain: 3/5", "monster", false
+    end
+    local objectives = TG:GetQuestObjectives("First Quest")
+    local el = {
+      args = { "287", "1" },
+      objectiveText = "Kill |cRXP_ENEMY_Frostmane Headhunter|r (x5)",
+    }
+    local index, objective = TG:FindQuestObjective(el, objectives, 1)
+    env.eq(index, 2)
+    env.eq(objective.text, "Frostmane Headhunters slain: 3/5")
+  end,
 }

@@ -1175,6 +1175,7 @@ step
     .goto Dun Morogh,24.5,50.8,0
     .goto Dun Morogh,22.1,50.3,0
     .goto Dun Morogh,21.3,52.9,0
+    >>|cRXP_WARN_Be careful, this quest can be challenging|r
     >>Kill |cRXP_ENEMY_Frostmane Headhunters|r
     .complete 287,1 --Kill Frostmane Headhunter (x5)
     .mob Frostmane Headhunter

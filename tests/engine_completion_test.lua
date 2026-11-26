@@ -49,6 +49,36 @@ return {
     env.eq(TG:IsElementDone(el), true)
   end,
 
+  test_complete_objective_remaps_index_from_guide_text = function()
+    local TG = loadEngine()
+    TG.GetQuestTitleById = function()
+      return "Frostmane Hold"
+    end
+    TG.GetQuestLogIndexByTitle = function()
+      return 1
+    end
+    TG.GetQuestLogIndexById = function()
+      return 1
+    end
+    local objectives = {
+      [1] = { text = "Explore Frostmane Hold", done = true },
+      [2] = { text = "Frostmane Headhunters slain: 2/5", done = false },
+    }
+    TG.GetQuestObjectives = function()
+      return objectives
+    end
+    local el = {
+      t = "cmd",
+      tag = "complete",
+      args = { "287", "1" },
+      objectiveText = "Kill Frostmane Headhunter (x5)",
+    }
+    env.eq(TG:IsElementDone(el), false)
+    env.eq(el.args[2], "2")
+    objectives[2] = { text = "Frostmane Headhunters slain: 5/5", done = true }
+    env.eq(TG:IsElementDone(el), true)
+  end,
+
   test_collect_objective_ignores_account_quest_history = function()
     local TG = loadEngine()
     _G.pfQuest_history = { [319] = true }

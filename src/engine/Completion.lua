@@ -25,6 +25,17 @@ local function itemObjectiveSatisfied(self, el)
   return have ~= nil and need ~= nil and have >= need
 end
 
+local function questObjectivesForElement(self, title, id)
+  local objectives
+  if title and self.GetQuestObjectives then
+    objectives = self:GetQuestObjectives(title)
+  end
+  if (not objectives or table.getn(objectives) == 0) and id and self.GetQuestObjectivesById then
+    objectives = self:GetQuestObjectivesById(id)
+  end
+  return objectives
+end
+
 function TG:DetectElementDone(el)
   if not el or el.t ~= "cmd" then
     return nil
@@ -53,6 +64,14 @@ function TG:DetectElementDone(el)
   elseif tag == "complete" then
     local title, id = self:ResolveQuestTitle(el)
     local objNum = el.args and tonumber(el.args[2])
+    local objectives = questObjectivesForElement(self, title, id)
+    if objNum and objectives and self.FindQuestObjective then
+      local matchedIndex, matchedObjective = self:FindQuestObjective(el, objectives, objNum)
+      if matchedIndex and matchedObjective and matchedIndex ~= objNum then
+        el.args[2] = tostring(matchedIndex)
+        objNum = matchedIndex
+      end
+    end
     local evidence = self:GetQuestEvidence(id, title)
     local characterDone = characterQuestTurnedIn(self, id, title)
     if el.skipIfMissing and (not evidence or (not evidence.inLog and not characterDone)) then
@@ -73,8 +92,9 @@ function TG:DetectElementDone(el)
     end
     if logIdx then
       if objNum then
-        local done
-        if title and self.GetObjectiveDone then
+        local objective = objectives and objectives[objNum]
+        local done = objective and objective.done
+        if done == nil and title and self.GetObjectiveDone then
           done = self:GetObjectiveDone(title, objNum)
         end
         if done ~= nil then

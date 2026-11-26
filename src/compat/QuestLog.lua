@@ -139,6 +139,79 @@ local function objectivesForIndex(idx)
   return objectives
 end
 
+local OBJECTIVE_STOP_WORDS = {
+  ["and"] = true,
+  bring = true,
+  collect = true,
+  complete = true,
+  explore = true,
+  find = true,
+  gather = true,
+  kill = true,
+  killed = true,
+  loot = true,
+  slain = true,
+  speak = true,
+  talk = true,
+  use = true,
+}
+
+local function objectiveWords(text)
+  local clean = TG.stripCodes and TG.stripCodes(text) or tostring(text or "")
+  clean = string.gsub(clean, "%(%s*[xX]?%d+[xX]?%s*%)", " ")
+  clean = string.gsub(clean, "%d+%s*/%s*%d+", " ")
+  clean = string.gsub(clean, "%d+", " ")
+  local words = {}
+  for word in string.gmatch(string.lower(clean), "[%a]+") do
+    if string.len(word) > 2 and not OBJECTIVE_STOP_WORDS[word] then
+      local stem = string.gsub(word, "s$", "")
+      table.insert(words, stem)
+    end
+  end
+  return words
+end
+
+local function objectiveMatchScore(el, objective)
+  local wanted = objectiveWords(el and el.objectiveText)
+  if table.getn(wanted) == 0 then
+    return 0
+  end
+  local actual = objectiveWords(objective and objective.text)
+  local seen, score = {}, 0
+  for _, word in ipairs(wanted) do
+    if not seen[word] then
+      seen[word] = true
+      for _, candidate in ipairs(actual) do
+        if candidate == word then
+          score = score + 1
+          break
+        end
+      end
+    end
+  end
+  return score
+end
+
+-- finds the live leaderboard objective that matches a guide's comment
+function TG:FindQuestObjective(el, objectives, fallbackIndex)
+  local fallback = tonumber(fallbackIndex)
+  if type(objectives) ~= "table" or not fallback then
+    return nil, nil
+  end
+  local declared = objectives[fallback]
+  local bestIndex, bestScore = fallback, objectiveMatchScore(el, declared)
+  for index, objective in ipairs(objectives) do
+    local score = objectiveMatchScore(el, objective)
+    if score > bestScore or (score == bestScore and index == fallback) then
+      bestIndex, bestScore = index, score
+    end
+  end
+  if bestScore == 0 then
+    return fallback, declared
+  end
+  return bestIndex, objectives[bestIndex]
+end
+
 function TG:GetQuestObjectives(title)
   return objectivesForIndex(self:GetQuestLogIndexByTitle(title))
 end
