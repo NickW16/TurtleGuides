@@ -2,6 +2,10 @@
 
 Leveling guide addon for Turtle WoW 1.12.1.
 
+## Preview
+
+![TurtleGuides guide window](docs/preview.png)
+
 ## Guide syntax
 
 The parser supports the common RXP-style guide syntax: `.goto`, `.accept`, `.complete`, `.turnin`, `>>` notes, and color tokens. TurtleGuides does not include any RXP guides; the bundled routes are written for this addon. You can use your own guide files, or licensed guides you already have locally, with the same syntax.
