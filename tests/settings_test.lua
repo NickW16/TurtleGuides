@@ -56,7 +56,7 @@ return {
     local picker = TG.UI.State.picker
     env.eq(picker:IsShown(), true)
     _G.arg1 = "ESCAPE"
-    picker.scripts.OnKeyDown()
+    picker.search.scripts.OnKeyDown()
     env.eq(picker:IsShown(), false)
   end,
 

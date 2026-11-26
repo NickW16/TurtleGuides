@@ -20,6 +20,24 @@ local function fresh()
 end
 
 return {
+  test_menu_does_not_capture_keyboard = function()
+    local TG = fresh()
+    TG:ShowMenu("guides")
+    local picker = TG.UI.State.picker
+    env.eq(picker.keyboardEnabled, nil)
+    env.eq(picker.scripts.OnKeyDown, nil)
+  end,
+
+  test_opening_menu_does_not_focus_search = function()
+    local TG = fresh()
+    TG:ShowMenu("guides")
+    local picker = TG.UI.State.picker
+    picker.search.SetFocus = function()
+      error("search must not steal movement keys")
+    end
+    TG:ShowMenu("guides")
+  end,
+
   test_picker_default_size = function()
     local TG = fresh()
     TG:ShowMenu("guides")

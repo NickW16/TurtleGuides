@@ -146,9 +146,6 @@ function TG:ShowMenu(view)
   picker:Show()
   if guides then
     self:RefreshGuidePicker()
-    if picker.search.SetFocus then
-      picker.search:SetFocus()
-    end
   elseif self.RefreshSettings then
     self:RefreshSettings()
   end
@@ -226,9 +223,6 @@ function TG:CreateGuidePicker()
   picker:SetHeight(WINDOW_H)
   picker:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
   picker:SetMovable(true)
-  if picker.EnableKeyboard then
-    picker:EnableKeyboard(true)
-  end
   picker:EnableMouse(true)
   picker:RegisterForDrag("LeftButton")
   picker:SetScript("OnDragStart", function()
@@ -239,9 +233,6 @@ function TG:CreateGuidePicker()
   picker:SetScript("OnDragStop", function()
     this:StopMovingOrSizing()
   end)
-  picker:SetScript("OnKeyDown", function()
-    handleKey(arg1)
-  end)
   panel(picker)
   picker:Hide()
 
@@ -249,18 +240,18 @@ function TG:CreateGuidePicker()
   topbar:SetTexture(BAR)
   topbar:SetPoint("TOPLEFT", picker, "TOPLEFT", 1, -1)
   topbar:SetPoint("TOPRIGHT", picker, "TOPRIGHT", -1, -1)
-  topbar:SetHeight(24)
+  topbar:SetHeight(20)
   topbar:SetVertexColor(0.92, 0.90, 0.86, 1.00)
 
   local topbarLine = picker:CreateTexture(nil, "ARTWORK")
   topbarLine:SetTexture(DOT)
-  topbarLine:SetPoint("TOPLEFT", picker, "TOPLEFT", 1, -25)
-  topbarLine:SetPoint("TOPRIGHT", picker, "TOPRIGHT", -1, -25)
+  topbarLine:SetPoint("TOPLEFT", picker, "TOPLEFT", 1, -21)
+  topbarLine:SetPoint("TOPRIGHT", picker, "TOPRIGHT", -1, -21)
   topbarLine:SetHeight(1)
   topbarLine:SetVertexColor(0.85, 0.85, 0.88, 0.08)
 
   local title = picker:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-  title:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -7)
+  title:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -5)
   title:SetText("TurtleGuides 0.1.0")
   title:SetTextColor(TITLE_COLOR[1], TITLE_COLOR[2], TITLE_COLOR[3])
   Text.register(title, 12)
