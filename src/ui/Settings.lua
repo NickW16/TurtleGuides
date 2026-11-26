@@ -189,12 +189,57 @@ function TG:CreateSettings()
         row.label = def[2]
         row.after = def[3]
         row:SetScript("OnClick", function()
+          if row._skipToggle then
+            row._skipToggle = nil
+            return
+          end
+          if row.swatches then
+            for _, swatch in pairs(row.swatches) do
+              local mouseIsOver = _G.MouseIsOver
+              if (mouseIsOver and mouseIsOver(swatch)) or (swatch.IsMouseOver and swatch:IsMouseOver()) then
+                return
+              end
+            end
+          end
           TG.db[row.key] = not TG.db[row.key]
           if row.after then
             row.after()
           end
           TG:RefreshSettings()
         end)
+        if def[1] == "showArrow" and TG.ArrowColors then
+          row.swatches = {}
+          local colors = TG:ArrowColors()
+          local x = 0
+          for i = table.getn(colors), 1, -1 do
+            local c = colors[i]
+            local swatch = CreateFrame("Button", nil, row)
+            swatch:SetWidth(10)
+            swatch:SetHeight(10)
+            swatch:SetPoint("RIGHT", row, "RIGHT", x, 0)
+            swatch:SetBackdrop({
+              bgFile = DOT,
+              edgeFile = DOT,
+              tile = true,
+              tileSize = 4,
+              edgeSize = 1,
+              insets = { left = 1, right = 1, top = 1, bottom = 1 },
+            })
+            swatch:SetBackdropColor(c.r, c.g, c.b, 1)
+            swatch:SetBackdropBorderColor(0.2, 0.2, 0.2, 1)
+            swatch.colorKey = c.key
+            swatch:SetScript("OnClick", function()
+              row._skipToggle = true
+              TG.db.arrowColor = c.key
+              if TG.ApplyArrowColor then
+                TG:ApplyArrowColor()
+              end
+              TG:RefreshSettings()
+            end)
+            row.swatches[c.key] = swatch
+            x = x - 12
+          end
+        end
         table.insert(frame.rows, row)
       end
       y = y - ROW_H
@@ -227,6 +272,16 @@ function TG:RefreshSettings()
     end
     row.text:SetText(row.label)
     row.text:SetTextColor(enabled and 0.90 or MUTED[1], enabled and 0.92 or MUTED[2], enabled and 0.90 or MUTED[3])
+    if row.swatches then
+      local selected = TG.db and TG.db.arrowColor or "royal"
+      for key, swatch in pairs(row.swatches) do
+        if key == selected then
+          swatch:SetBackdropBorderColor(1, 1, 1, 1)
+        else
+          swatch:SetBackdropBorderColor(0.2, 0.2, 0.2, 1)
+        end
+      end
+    end
   end
   if frame.fontValue then
     frame.fontValue:SetText(string.format("%.1f", tonumber(TG.db.fontScale) or 1.0))
