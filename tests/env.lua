@@ -179,8 +179,8 @@ function env.reset()
   _G.IsAltKeyDown = function()
     return false
   end
-  _G.CreateFrame = function(kind, name, _parent, template)
-    local frame = { kind = kind, name = name, template = template, scripts = {} }
+  _G.CreateFrame = function(kind, name, parent, template)
+    local frame = { kind = kind, name = name, template = template, scripts = {}, parent = parent }
     if template == "UIPanelScrollFrameTemplate" then
       local scrollBar = {
         value = 0,
