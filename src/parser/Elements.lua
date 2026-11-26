@@ -75,6 +75,7 @@ function TG.Parser.parseElementLine(line, commentText)
     tag = tag or ""
     rest = rest or ""
     local tlow = string.lower(tag)
+    local sourceTag = tlow
     tag = TAG_ALIASES[tlow] or tag
 
     local textInline, objectiveText
@@ -89,6 +90,7 @@ function TG.Parser.parseElementLine(line, commentText)
     return {
       t = "cmd",
       tag = tag,
+      sourceTag = sourceTag,
       args = parseArgs(rest),
       text = textInline,
       objectiveText = objectiveText,

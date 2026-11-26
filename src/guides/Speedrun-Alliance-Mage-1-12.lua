@@ -1296,9 +1296,9 @@ step
     #label Stout
     .goto Dun Morogh,30.189,45.725
 >>Talk to |cRXP_FRIENDLY_Rejold Barleybrew|r
+>>|cRXP_WARN_Turtle WoW requires Rejold's New Brew before Shimmer Stout. We will return for it later|r
     .turnin 315 >> Turn in The Perfect Stout
 .target Rejold Barleybrew
-    .accept 413 >> Accept Shimmer Stout
 step
     .goto Dun Morogh,30.186,45.531
 .target Marleth Barleybrew
@@ -1355,6 +1355,17 @@ step
 .target Razzle Sprysprocket
 >>Talk to |cRXP_FRIENDLY_Razzle Sprysprocket|r
     .turnin 412 >> Turn in Operation Recombobulation
+step
+    .goto Dun Morogh,46.021,51.676
+.target Tharek Blackstone
+>>Talk to |cRXP_FRIENDLY_Tharek Blackstone|r
+    .accept 415 >> Accept Rejold's New Brew
+step
+    .goto Dun Morogh,30.189,45.725
+>>Talk to |cRXP_FRIENDLY_Rejold Barleybrew|r
+    .turnin 415 >> Turn in Rejold's New Brew
+    .accept 413 >> Accept Shimmer Stout
+.target Rejold Barleybrew
 step
     .goto Dun Morogh,60.1,52.6,50,0
     .goto Dun Morogh,63.1,49.8

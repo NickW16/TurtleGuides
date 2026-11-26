@@ -2503,8 +2503,8 @@ step
     .isQuestTurnedIn 384
 step
     >>Talk to |cRXP_FRIENDLY_Rejold|r and |cRXP_FRIENDLY_Marleth|r
+    >>|cRXP_WARN_Turtle WoW requires Rejold's New Brew before Shimmer Stout. We will return for it later|r
     .turnin 315,1 >> Turn in The Perfect Stout
-    .accept 413 >> Accept Shimmer Stout
     .turnin 319 >> Turn in A Favor for Evershine
     .accept 320 >> Accept Return to Bellowfiz
     .goto Dun Morogh,30.189,45.725
@@ -2603,11 +2603,18 @@ step
 step
     >>Talk to |cRXP_FRIENDLY_Bellowfiz|r and |cRXP_FRIENDLY_Stonegear|r
     .turnin 320,2 >> Turn in Return to Bellowfiz
+    .accept 415 >> Accept Rejold's New Brew
     .target +Pilot Bellowfiz
     .goto Dun Morogh,49.426,48.410
     .turnin 313 >> Turn in The Grizzled Den
     .goto Dun Morogh,49.622,48.612
     .target +Pilot Stonegear
+step
+    .goto Dun Morogh,30.189,45.725
+    >>Talk to |cRXP_FRIENDLY_Rejold Barleybrew|r
+    .turnin 415 >> Turn in Rejold's New Brew
+    .accept 413 >> Accept Shimmer Stout
+    .target Rejold Barleybrew
 step
     #completewith next
     +|cRXP_WARN_Deal 51%+ damage to nearby |cRXP_ENEMY_Winter Wolves|r, then pull them to the |cRXP_FRIENDLY_Ironforge Mountaineers|r that CAN be patrolling on the road to kill them more efficiently|r

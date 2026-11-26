@@ -31,6 +31,16 @@ return {
     env.eq(el.objectiveText, "Collect Thick Bear Fur (x2)")
   end,
 
+  test_target_tag_keeps_source_tag = function()
+    local TG = fresh()
+    local target = TG.Parser.parseElementLine(".target Rejold Barleybrew")
+    local kill = TG.Parser.parseElementLine(".kill Frostmane Seer")
+    env.eq(target.tag, "mob")
+    env.eq(target.sourceTag, "target")
+    env.eq(kill.tag, "mob")
+    env.eq(kill.sourceTag, "kill")
+  end,
+
   test_text_tags = function()
     local TG = fresh()
     env.eq(TG.Parser.parseElementLine("#label Hello").value, "Hello")

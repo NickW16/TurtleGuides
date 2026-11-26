@@ -3111,8 +3111,8 @@ step << Warrior/Paladin/Rogue
     .target Keeg Gibn
 step
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Rejold Barleybrew|r and |cRXP_FRIENDLY_Marleth Barleybrew|r
+    >>|cRXP_WARN_Turtle WoW requires Rejold's New Brew before Shimmer Stout. We will return for it later|r
     .turnin 315 >> Turn in The Perfect Stout
-    .accept 413 >> Accept Shimmer Stout
     .goto Dun Morogh,30.189,45.725
     .target +Rejold Barleybrew
     .turnin 311 >> Turn in Return to Marleth
@@ -3340,6 +3340,17 @@ step << !Warrior !Rogue !Paladin
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Thamner Pol|r
     .train 3273 >> Train |T135966:0|t[First Aid]
     .target Thamner Pol
+step
+    .goto Dun Morogh,46.021,51.676
+    >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Tharek Blackstone|r
+    .accept 415 >> Accept Rejold's New Brew
+    .target Tharek Blackstone
+step
+    .goto Dun Morogh,30.189,45.725
+    >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Rejold Barleybrew|r
+    .turnin 415 >> Turn in Rejold's New Brew
+    .accept 413 >> Accept Shimmer Stout
+    .target Rejold Barleybrew
 step
     #xprate <1.5
     .goto Dun Morogh,46.005,48.637,8,0
@@ -8100,10 +8111,10 @@ step
     .accept 320 >> Accept Return to Bellowfiz
 step
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Rejold Barleybrew|r
+    >>|cRXP_WARN_Turtle WoW requires Rejold's New Brew before Shimmer Stout. We will return for it later|r
     .target Rejold Barleybrew
     .goto Dun Morogh,30.189,45.725
     .turnin 315 >> Turn in The Perfect Stout
-    .accept 413 >> Accept Shimmer Stout
 step
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Marleth Barleybrew|r
     .target Marleth Barleybrew
@@ -8174,7 +8185,14 @@ step
     .target Pilot Bellowfiz
     .goto Dun Morogh,49.426,48.410
     .turnin 320 >> Turn in Return to Bellowfiz
+    .accept 415 >> Accept Rejold's New Brew
     .isOnQuest 320
+step
+    .goto Dun Morogh,30.189,45.725
+    >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Rejold Barleybrew|r
+    .turnin 415 >> Turn in Rejold's New Brew
+    .accept 413 >> Accept Shimmer Stout
+    .target Rejold Barleybrew
 step << Hunter
 #xprate <1.5
     .goto Dun Morogh,45.810,53.039

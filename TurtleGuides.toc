@@ -73,6 +73,7 @@ src\engine\Navigation.lua
 src\engine\Advance.lua
 src\engine\Debug.lua
 src\engine\Events.lua
+src\engine\TargetMarker.lua
 src\automation\Actions.lua
 src\automation\Events.lua
 src\vendor\Junk.lua
