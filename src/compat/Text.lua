@@ -22,6 +22,7 @@ function TG.cleanRxpColors(s)
   s = string.gsub(s, "|cRXP_WARN_", "|cffffff00")
   s = string.gsub(s, "|cRXP_LOG_", "|cff00ccff")
   s = string.gsub(s, "|cRXP_ITEM_", "|cffffd100")
+  s = string.gsub(s, "|cRXP_LOOT_", "|cffffd100")
   s = string.gsub(s, "|cRXP_%w+_", "")
   s = string.gsub(s, "|T.-|t", "")
   return s

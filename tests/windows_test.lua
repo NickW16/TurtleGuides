@@ -44,6 +44,37 @@ return {
     env.eq(TG.UI.State.main:IsShown(), true)
   end,
 
+  test_loot_name_shows_builtin_content_icon = function()
+    local TG = fresh()
+    withGuide(TG)
+    local path = "Interface\\ICONS\\INV_Misc_Food_14"
+    TG.OctoWowIcons = { names = { ["Boar Meat"] = path } }
+    TG.currentGuide.steps[2].elements = { { t = "text", text = "Loot |cRXP_LOOT_Boar Meat|r" } }
+    TG:InitUI()
+    env.eq(TG.UI.State.smalls[1].rows[1].contentIcon.path, path)
+  end,
+
+  test_multiple_content_icons_on_one_row = function()
+    local TG = fresh()
+    withGuide(TG)
+    TG.OctoWowIcons = {
+      names = {
+        ["Recruit's Shirt"] = "P1",
+        ["Recruit's Pants"] = "P2",
+        ["Recruit's Boots"] = "P3",
+      },
+    }
+    TG.currentGuide.steps[2].elements = {
+      { t = "text", text = "Unequip your [Recruit's Shirt], [Recruit's Pants], and [Recruit's Boots]" },
+    }
+    TG:InitUI()
+    local row = TG.UI.State.smalls[1].rows[1]
+    env.eq(row.contentIcons[1].path, "P1")
+    env.eq(row.contentIcons[2].path, "P2")
+    env.eq(row.contentIcons[3].path, "P3")
+    env.eq(string.find(row.text.value, "\001", 1, true) == nil, true)
+  end,
+
   test_class_icon_uses_vanilla_sheet = function()
     local TG = fresh()
     TG:InitUI()

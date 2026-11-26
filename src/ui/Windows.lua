@@ -3,9 +3,9 @@ local TG = _G.TurtleGuides
 local State = TG.UI.State
 local Text = TG.UI.Text
 
-local BOX = "Interface\\Buttons\\UI-CheckBox-Up"
-local CHECK = "Interface\\Buttons\\UI-CheckBox-Check"
 local DOT = "Interface\\Buttons\\WHITE8X8"
+local CHECK_ON = { 0.85, 0.75, 0.40 }
+local CHECK_OFF = { 0.35, 0.35, 0.37 }
 local CLASS_ICONS = "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes"
 local CLASS_ICON_COORDS = {
   WARRIOR = { 0, 0.25, 0, 0.25 },
@@ -78,10 +78,18 @@ local function makeRow(parent, size)
   itemIcon:SetWidth(10)
   itemIcon:SetHeight(10)
   row.itemIcon = itemIcon
-  local contentIcon = row:CreateTexture(nil, "OVERLAY")
-  contentIcon:SetWidth(10)
-  contentIcon:SetHeight(10)
-  row.contentIcon = contentIcon
+  local contentIcons = {}
+  local contentHolders = {}
+  for _ = 1, 6 do
+    local holder = CreateFrame("Frame", nil, row)
+    local contentIcon = holder:CreateTexture(nil, "OVERLAY")
+    contentIcon:Hide()
+    table.insert(contentIcons, contentIcon)
+    table.insert(contentHolders, holder)
+  end
+  row.contentIcons = contentIcons
+  row.contentIconHolders = contentHolders
+  row.contentIcon = contentIcons[1]
   local headerLine = row:CreateTexture(nil, "ARTWORK")
   headerLine:SetTexture(DOT)
   headerLine:SetHeight(1)
@@ -100,6 +108,19 @@ local function makeRow(parent, size)
   local check = CreateFrame("Button", nil, row)
   check:SetWidth(10)
   check:SetHeight(10)
+  check:SetBackdrop({
+    bgFile = DOT,
+    edgeFile = DOT,
+    tile = true,
+    tileSize = 4,
+    edgeSize = 1,
+    insets = { left = 1, right = 1, top = 1, bottom = 1 },
+  })
+  local checkFill = check:CreateTexture(nil, "ARTWORK")
+  checkFill:SetTexture(DOT)
+  checkFill:SetPoint("TOPLEFT", check, "TOPLEFT", 2, -2)
+  checkFill:SetPoint("BOTTOMRIGHT", check, "BOTTOMRIGHT", -2, 2)
+  check.fill = checkFill
   check:SetScript("OnClick", function()
     local el = row.el
     if not el or not row.trackable then
@@ -122,6 +143,8 @@ local function makeRow(parent, size)
   return row
 end
 
+local ICON_MARKER = "\001"
+
 local function renderRow(
   row,
   text,
@@ -136,7 +159,8 @@ local function renderRow(
   contentIcon,
   interactive,
   stepNum,
-  topLine
+  topLine,
+  contentIcons
 )
   row.el = el
   row.kind = isHeader and "header" or "task"
@@ -150,22 +174,71 @@ local function renderRow(
   local topPad = (topLine and not isHeader) and 2 or 0
   local x = isHeader and 2 or (child and 22 or (bulletIcon and 16 or (icon and 26 or (row.trackable and 16 or 12))))
   local textWidth = math.max(20, width - x - 1 - (stepNum and 18 or 0))
-  local position = contentIcon and string.find(text or "", "%[", 1, true) or nil
+  local anchors = {}
+  if contentIcons and not isHeader then
+    for _, item in ipairs(contentIcons) do
+      table.insert(anchors, item.finish)
+    end
+  elseif contentIcon and not isHeader then
+    local bracket = string.find(text or "", "%[", 1, true)
+    local close = bracket and string.find(text or "", "]", bracket, true)
+    if close then
+      table.insert(anchors, close + 1)
+    end
+  end
+  table.sort(anchors)
+  if contentIcons then
+    table.sort(contentIcons, function(left, right)
+      return left.finish < right.finish
+    end)
+  end
+  local iconSize = Text.size(row.size)
+  local iconPad = 3
   local displayText = text or ""
-  if position then
-    displayText = string.sub(displayText, 1, position - 1) .. "  " .. string.sub(displayText, position)
+  for index = table.getn(anchors), 1, -1 do
+    local anchor = anchors[index]
+    displayText = string.sub(displayText, 1, anchor) .. ICON_MARKER .. "      " .. string.sub(displayText, anchor + 1)
   end
   local wrapped, lines = Text.wrap(displayText, textWidth, row.size)
+  local placements = {}
+  local search = 1
+  for _ = 1, table.getn(anchors) do
+    local start, finish = string.find(wrapped, ICON_MARKER, search, true)
+    if not start then
+      break
+    end
+    local line, lastBreak = 1, 1
+    for index = 1, start - 1 do
+      if string.sub(wrapped, index, index) == "\n" then
+        line = line + 1
+        lastBreak = index + 1
+      end
+    end
+    table.insert(placements, {
+      line = line,
+      prefix = string.sub(wrapped, lastBreak, start - 1),
+    })
+    search = finish + 1
+  end
+  local finalText = string.gsub(wrapped, ICON_MARKER, "")
   row.text:SetWidth(textWidth)
-  row.text:SetText(wrapped)
+  row.text:SetText(finalText)
   row.text:ClearAllPoints()
   row.text:SetPoint("TOPLEFT", row, "TOPLEFT", x, -1 - topPad)
   local measured = (row.text.GetStringHeight and row.text:GetStringHeight()) or 0
+  local lineStep = lines > 0 and (measured / lines) or Text.lineHeight(row.size)
+  for _, placement in ipairs(placements) do
+    placement.x = x + Text.width(placement.prefix, row.size) - 1
+    placement.y = -(topPad + (placement.line - 1) * lineStep)
+  end
   local height = math.max(measured + 2 + topPad, lines * Text.lineHeight(row.size) + topPad)
   if isHeader then
     row.icon:Hide()
     row.itemIcon:Hide()
-    row.contentIcon:Hide()
+    for index, texture in ipairs(row.contentIcons) do
+      texture:Hide()
+      row.contentIconHolders[index]:Hide()
+    end
     row.check:Hide()
     row.headerLine:ClearAllPoints()
     row.headerLine:SetPoint("TOPLEFT", row, "TOPLEFT", 0, 0)
@@ -186,20 +259,40 @@ local function renderRow(
   end
   row.text:SetTextColor(0.90, 0.90, 0.90)
   row.text:SetAlpha(1.00)
-  if position and contentIcon then
-    row.contentIcon:Show()
-    row.contentIcon:SetTexture(contentIcon)
-    row.contentIcon:SetVertexColor(1.00, 1.00, 1.00, 1.00)
-    row.contentIcon:ClearAllPoints()
-    row.contentIcon:SetPoint(
-      "TOPLEFT",
-      row,
-      "TOPLEFT",
-      x + Text.width(string.sub(displayText, 1, position + 1), row.size),
-      -1 - topPad
-    )
-  else
-    row.contentIcon:Hide()
+  local pool = row.contentIcons
+  local holders = row.contentIconHolders
+  local used = 0
+  local function applyIcon(index, texturePath, placement)
+    local holder = holders[index]
+    local texture = pool[index]
+    holder:SetWidth(iconSize + iconPad * 2)
+    holder:SetHeight(iconSize + iconPad * 2)
+    texture:SetWidth(iconSize)
+    texture:SetHeight(iconSize)
+    texture:SetTexture(texturePath)
+    texture:SetVertexColor(1.00, 1.00, 1.00, 1.00)
+    texture:SetPoint("TOPLEFT", holder, "TOPLEFT", iconPad, -iconPad)
+    texture:Show()
+    holder:Show()
+    if placement then
+      holder:SetPoint("TOPLEFT", row, "TOPLEFT", placement.x, placement.y)
+    end
+  end
+  if not isHeader then
+    for _, item in ipairs(contentIcons or {}) do
+      if used < table.getn(pool) then
+        used = used + 1
+        applyIcon(used, item.texture, placements[used])
+      end
+    end
+    if used == 0 and contentIcon and anchors[1] then
+      used = 1
+      applyIcon(1, contentIcon, placements[1])
+    end
+  end
+  for index = used + 1, table.getn(pool) do
+    pool[index]:Hide()
+    holders[index]:Hide()
   end
   if child then
     row.check:Hide()
@@ -209,7 +302,7 @@ local function renderRow(
       row.itemIcon:SetTexture(icon)
       row.itemIcon:SetVertexColor(1.00, 1.00, 1.00, 1.00)
       row.itemIcon:ClearAllPoints()
-      row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", 10, -2 - topPad)
+      row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", 10, -1 - topPad)
     else
       row.itemIcon:Hide()
       row.icon:Show()
@@ -231,11 +324,16 @@ local function renderRow(
     end
     row.itemIcon:SetVertexColor(unpack(tint))
     row.itemIcon:ClearAllPoints()
-    row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", bulletIcon and 3 or 16, -2 - topPad)
+    row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", bulletIcon and 3 or 16, -1 - topPad)
   else
     row.itemIcon:Hide()
   end
   if bulletIcon then
+    row.icon:Hide()
+    row.check:Hide()
+    return height
+  end
+  if row.trackable then
     row.icon:Hide()
     if interactive then
       row.check:Show()
@@ -245,35 +343,22 @@ local function renderRow(
     row.check:SetWidth(10)
     row.check:SetHeight(10)
     row.check:ClearAllPoints()
-    row.check:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -2 - topPad)
-    return height
-  end
-  if row.trackable then
-    row.icon:Show()
-    row.icon:SetWidth(10)
-    row.icon:SetHeight(10)
-    row.icon:ClearAllPoints()
-    row.icon:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -2 - topPad)
-    if interactive then
-      row.check:Show()
-    else
-      row.check:Hide()
-    end
-    row.check:SetWidth(10)
-    row.check:SetHeight(10)
-    row.check:ClearAllPoints()
-    row.check:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -2 - topPad)
+    row.check:SetPoint("TOPLEFT", row, "TOPLEFT", 3, -1 - topPad)
     if state == true then
-      row.icon:SetTexture(CHECK)
-      row.icon:SetVertexColor(0.40, 1.00, 0.40, 1.00)
+      row.check:SetBackdropColor(0.20, 0.28, 0.20, 1)
+      row.check:SetBackdropBorderColor(CHECK_ON[1], CHECK_ON[2], CHECK_ON[3], 1)
+      row.check.fill:SetVertexColor(CHECK_ON[1], CHECK_ON[2], CHECK_ON[3], 1)
+      row.check.fill:Show()
       row.text:SetTextColor(0.55, 0.90, 0.55)
-    elseif state == false then
-      row.icon:SetTexture(BOX)
-      row.icon:SetVertexColor(1.00, 1.00, 1.00, 1.00)
     else
-      row.icon:SetTexture(BOX)
-      row.icon:SetVertexColor(0.55, 0.55, 0.58, 0.75)
-      row.text:SetTextColor(0.65, 0.65, 0.65)
+      row.check:SetBackdropColor(0.10, 0.10, 0.10, 1)
+      row.check:SetBackdropBorderColor(CHECK_OFF[1], CHECK_OFF[2], CHECK_OFF[3], 1)
+      row.check.fill:Hide()
+      if state == false then
+        row.text:SetTextColor(0.90, 0.90, 0.90)
+      else
+        row.text:SetTextColor(0.65, 0.65, 0.65)
+      end
     end
   else
     row.check:Hide()
@@ -338,7 +423,10 @@ local function updateSmallWindow(frame, title, entries, width)
         entry.bulletIcon,
         entry.child,
         entry.contentIcon,
-        true
+        true,
+        nil,
+        nil,
+        entry.contentIcons
       )
       row:ClearAllPoints()
       row:SetPoint("TOPLEFT", frame, "TOPLEFT", 3, y)
@@ -802,7 +890,8 @@ function TG:UpdateUI()
         entry.contentIcon,
         false,
         nil,
-        false
+        false,
+        entry.contentIcons
       )
       row:ClearAllPoints()
       row:SetPoint("TOPLEFT", main.content, "TOPLEFT", 0, y)

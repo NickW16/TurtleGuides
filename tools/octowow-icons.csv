@@ -1,0 +1,1894 @@
+kind;id;name;icon
+item;59;Acolyte's Shoes;INV_Boots_01
+item;117;Tough Jerky;INV_Misc_Food_16
+item;159;Refreshing Spring Water;INV_Drink_07
+item;182;Garrick's Head;INV_Misc_Head_Human_01
+item;414;Dalaran Sharp;INV_Misc_Food_39
+item;711;Tattered Cloth Gloves;INV_Gauntlets_27
+item;714;Dirty Leather Gloves;INV_Gauntlets_18
+item;723;Goretusk Liver;INV_Misc_Organ_04
+item;725;Gnoll Paws;INV_Misc_MonsterClaw_04
+item;729;Stringy Vulture Meat;INV_Misc_Food_16
+item;730;Murloc Eye;INV_Misc_Eye_01
+item;731;Goretusk Snout;Spell_Magic_PolymorphPig
+item;732;Okra;INV_Misc_Herb_05
+item;737;Holy Spring Water;INV_Potion_01
+item;738;Sack of Barley;INV_Misc_Food_Wheat_01
+item;739;Sack of Corn;INV_Misc_Food_Wheat_02
+item;740;Sack of Rye;INV_Misc_Food_Wheat_02
+item;742;A Sycamore Branch;INV_Misc_Branch_01
+item;743;Bundle of Charred Oak;INV_TradeskillItem_03
+item;750;Tough Wolf Meat;INV_Misc_Food_16
+item;752;Red Burlap Bandanas;INV_Misc_Bandana_03
+item;769;Chunk of Boar Meat;INV_Misc_Food_14
+item;773;Gold Dust;INV_Misc_Dust_01
+item;814;Flask of Oil;INV_Drink_07
+item;829;Red Leather Bandanas;INV_Misc_Bandana_03
+item;841;Furlbrow's Pocket Watch;INV_Misc_PocketWatch_02
+item;851;Cutlass;INV_Sword_36
+item;852;Mace;INV_Mace_15
+item;854;Quarter Staff;INV_Staff_17
+item;858;Lesser Healing Potion;INV_Potion_50
+item;878;Spinnerets;INV_Misc_MonsterSpiderCarapace_01
+item;884;Ghoul Ribs;INV_Misc_Idol_03
+item;910;An Undelivered Letter;INV_Letter_08
+item;915;Red Silk Bandanas;INV_Misc_Bandana_03
+item;916;A Torn Journal Page;INV_Misc_Bandage_18
+item;921;A Faded Journal Page;INV_Misc_Bandage_18
+item;922;Dacian Falx;INV_Sword_10
+item;923;Longsword;INV_Sword_23
+item;924;Maul;INV_Hammer_07
+item;925;Flail;INV_Mace_01
+item;926;Battle Axe;INV_ThrowingAxe_05
+item;928;Long Staff;INV_Staff_20
+item;929;Healing Potion;INV_Potion_51
+item;967;Frost Ward;INV_Misc_Book_07
+item;981;Bernice's Necklace;INV_Jewelry_Amulet_05
+item;1006;Brass Collar;INV_Jewelry_Ring_03
+item;1013;Iron Rivets;INV_Misc_Gear_06
+item;1015;Lean Wolf Flank;INV_Misc_Food_14
+item;1019;Red Linen Bandanas;INV_Misc_Bandana_03
+item;1075;Shadowhide Pendants;INV_Jewelry_Talisman_04
+item;1080;Tough Condor Meat;INV_Misc_Food_72
+item;1081;Crisp Spider Meat;INV_Misc_MonsterSpiderCarapace_01
+item;1083;Glyph of Azora;INV_Jewelry_Amulet_02
+item;1129;Ghoul Fangs;INV_Misc_MonsterFang_01
+item;1130;Vial of Spider Venom;INV_Potion_19
+item;1159;Militia Quarterstaff;INV_Staff_08
+item;1161;Militia Shortsword;INV_Sword_04
+item;1177;Oil of Olaf;INV_Potion_12
+item;1178;Explosive Rockets;INV_Ammo_Bullet_01
+item;1179;Ice Cold Milk;INV_Drink_Milk_01
+item;1180;Scroll of Stamina;INV_Scroll_07
+item;1181;Scroll of Spirit;INV_Scroll_01
+item;1191;Bag of Marbles;INV_Misc_Ammo_Bullet_01
+item;1196;Tabar;INV_Axe_04
+item;1197;Giant Mace;INV_Mace_02
+item;1198;Claymore;INV_Sword_40
+item;1205;Melon Juice;INV_Drink_09
+item;1206;Moss Agate;INV_Misc_Gem_Emerald_02
+item;1256;Crystal Kelp Frond;INV_Misc_Herb_04
+item;1260;Tharil'zun's Head;INV_Misc_Head_Orc_01
+item;1263;Brain;INV_Weapon_Halberd_10
+item;1274;Hops;INV_Misc_Herb_08
+item;1284;Crate of Horseshoes;INV_Crate_01
+item;1307;Gold Pickup Schedule;INV_Scroll_03
+item;1326;Sunfish;INV_Misc_Fish_02
+item;1339;Entangling Roots;INV_Misc_Book_11
+item;1349;Abercrombie's Crate;INV_Crate_06
+item;1357;Captain Sander\'s Treasure Map;INV_Misc_Map_01
+item;1381;Mysterious Message;INV_Letter_12
+item;1396;Acolyte's Pants;INV_Pants_01
+item;1404;Tidal Charm;INV_Misc_Rune_01
+item;1451;Bottle of Zombie Juice;INV_Potion_15
+item;1467;Spotted Sunfish;INV_Misc_Fish_02
+item;1468;Murloc Fin;INV_Misc_MonsterScales_02
+item;1475;Small Venom Sac;INV_Misc_Organ_02
+item;1478;Scroll of Protection II;inv_scroll_12
+item;1524;Skullsplitter Tusks;INV_Misc_MonsterFang_01
+item;1528;Handful of Oats;INV_Misc_Food_Wheat_02
+item;1532;Shrunken Head;INV_Misc_Bone_HumanSkull_01
+item;1574;Fire Ward;INV_Misc_Book_07
+item;1598;Rot Blossoms;INV_Misc_Herb_07
+item;1645;Moonberry Juice;INV_Drink_02
+item;1681;Cripple;INV_Misc_Book_06
+item;1708;Sweet Nectar;INV_Drink_12
+item;1710;Greater Healing Potions;INV_Potion_52
+item;1711;Scroll of Stamina II;INV_Scroll_07
+item;1712;Scroll of Spirit II;INV_Scroll_01
+item;1831;Oaken War Staff;INV_Staff_08
+item;1922;Supplies for Sven;INV_Misc_Bag_07_Black
+item;1939;Skin of Sweet Rum;INV_Drink_07
+item;1941;Cask of Merlot;INV_Cask_01
+item;1942;Bottle of Moonshine;INV_Drink_11
+item;1946;Mary's Looking Glass;INV_Ore_Mithril_02
+item;1968;Ogre's Monocle;INV_Misc_Orb_04
+item;1971;Furlbrow\'s Deed;INV_Scroll_08
+item;1972;Westfall Deed;INV_Scroll_03
+item;2004;Grelin Whitebeard's Journal;INV_Misc_Book_09
+item;2005;The First Troll Legend;INV_Scroll_01
+item;2007;The Third Troll Legend;INV_Scroll_01
+item;2008;The Fourth Troll Legend;INV_Scroll_01
+item;2024;Espadon;INV_Sword_43
+item;2025;Bearded Axe;INV_Axe_03
+item;2026;Rock Hammer;INV_Hammer_09
+item;2027;Scimitar;INV_Sword_33
+item;2028;Hammer;INV_Hammer_15
+item;2030;Gnarled Staff;INV_Staff_10
+item;2125;Cracked Leather Gloves;INV_Gauntlets_18
+item;2127;Cracked Leather Vest;INV_Shirt_06
+item;2132;Short Staff;INV_Staff_02
+item;2139;Dirk;INV_Weapon_ShortBlade_14
+item;2154;The Story of Morgan Ladimore;INV_Misc_Book_09
+item;2207;Jambiya;INV_Weapon_ShortBlade_04
+item;2208;Poniard;INV_Sword_12
+item;2209;Kris;INV_Sword_32
+item;2218;Craftsman\'s Dagger;INV_Weapon_ShortBlade_05
+item;2224;Militia Dagger;INV_Weapon_ShortBlade_05
+item;2239;The Collector's Ring;INV_Jewelry_Ring_03
+item;2251;Gooey Spider Leg;INV_Misc_MonsterSpiderCarapace_01
+item;2287;Haunch of Meat;INV_Misc_Food_18
+item;2296;Great Goretusk Snout;INV_Misc_Head_Quillboar_01
+item;2318;Light Leather;INV_Misc_LeatherScrap_03
+item;2320;Coarse Thread;INV_Fabric_Linen_03
+item;2321;Fine Thread;INV_Fabric_Wool_02
+item;2378;Skeleton Finger;INV_Misc_Bone_01
+item;2382;Embalmer's Heart;INV_Misc_Organ_01
+item;2385;Tarnished Chain Gloves;INV_Gauntlets_04
+item;2414;Pinto;Ability_Mount_RidingHorse
+item;2449;Earthroot;INV_Misc_Herb_07
+item;2450;Briarthorn;INV_Misc_Root_01
+item;2453;Bruiseweed;INV_Misc_Herb_01
+item;2455;Minor Mana Potion;INV_Potion_70
+item;2458;Elixir of Minor Fortitude;INV_Potion_42
+item;2460;Tongues;INV_Potion_12
+item;2476;Chilled Basilisk Haunch;INV_Misc_Food_13
+item;2488;Gladius;INV_Sword_20
+item;2490;Tomahawk;INV_ThrowingAxe_03
+item;2491;Large Axe;INV_Axe_10
+item;2493;Wooden Mallet;INV_Hammer_16
+item;2494;Stiletto;INV_Weapon_ShortBlade_05
+item;2495;Walking Stick;INV_Staff_08
+item;2506;Hornwood Recurve Bow;INV_Weapon_Bow_11
+item;2507;Laminated Recurve Bow;INV_Weapon_Bow_01
+item;2509;Ornate Blunderbuss;INV_Weapon_Rifle_02
+item;2511;Hunter\'s Boomstick;INV_Weapon_Rifle_04
+item;2512;Rough Arrow;INV_Ammo_Arrow_02
+item;2515;Sharp Arrow;INV_Ammo_Arrow_02
+item;2516;Light Shot;INV_Ammo_Bullet_02
+item;2519;Heavy Shot;INV_Ammo_Bullet_02
+item;2520;Broadsword;INV_Sword_05
+item;2523;Bullova;INV_Weapon_Halberd_06
+item;2526;Main Gauche;INV_Weapon_ShortBlade_15
+item;2528;Falchion;INV_Sword_34
+item;2531;Great Axe;INV_ThrowingAxe_06
+item;2534;Rondel;INV_Sword_31
+item;2548;Scald;INV_Cask_01
+item;2581;Heavy Linen Bandage;INV_Misc_Bandage_18
+item;2583;Woolen Boots;INV_Boots_09
+item;2585;Gray Woolen Robe;INV_Chest_Cloth_13
+item;2589;Linen Cloth;INV_Fabric_Linen_01
+item;2592;Wool Cloth;INV_Fabric_Wool_01
+item;2594;Flagon of Mead;INV_Drink_05
+item;2601;Pattern: Gray Woolen Robe;INV_Scroll_06
+item;2609;Disarm;INV_Misc_Slime_01
+item;2611;Crude Flint;INV_Stone_16
+item;2629;Intrepid Strongbox Key;INV_Misc_Key_04
+item;2633;Jungle Remedy;INV_Potion_122
+item;2634;Venom Fern Extract;INV_Misc_Herb_04
+item;2640;Miners' Gear;INV_Misc_Bag_01
+item;2658;Ados;INV_Stone_09
+item;2659;Modr;INV_Stone_11
+item;2660;Golm;INV_Stone_10
+item;2661;Neru Fragment;INV_Stone_12
+item;2665;Stormwind Seasoning Herbs;INV_Misc_Dust_02
+item;2667;Macgrann's Dried Meats;INV_Misc_Food_14
+item;2671;Wendigo Manes;INV_Misc_Pelt_Wolf_02
+item;2672;Stringy Wolf Meat;INV_Misc_Food_14
+item;2676;Shimmerweed;INV_Misc_Herb_04
+item;2678;Mild Spices;INV_Misc_Food_Wheat_02
+item;2679;Charred Wolf Meat;INV_Misc_Food_18
+item;2681;Roasted Boar Meat;INV_Misc_Food_18
+item;2686;Thunder Ale;INV_Drink_13
+item;2712;Ingots;INV_Crate_01
+item;2719;Small Brass Key;INV_Misc_Key_04
+item;2725;Green Hills of Stranglethorn - Page 1;INV_Misc_Note_06
+item;2728;Green Hills of Stranglethorn - Page 4;INV_Misc_Note_06
+item;2730;Green Hills of Stranglethorn - Page 6;INV_Misc_Note_06
+item;2732;Green Hills of Stranglethorn - Page 8;INV_Misc_Note_06
+item;2734;Green Hills of Stranglethorn - Page 10;INV_Misc_Note_06
+item;2735;Green Hills of Stranglethorn - Page 11;INV_Misc_Note_06
+item;2738;Green Hills of Stranglethorn - Page 14;INV_Misc_Note_06
+item;2740;Green Hills of Stranglethorn - Page 16;INV_Misc_Note_06
+item;2742;Green Hills of Stranglethorn - Page 18;INV_Misc_Note_06
+item;2744;Green Hills of Stranglethorn - Page 20;INV_Misc_Note_06
+item;2745;Green Hills of Stranglethorn - Page 21;INV_Misc_Note_06
+item;2748;Green Hills of Stranglethorn - Page 24;INV_Misc_Note_06
+item;2749;Green Hills of Stranglethorn - Page 25;INV_Misc_Note_06
+item;2750;Green Hills of Stranglethorn - Page 26;INV_Misc_Note_06
+item;2751;Green Hills of Stranglethorn - Page 27;INV_Misc_Note_06
+item;2756;Green Hills of Stranglethorn - Chapters;INV_Misc_Bandage_07
+item;2779;Tear of Tilloa;INV_Misc_Flower_02
+item;2784;Musquash Root;INV_Misc_Herb_07
+item;2794;An Old History Book;INV_Misc_Book_09
+item;2797;Heart of Mokk;INV_Misc_Organ_01
+item;2798;Rethban Ore;INV_Ore_Iron_01
+item;2799;Gorilla Fang;INV_Misc_MonsterFang_01
+item;2825;Arrows;INV_Weapon_Bow_09
+item;2833;The Lich's Spellbook;INV_Misc_Book_01
+item;2835;Rough Stone;INV_Stone_06
+item;2837;Thurman's Letter;INV_Scroll_03
+item;2839;A Letter to Yvette;INV_Scroll_03
+item;2842;Silver Bar;INV_Ingot_01
+item;2843;Dirty Knucklebones;INV_Misc_Bone_10
+item;2856;Iron Pikes;INV_Spear_05
+item;2862;Rough Sharpening Stone;INV_Stone_SharpeningStone_01
+item;2868;Patterned Bronze Bracers;INV_Bracer_07
+item;2874;An Unsent Letter;INV_Letter_15
+item;2875;Scarlet Insignia Rings;INV_Jewelry_Ring_04
+item;2876;Duskbat Pelt;INV_Misc_Pelt_Bear_03
+item;2885;Scarlet Crusade Documents;INV_Letter_02
+item;2886;Crag Boar Rib;INV_Misc_Food_16
+item;2894;Rhapsody Malt;INV_Drink_13
+item;2901;Mining Pick;INV_Pick_02
+item;2928;Dust of Decay;INV_Misc_Dust_09
+item;2946;Balanced Throwing Dagger;INV_Weapon_ShortBlade_05
+item;2947;Small Throwing Knife;INV_ThrowingKnife_02
+item;2996;Bolt of Linen Cloth;INV_Fabric_Linen_02
+item;2997;Bolt of Woolen Cloth;INV_Fabric_Wool_03
+item;2998;A Simple Compass;INV_Misc_PocketWatch_02
+item;3012;Scroll of Agility;inv_scroll_11
+item;3013;Scroll of Protection;inv_scroll_12
+item;3014;Battleworn Axe;INV_Axe_01
+item;3023;Large Bore Blunderbuss;INV_Weapon_Rifle_03
+item;3026;Reinforced Bow;INV_Weapon_Bow_02
+item;3027;Heavy Recurve Bow;INV_Weapon_Bow_01
+item;3030;Razor Arrow;INV_Ammo_Arrow_02
+item;3080;Candle of Beckoning;INV_Misc_Candle_01
+item;3083;Restabilization Cogs;INV_Misc_Gear_02
+item;3084;Gyromechanic Gears;INV_Misc_Gear_01
+item;3090;Frostbolts;INV_Misc_Book_07
+item;3107;Keen Throwing Knife;INV_ThrowingKnife_01
+item;3108;Heavy Throwing Dagger;INV_ThrowingKnife_03
+item;3110;Tunnel Rat Ear;INV_Misc_Ear_Human_01
+item;3121;Levitate;INV_Misc_Book_09
+item;3131;Weighted Throwing Axe;INV_ThrowingAxe_03
+item;3135;Sharp Throwing Axe;INV_ThrowingAxe_01
+item;3137;Deadly Throwing Axe;INV_ThrowingAxe_05
+item;3164;Discolored Worg Heart;INV_Misc_Organ_02
+item;3172;Boar Intestines;INV_Misc_Organ_05
+item;3173;Bear Meat;INV_Misc_Food_71
+item;3174;Spider Ichor;INV_Misc_Slime_01
+item;3183;Mangy Claw;INV_Misc_MonsterClaw_04
+item;3239;Rough Weightstone;INV_Stone_WeightStone_01
+item;3248;Translated Letter from The Embalmer;INV_Scroll_03
+item;3264;Duskbat Wings;INV_Misc_Pelt_Bear_Ruin_05
+item;3265;Scavenger Paws;INV_Misc_MonsterClaw_04
+item;3266;Scarlet Armbands;INV_Misc_Bandana_03
+item;3297;Fel Moss;INV_Misc_Herb_06
+item;3317;A Talking Head;INV_Misc_Head_Scourge_01
+item;3318;Remains;INV_Misc_Bag_10_Black
+item;3337;Dragonmaw War Banners;INV_Banner_03
+item;3339;Dwarven Tinder;INV_Misc_Dust_02
+item;3347;Bundle of Crocolisk Skins;INV_Misc_MonsterScales_03
+item;3348;Giant Crocolisk Skin;INV_Misc_MonsterScales_03
+item;3349;Sida's Bag;INV_Misc_Bag_03
+item;3357;Liferoot;INV_Misc_Root_02
+item;3371;Empty Vial;inv_potion_84
+item;3372;Leaded Vial;inv_potion_85
+item;3385;Lesser Mana Potions;INV_Potion_71
+item;3388;Strong Troll\'s Blood Potion;INV_Potion_78
+item;3397;Young Crocolisk Skin;INV_Misc_MonsterScales_02
+item;3404;Buzzard Wing;INV_Misc_MonsterScales_02
+item;3418;Fel Cone;INV_Misc_Food_02
+item;3467;Dull Iron Key;INV_Misc_Key_03
+item;3476;Gray Bear Tongues;Ability_Druid_DemoralizingRoar
+item;3477;Ichor;INV_Misc_Slime_01
+item;3493;Raptor\'s End;INV_Weapon_Bow_03
+item;3496;Mountain Lion Blood;Spell_Shadow_LifeDrain
+item;3499;Burnished Gold Key;INV_Misc_Key_04
+item;3502;Mudsnout Blossoms;INV_Mushroom_10
+item;3505;Alterac Signet Rings;INV_Jewelry_Ring_02
+item;3509;Daggerspine Scale;INV_Misc_MonsterScales_01
+item;3510;Torn Fin Eye;INV_Misc_Eye_01
+item;3514;Mor'Ladim's Skull;INV_Misc_Bone_HumanSkull_01
+item;3518;Decrypted Letter;INV_Scroll_04
+item;3521;Cleverly Encrypted Letter;INV_Scroll_03
+item;3530;Wool Bandages;INV_Misc_Bandage_14
+item;3531;Heavy Wool Bandages;INV_Misc_Bandage_17
+item;3554;Crown of Will;INV_Crown_02
+item;3564;Shipment of Iron;INV_Crate_01
+item;3595;Tattered Cloth Belt;INV_Belt_24
+item;3596;Tattered Cloth Bracers;INV_Bracer_07
+item;3601;Syndicate Missive;INV_Letter_16
+item;3616;Mind's Eye;INV_Misc_Gem_Diamond_02
+item;3618;Gobbler\'s Head;INV_Misc_MonsterHead_01
+item;3619;Snellig's Snuffbox;INV_Misc_OrnateBox
+item;3625;Nek\'rosh\'s Head;INV_Misc_Head_Orc_01
+item;3626;Baron Vardus;INV_Misc_Head_Human_01
+item;3629;Family Ring;INV_Jewelry_Ring_01
+item;3632;Fangore's Paw;INV_Misc_MonsterClaw_03
+item;3636;Scale of Old Murk-Eye;INV_Misc_MonsterScales_01
+item;3638;Sarltooth;INV_Misc_Bone_06
+item;3657;Hillsbrad Town Registry;INV_Misc_Book_08
+item;3658;Recovered Tome;INV_Misc_Book_11
+item;3659;Worn Leather Book;INV_Misc_Book_07
+item;3660;Tomes of Alterac;INV_Crate_01
+item;3668;Assassin\'s Contract;INV_Scroll_03
+item;3684;Perenolde Tiara;INV_Crown_01
+item;3690;Stone Shards;INV_Misc_Gem_Bloodstone_01
+item;3692;Hillsbrad Human Skull;INV_Misc_Bone_HumanSkull_01
+item;3693;Humbert's Sword;INV_Sword_06
+item;3703;Southshore Stout;INV_Drink_08
+item;3706;Ensorcelled Parchment;INV_Scroll_02
+item;3708;Helcular's Rod;INV_Wand_09
+item;3711;Belamoore\'s Research Journal;INV_Misc_Book_04
+item;3712;Turtle Meat;INV_Misc_Food_70
+item;3713;Soothing Spices;inv_misc_food_wheat_04
+item;3714;Worn Stone Tokens;INV_Misc_Rune_01
+item;3719;Hillman\'s Cloak;INV_Misc_Cape_07
+item;3720;Yeti Fur;INV_Misc_Pelt_Wolf_01
+item;3721;Farren\'s Report;INV_Letter_05
+item;3761;Deadskull Shield;INV_Shield_01
+item;3770;Mutton Chops;INV_Misc_Food_14
+item;3771;Wild Hog Shank;INV_Misc_Food_13
+item;3775;Crippling Poison;Ability_PoisonSting
+item;3818;Fadeleaf;INV_Misc_Herb_12
+item;3823;Lesser Invisibility Potion;INV_Potion_18
+item;3825;Elixir of Fortitude;INV_Potion_43
+item;3829;Frost Oil;INV_potion_130
+item;3839;Pristine Tigress Fang;INV_Misc_Bone_08
+item;3853;Moonsteel Broadsword;INV_Sword_25
+item;3876;Fang of Bhag'thera;INV_Misc_MonsterFang_01
+item;3880;Head of Bangalash;INV_Misc_Head_Tiger_01
+item;3897;Dizzy's Eye;INV_Misc_Eye_01
+item;3898;Library Scrip;INV_Scroll_03
+item;3900;Pupellyverbos Port;INV_Drink_09
+item;3912;Soul Gem;INV_Misc_Orb_04
+item;3917;Singing Blue Crystals;INV_Misc_Gem_Sapphire_02
+item;3919;Giblets;INV_Misc_Organ_04
+item;3920;Bloodsail Charts;INV_Misc_Map_01
+item;3921;Bloodsail Orders;INV_Letter_15
+item;3925;Golden Spyglass;INV_Misc_Spyglass_02
+item;3928;Superior Healing Potions;INV_Potion_53
+item;3930;Maury's Key;INV_Misc_Key_03
+item;3932;Smotts' Chest;INV_Box_01
+item;3935;Smotts' Cutlass;INV_Sword_24
+item;3950;Twill Shoulderpads;INV_Shoulder_09
+item;3960;Bag of Water Elemental Bracers;INV_Misc_Bag_08
+item;3985;Monogrammed Sash;INV_Misc_Bandana_03
+item;4027;Catelyn\'s Blade;INV_Weapon_ShortBlade_01
+item;4028;Akiris Reeds;INV_TradeskillItem_03
+item;4029;Akiris Reed;INV_Misc_Herb_06
+item;4034;Stone of the Tides;INV_Misc_Orb_01
+item;4056;Cortello\'s Riddle;INV_Scroll_03
+item;4094;Tablet Shard;INV_Misc_Rune_02
+item;4098;Carefully Folded Note;INV_Letter_13
+item;4105;Elder Crocolisk Skin;INV_Misc_MonsterScales_01
+item;4148;Counterspell;INV_Misc_Book_07
+item;4159;Arcane Missiles;INV_Misc_Book_07
+item;4189;Chain Lightning;INV_Misc_StoneTablet_05
+item;4215;Rain of Fire;INV_Misc_Book_06
+item;4278;Lesser Bloodstone Ore;INV_Ore_Thorium_01
+item;4306;Silk Cloth;INV_Fabric_Silk_01
+item;4308;Green Linen Bracers;INV_Bracer_12
+item;4309;Handstitched Linen Britches;INV_Pants_07
+item;4338;Mageweave Cloth;INV_Fabric_Mageweave_01
+item;4358;Rough Dynamite;INV_Misc_Bomb_06
+item;4371;Bronze Tube;INV_Gizmo_Pipe_01
+item;4389;Gyrochronatom;INV_Misc_PocketWatch_02
+item;4433;Waterlogged Envelope;INV_Letter_13
+item;4440;Sigil of Strom;INV_Misc_Rune_01
+item;4449;Naraxis\' Fang;INV_Misc_MonsterFang_01
+item;4450;Sigil Fragments;INV_Misc_Rune_03
+item;4457;Barbecued Buzzard Wing;INV_Misc_Food_18
+item;4469;Rod of Order;INV_Wand_01
+item;4470;Simple Wood;simple_wood_1
+item;4471;Flint and Tinder;INV_Stone_11
+item;4472;Scroll of Myzrael;INV_Scroll_01
+item;4479;Burning Charm;INV_Jewelry_Talisman_01
+item;4480;Thundering Charm;INV_Jewelry_Talisman_02
+item;4481;Cresting Charm;INV_Jewelry_Talisman_05
+item;4482;Sealed Folder;INV_Letter_14
+item;4484;Cresting Key;INV_Misc_Key_03
+item;4485;Thundering Key;INV_Misc_Key_02
+item;4487;Maiden's Folly Charts;INV_Misc_Map_01
+item;4488;Spirit of Silverpine Charts;INV_Misc_Map_01
+item;4489;Maiden's Folly Log;INV_Misc_Book_09
+item;4490;Spirit of Silverpine Log;INV_Misc_Book_03
+item;4491;Goggles of Gem Hunting;INV_Helmet_47
+item;4493;Elven Gems;INV_Misc_Gem_Opal_03
+item;4494;Seahorn\'s Sealed Letter;INV_Letter_10
+item;4496;Small Brown Pouch;INV_Misc_Bag_09
+item;4498;Brown Leather Satchel;INV_Misc_Bag_09
+item;4502;Sample Elven Gem;INV_Misc_Gem_Opal_01
+item;4503;Witherbark Tusks;INV_Misc_Bone_05
+item;4519;Scroll Fragments;INV_Scroll_01
+item;4521;Alterac Granite;INV_Stone_08
+item;4527;Azure Agate;INV_Misc_Gem_Sapphire_02
+item;4529;Enchanted Agate;INV_Misc_Gem_Diamond_01
+item;4537;Tel\'Abim Banana;INV_Misc_Food_24
+item;4541;Freshly Baked Bread;INV_Misc_Food_12
+item;4589;Long Elegant Feather;Spell_Magic_FeatherFall
+item;4591;Eagle Eye;INV_Misc_Eye_01
+item;4592;Longjaw Mud Snapper;INV_Misc_Fish_32
+item;4595;Junglevine Wine;INV_Drink_09
+item;4598;Goblin Fishing Poles;INV_Misc_Bomb_03
+item;4599;Cured Ham Steak;INV_Misc_Food_14
+item;4600;Cherry Grog;INV_Drink_03
+item;4601;Soft Banana Bread;inv_misc_food_94
+item;4604;Mushroom Caps;INV_Mushroom_13
+item;4605;Red-speckled Mushroom;INV_Mushroom_11
+item;4611;Blue Pearl;INV_Ore_Arcanite_02
+item;4612;Black Drake's Heart;INV_Misc_Organ_01
+item;4614;Pendant of Myzrael;INV_Jewelry_Necklace_07
+item;4616;Ryedol's Lucky Pick;INV_Pick_03
+item;4621;Ambassador Infernus' Bracer;INV_Bracer_09
+item;4626;Small Stone Shards;INV_Stone_07
+item;4627;Large Stone Slabs;INV_Stone_08
+item;4628;Bracers of Rock Binding;INV_Bracer_02
+item;4630;Scrap Metal;INV_Misc_Gear_08
+item;4631;Tablet of Ryun'eh;INV_Misc_Rune_02
+item;4640;Sign of the Earth;INV_Ore_Copper_01
+item;4654;Mysterious Fossil;INV_Misc_Shell_01
+item;4702;Prospector\'s Pick;INV_Pick_01
+item;4752;Azure Feathers;INV_Feather_13
+item;4753;Bronze Feathers;INV_Feather_14
+item;4755;Water Pitcher;INV_Drink_08
+item;4777;Ironwood Maul;INV_Hammer_16
+item;4778;Heavy Spiked Mace;INV_Mace_01
+item;4786;Wise Man\'s Belt;INV_Belt_02
+item;4788;Agile Boots;INV_Boots_05
+item;4789;Stable Boots;INV_Boots_03
+item;4794;Wolf Bracers;INV_Bracer_04
+item;4800;Mighty Chain Pants;INV_Pants_03
+item;4818;Executioner\'s Sword;INV_Sword_28
+item;4819;Clipboard;INV_Scroll_08
+item;4823;Water of the Seers;INV_Potion_01
+item;4827;Wizard\'s Belt;INV_Belt_29
+item;4828;Nightwind Belt;INV_Belt_26
+item;4829;Dreamer\'s Belt;INV_Belt_04
+item;4831;Stalking Pants;INV_Pants_10
+item;4843;Amethyst Runestone;INV_Misc_Gem_Amethyst_02
+item;4844;Opal Runestone;INV_Misc_Gem_Opal_01
+item;4845;Diamond Runestone;INV_Misc_Gem_Diamond_01
+item;4848;Snouts;Spell_Magic_PolymorphPig
+item;4849;Flanks;INV_Misc_Food_14
+item;4851;Dirt-stained Map;INV_Misc_Map_01
+item;4852;Flash Bomb;INV_Misc_Ammo_Bullet_01
+item;4854;Demon Scarred Cloak;INV_Misc_Pelt_Bear_Ruin_03
+item;4859;Burning Blade Medallion;INV_Jewelry_Talisman_01
+item;4862;Scorpid Worker Tails;Ability_PoisonSting
+item;4870;Canvas Scraps;INV_Fabric_Silk_01
+item;4881;Aged Envelope;INV_Letter_15
+item;4882;Benedict\'s Key;INV_Misc_Key_06
+item;4886;Poison Sacs;INV_Misc_Organ_06
+item;4888;Mucus;INV_Potion_19
+item;4891;Kron's Amulet;INV_Jewelry_Amulet_03
+item;4894;Kidneys;INV_Misc_Organ_05
+item;4895;Thunder Lizard Horn;INV_Misc_Bone_06
+item;4896;Kodo Liver;INV_Misc_Organ_04
+item;4897;Saliva Gland;INV_Misc_Organ_06
+item;4898;Lightning Glands;INV_Misc_Organ_02
+item;4903;Eye of Burning Shadow;INV_Misc_Gem_Bloodstone_02
+item;4904;Venomtail Antidote;INV_Potion_12
+item;4905;Sarkoth's Mangled Claw;INV_Misc_MonsterClaw_01
+item;4926;Chen\'s Empty Keg;INV_Cask_04
+item;4931;Hickory Shortbow;INV_Weapon_Bow_05
+item;4938;Blemished Wooden Staff;INV_Staff_21
+item;4986;Flawed Power Stone;INV_Misc_Gem_Diamond_02
+item;5006;Khazgorm's Journal;INV_Misc_Book_09
+item;5018;Wood Pulp;INV_TradeskillItem_03
+item;5019;Sodium Nitrate;INV_Misc_Ammo_Gunpowder_01
+item;5020;Kolkar Booty Key;INV_Misc_Key_03
+item;5026;Fire Tar;INV_Ammo_FireTar
+item;5030;Centaur Bracers;INV_Bracer_08
+item;5038;Tear of the Moons;INV_Misc_Gem_Amethyst_02
+item;5040;Shadow Hunter Knife;INV_Weapon_ShortBlade_11
+item;5052;Unconscious Dig Rat;INV_Misc_Pelt_Boar_01
+item;5058;Silithid Egg;INV_Egg_03
+item;5059;Digging Claw;INV_Gauntlets_04
+item;5060;Thieves\' Tools;INV_Misc_Gear_03
+item;5072;Lok's Skull;INV_Misc_Bone_TaurenSkull_01
+item;5073;Nak's Skull;INV_Misc_Bone_TaurenSkull_01
+item;5074;Kuz's Skull;INV_Misc_Bone_TaurenSkull_01
+item;5075;Blood Shard;INV_Misc_Gem_Ruby_01
+item;5085;Bristleback Quilboar Tusk;INV_Misc_Bone_04
+item;5088;Control Console Operating Manual;INV_Misc_Book_03
+item;5092;Charred Razormane Wand;INV_Staff_02
+item;5093;Razormane Backstabber;INV_Weapon_ShortBlade_04
+item;5094;Razormane War Shield;INV_Shield_09
+item;5097;Cats Eye Emerald;INV_Misc_Gem_Emerald_01
+item;5099;Hoof of Lakota\'mani;Ability_Smash
+item;5100;Echeyakee\'s Hide;INV_Misc_Pelt_Wolf_Ruin_04
+item;5102;Owatanka\'s Tailspike;INV_Misc_Bone_06
+item;5103;Washte Pawne\'s Feather;Spell_Magic_FeatherFall
+item;5104;Heart of Isha Awak;INV_Misc_Organ_01
+item;5138;Harvester\'s Head;INV_Misc_MonsterSpiderCarapace_01
+item;5140;Flash Powder;INV_Misc_Powder_Purple
+item;5164;Thunderhawk Wings;INV_Misc_MonsterScales_01
+item;5165;Sunscale Feather;INV_Feather_01
+item;5167;Webwood Egg;INV_Egg_02
+item;5169;Timberling Sprouts;Spell_Nature_NatureTouchGrow
+item;5185;Crystal Phial;INV_Potion_15
+item;5198;Cook;INV_Staff_02
+item;5208;Smoldering Wand;INV_Wand_06
+item;5210;Burning Wand;INV_Staff_02
+item;5211;Dusk Wand;INV_Wand_07
+item;5233;Stone of Relu;INV_Misc_StoneTablet_04
+item;5234;Flagongut\'s Fossil;INV_Misc_Shell_04
+item;5238;Pitchwood Wand;INV_Staff_02
+item;5239;Blackbone Wand;INV_Misc_Bone_01
+item;5244;Consecrated Wand;INV_Wand_02
+item;5246;Excavation Rod;INV_Staff_02
+item;5251;Phial of Scrying;INV_Potion_04
+item;5270;Death Cap;INV_Mushroom_02
+item;5271;Scaber Stalks;INV_Mushroom_10
+item;5334;99-Year-Old Port;INV_Drink_10
+item;5336;Grell Earrings;INV_Jewelry_Ring_06
+item;5338;Ancient Moonstone Seal;INV_Misc_StoneTablet_03
+item;5340;Cauldron Stirrer;INV_Staff_08
+item;5347;Pestilent Wand;INV_Wand_04
+item;5348;Worn Parchments;INV_Scroll_02
+item;5352;Book: The Powers Below;INV_Misc_Book_11
+item;5354;Letter to Delgren;INV_Letter_13
+item;5360;Highborne Relics;INV_Misc_StoneTablet_05
+item;5366;Glowing Soul Gem;INV_Misc_Orb_03
+item;5382;Anaya\'s Pendant;INV_Jewelry_Amulet_04
+item;5386;Fine Moonstalker Pelts;INV_Misc_Pelt_Wolf_01
+item;5387;Enchanted Moonstalker Cloak;INV_Misc_Cape_10
+item;5388;Ran Bloodtooth\'s Skull;INV_Misc_Bone_OrcSkull_01
+item;5392;Thistlewood Dagger;INV_Weapon_ShortBlade_05
+item;5411;Winterhoof Cleansing Totem;INV_Staff_02
+item;5412;Thresher Eyes;INV_Misc_Eye_01
+item;5413;Moonstalker Fangs;INV_Misc_MonsterFang_01
+item;5414;Grizzled Scalps;INV_Misc_Pelt_Bear_Ruin_04
+item;5415;Thunderhorn Cleansing Totem;INV_Staff_02
+item;5416;Wildmane Cleansing Totem;INV_Staff_02
+item;5437;Bathran's Hairs;INV_Misc_Herb_05
+item;5439;Small Quiver;INV_Misc_Quiver_09
+item;5440;Bottle of Disease;INV_Potion_19
+item;5445;Ring of Zoram;INV_Jewelry_Ring_10
+item;5455;Divined Scroll;INV_Scroll_02
+item;5456;Divining Scroll;INV_Scroll_07
+item;5462;Dartol\'s Rod of Transformation;INV_Wand_01
+item;5463;Glowing Gem;INV_Misc_Gem_Sapphire_02
+item;5464;Iron Shaft;INV_Staff_01
+item;5465;Small Spider Leg;INV_Misc_MonsterSpiderCarapace_01
+item;5466;Scorpid Stingers;Spell_Nature_NullifyPoison
+item;5469;Strider Meat;INV_Misc_Food_16
+item;5475;Wooden Key;INV_Misc_Key_05
+item;5481;Satyr Horns;INV_Misc_Bone_04
+item;5493;Elune's Tear;INV_Ore_Arcanite_02
+item;5505;Teronis\' Journal;INV_Misc_Book_09
+item;5508;Fallen Moonstone;INV_Misc_Orb_01
+item;5514;Mana Agate;inv_mana_agate_01
+item;5519;Iron Pommel;INV_Misc_Orb_02
+item;5520;Velinde's Journal;INV_Misc_Book_09
+item;5530;Blinding Powder;INV_Misc_Ammo_Gunpowder_01
+item;5535;Compendium of the Fallen;INV_Misc_Book_05
+item;5536;Mythology of the Titans;INV_Misc_Book_10
+item;5539;Letter of Commendation;INV_Letter_04
+item;5570;Deepmoss Eggs;INV_Egg_03
+item;5579;Militia Warhammer;INV_Hammer_15
+item;5596;Ashwood Bow;INV_Weapon_Bow_01
+item;5611;Tear of Grief;INV_Potion_17
+item;5619;Jade Phial;INV_Potion_10
+item;5621;Tourmaline Phial;INV_Potion_14
+item;5638;Toxic Fogger;INV_Cask_01
+item;5655;Chestnut Mare;Ability_Mount_RidingHorse
+item;5656;Brown Horse;Ability_Mount_RidingHorse
+item;5660;Seal of Righteousness;INV_Misc_Book_08
+item;5664;Shrapnel;INV_Misc_Gear_08
+item;5669;Debris;INV_Misc_Dust_02
+item;5703;Thunderclap;INV_Misc_StoneTablet_05
+item;5707;Far Sight;INV_Misc_StoneTablet_05
+item;5717;Venture Co. Letters;INV_Letter_09
+item;5718;Venture Co. Engineering Plans;INV_Scroll_03
+item;5736;Mechanical Arm;Ability_GolemThunderClap
+item;5791;Henrig Lonebrow\'s Journal;INV_Misc_Book_09
+item;5793;Razorflank's Heart;INV_Misc_Organ_01
+item;5796;Encrusted Tail Fin;INV_Misc_MonsterScales_03
+item;5797;Indurium;inv_DiabloStone
+item;5798;Rocket Car Parts;INV_Gizmo_03
+item;5800;Kravel\'s Parts;INV_Crate_03
+item;5801;Kraul Guano;INV_Misc_Slime_01
+item;5804;Goblin Rumors;INV_Letter_13
+item;5807;Fool\'s Stout Report;INV_Letter_15
+item;5808;Pridewing Venom Sacs;INV_Misc_Organ_02
+item;5810;Fresh Carcass;INV_Misc_Pelt_Wolf_Ruin_01
+item;5816;Light of Elune;INV_Potion_13
+item;5825;Treshala's Pendant;INV_Jewelry_Necklace_01
+item;5826;Kravel\'s Scheme;INV_Misc_Note_06
+item;5827;Fizzle Brassbolts\' Letter;INV_Letter_13
+item;5834;Mok'Morokk's Snuff;INV_Cask_03
+item;5835;Mok'Morokk's Grog;INV_Drink_09
+item;5837;Steelsnap's Rib;INV_Misc_Bone_02
+item;5838;Kodo Skin Scroll;INV_Misc_LeatherScrap_03
+item;5842;Ore Sample;INV_Stone_16
+item;5843;Grenka's Claw;INV_Misc_MonsterClaw_02
+item;5847;Mirefin Head;INV_Misc_MonsterHead_04
+item;5849;Crate of Crash Helmets;INV_Crate_05
+item;5851;Cozzle\'s Key;INV_Misc_Key_07
+item;5852;Fuel Regulator Blueprints;INV_Misc_Note_04
+item;5862;Seaforium Booster;INV_Ammo_Bullet_03
+item;5866;Sample of Indurium Ore;INV_Ore_Mithril_01
+item;5867;Etched Phial;INV_Potion_15
+item;5869;Cloven Hoof;Ability_WarStomp
+item;5876;Blueleaf Tuber;INV_Misc_Herb_07
+item;5877;Cracked Silithid Carapace;INV_Shoulder_03
+item;5879;Twilight Pendants;INV_Jewelry_Amulet_06
+item;5880;Crate With Holes;INV_Crate_05
+item;5882;Captain's Documents;INV_Letter_11
+item;5883;Forked Mudrock Tongues;INV_Misc_Organ_06
+item;5884;Unpopped Darkmist Eye;INV_Misc_Eye_01
+item;5897;Snufflenose Owner\'s Manual;INV_Misc_Book_03
+item;5947;Defias Docket;INV_Letter_10
+item;5952;Corrupted Brain Stems;INV_Misc_Organ_03
+item;5996;Elixir of Water Breathing;INV_Potion_17
+item;6037;Truesilver Bar;INV_Ingot_08
+item;6052;Nature Protection Potion;INV_Potion_06
+item;6065;Khadgar\'s Essays on Dimensional Convergence;INV_Letter_05
+item;6069;Crudely Dried Meats;INV_Misc_Food_16
+item;6071;Draenethyst Crystals;INV_Misc_Gem_Crystal_01
+item;6074;War Horn Mouthpiece;INV_Misc_Pipe_01
+item;6077;Key Fragment;INV_Misc_Idol_03
+item;6082;Tumors;INV_Ore_Thorium_01
+item;6091;Power Stones;INV_Crate_06
+item;6097;Acolyte's Shirt;INV_Shirt_01
+item;6120;Recruit's Shirt;INV_Shirt_05
+item;6121;Recruit's Pants;INV_Pants_02
+item;6122;Recruit's Boots;INV_Boots_06
+item;6129;Acolyte's Robe;INV_Chest_Cloth_16
+item;6146;Sundried Driftwood;INV_TradeskillItem_03
+item;6166;Jawbones;INV_Misc_Bone_09
+item;6169;Sawtooth Flanks;INV_Misc_Food_14
+item;6170;Wizards' Reagents;INV_Misc_Bag_10_Black
+item;6181;Fetish of Hakkar;INV_Misc_Bone_HumanSkull_01
+item;6193;Atal'ai Artifacts;INV_Misc_Bag_11
+item;6196;Noboru\'s Truncheon;INV_Mace_10
+item;6215;Balanced Fighting Stick;INV_Staff_08
+item;6217;Copper Rod;INV_Misc_Flute_01
+item;6218;Runed Copper Rod;INV_Staff_Goldfeathered_01
+item;6238;Brown Linen Robe;INV_Chest_Cloth_21
+item;6245;Karnitol\'s Satchel;INV_Misc_Bag_08
+item;6249;Aged Kodo Hides;INV_Misc_LeatherScrap_01
+item;6253;Leftwitch\'s Package;INV_Crate_02
+item;6256;Fishing Pole;INV_Fishingpole_02
+item;6257;Roc Gizzard;INV_Misc_Birdbeck_01
+item;6265;Soul Shard;INV_Misc_Gem_Amethyst_02
+item;6281;Rattlecage Skulls;INV_Misc_Bone_HumanSkull_01
+item;6284;Runes of Summoning;INV_Misc_Rune_03
+item;6285;Egalin's Grimoire;INV_Misc_Book_01
+item;6287;Atal\'ai Tablet Fragment;INV_Ore_Iron_01
+item;6288;Atal'ai Tablets;INV_Misc_StoneTablet_04
+item;6291;Raw Brilliant Smallfish;INV_Misc_Fish_08
+item;6436;Burning Gem;INV_Misc_Gem_Diamond_02
+item;6442;Oracle Crystal;INV_Ore_Arcanite_02
+item;6443;Deviate Hides;INV_Misc_Pelt_Wolf_Ruin_03
+item;6452;Anti-Venom;antitoxin_01
+item;6487;Vile Familiar Heads;Spell_Shadow_CurseOfTounges
+item;6529;Shiny Bauble;INV_Misc_Orb_03
+item;6534;Forged Steel Bars;INV_Ingot_Mithril
+item;6535;Tablet of Verga;INV_Misc_StoneTablet_04
+item;6623;Succubus;INV_Scroll_01
+item;6626;Dogran\'s Pendant;INV_Jewelry_Necklace_03
+item;6635;Earth Sapta;INV_Potion_12
+item;6636;Fire Sapta;INV_Potion_11
+item;6637;Water Sapta;INV_Potion_13
+item;6652;Reagent Pouch;INV_Misc_Bag_11
+item;6655;Glowing Ember;INV_Misc_Orb_03
+item;6684;Snufflenose Command Stick;INV_Wand_12
+item;6738;Bleeds;INV_Axe_12
+item;6753;Feather Charms;INV_Staff_Goldfeathered_01
+item;6775;Tome of Divinity;INV_Misc_Book_07
+item;6776;Tome of Valor;INV_Misc_Book_07
+item;6785;Powers of the Void;INV_Misc_Book_11
+item;6847;Dark Iron Script;INV_Letter_16
+item;6866;Symbol of Life;INV_Jewelry_Talisman_06
+item;6888;Herb Baked Eggs;INV_Egg_03
+item;6889;Small Egg;INV_Egg_01
+item;6894;Whirlwind Heart;INV_Misc_Gem_Sapphire_01
+item;6913;Heartswood Core;Spell_Nature_NatureTouchGrow
+item;6916;Tome of Divinity;INV_Misc_Book_07
+item;6928;Bloodstone Choker;INV_Jewelry_Necklace_05
+item;6931;Moldy Tome;INV_Misc_Book_08
+item;6947;Instant Poison;Ability_Poisons
+item;6948;Hearthstone;INV_Misc_Rune_01
+item;6952;Thick Bear Fur;INV_Misc_Pelt_Bear_01
+item;6975;Whirlwind Axe;INV_Axe_12
+item;6997;Tattered Manuscript;INV_Misc_Note_01
+item;6999;Tome of the Cabal;INV_Misc_Book_08
+item;7005;Skinning Knife;INV_Weapon_ShortBlade_01
+item;7067;Elemental Earth;INV_Ore_Iron_01
+item;7068;Elemental Fire;Spell_Fire_Fire
+item;7069;Elemental Air;Spell_Nature_Tranquility
+item;7070;Elemental Water;INV_Potion_03
+item;7072;Naga Scales;INV_Misc_MonsterScales_01
+item;7119;Twitching Antenna;INV_Gizmo_Pipe_04
+item;7146;The Scarlet Key;INV_Misc_Key_01
+item;7207;Jennea\'s Flask;INV_Drink_01
+item;7208;Tazan\'s Key;INV_Misc_Key_08
+item;7209;Tazan's Satchel;INV_Misc_Bag_05
+item;7231;Astor\'s Letter of Introduction;INV_Misc_Note_05
+item;7266;Ur's Treatise on Shadow Magic;INV_Misc_Book_01
+item;7267;Pristine Spider Silk;spell_nature_web_01
+item;7291;Infernal Orb;INV_Misc_Orb_04
+item;7297;Morbent\'s Bane;INV_Staff_05
+item;7298;Blade of Cunning;INV_Weapon_ShortBlade_26
+item;7347;Cogs;INV_Gizmo_03
+item;7365;Gnoam Sprecklesprocket;INV_Gizmo_01
+item;7371;Heavy Quiver;INV_Misc_Quiver_02
+item;7442;Gyromast\'s Key;INV_Misc_StoneTablet_05
+item;7498;Top of Gelkak's Key;INV_Misc_Key_01
+item;7499;Middle of Gelkak's Key;INV_Misc_Key_02
+item;7500;Bottom of Gelkak's Key;INV_Misc_Key_03
+item;7586;Tharnariun\'s Hope;INV_Misc_Orb_03
+item;7666;Shattered Necklace;INV_Jewelry_Necklace_02
+item;7676;Thistle Tea;INV_Drink_Milk_05
+item;7733;Staff of Prehistoria;INV_Staff_01
+item;7740;Gni\'kiv Medallion;INV_Jewelry_Amulet_01
+item;7741;The Shaft of Tsol;INV_Staff_Goldfeathered_01
+item;7766;Empty Brown Waterskin;INV_Drink_Waterskin_06
+item;7767;Empty Blue Waterskin;INV_Drink_Waterskin_02
+item;7768;Empty Red Waterskin;INV_Drink_Waterskin_10
+item;7812;Corrupt Manifestation's Bracers;INV_Bracer_09
+item;7846;Crag Coyote Fang;INV_Misc_MonsterFang_01
+item;7847;Buzzard Gizzards;INV_Misc_Organ_06
+item;7848;Rock Elemental Shards;INV_Misc_StoneTablet_01
+item;7872;Thieves' Tools;INV_Misc_Gear_03
+item;7907;Certificate of Thievery;INV_Misc_Note_02
+item;7908;Klaven Mortwake's Journal;INV_Misc_Book_10
+item;7923;Defias Tower Key;INV_Misc_Key_11
+item;7970;E.C.A.C.;INV_Misc_Food_Wheat_02
+item;7972;Ichor of Undeath;spell_shadow_soulleech_1
+item;8026;Garrett Family Treasure;INV_Banner_01
+item;8027;Krom Stoutarm's Treasure;INV_Drink_03
+item;8047;Fungus Caps;INV_Mushroom_09
+item;8048;Emerald Dreamcatcher;INV_Misc_ShadowEgg
+item;8049;Gnarlpine Necklace;INV_Jewelry_Necklace_01
+item;8050;Tallonkai's Jewel;INV_Misc_Gem_Emerald_01
+item;8051;Flare Gun;INV_Musket_02
+item;8066;Fizzule\'s Whistle;INV_Misc_Pipe_01
+item;8073;Mixture;INV_Potion_66
+item;8095;Hinott\'s Oil;INV_Potion_27
+item;8155;Sathrah\'s Sacrifice;INV_Weapon_ShortBlade_16
+item;8244;Flawless Draenethyst Sphere;INV_Ore_Arcanite_02
+item;8391;Snickerfang Jowl;INV_Misc_Food_16
+item;8392;Blasted Boar Lung;INV_Misc_Organ_06
+item;8393;Scorpok Pincer;INV_Misc_Birdbeck_02
+item;8394;Basilisk Brain;INV_Misc_Organ_03
+item;8396;Vulture Gizzard;INV_Misc_Organ_05
+item;8428;Laden Dew Gland;INV_Misc_Pipe_01
+item;8443;Gahz'ridian Ornaments;INV_Jewelry_Talisman_06
+item;8444;Executioner\'s Key;INV_Misc_Key_02
+item;8463;Warchief's Orders;INV_Letter_17
+item;8483;Wastewander Water Pouch;INV_Drink_Milk_02
+item;8524;Model 4711-FTZ Power Source;INV_Misc_StoneTablet_05
+item;8526;Violet Tragan;INV_Mushroom_06
+item;8529;Noggenfogger Elixir;INV_Potion_108
+item;8548;Divino-matic Rod;INV_Wand_08
+item;8563;Red Mechanostrider;Ability_Mount_MechaStrider
+item;8564;Hippogryph Egg;INV_Egg_02
+item;8584;Untapped Dowsing Widget;INV_Potion_87
+item;8587;Centipaar Insect Parts;INV_Misc_Pelt_Boar_Ruin_03
+item;8593;Scrimshank's Surveying Gear;INV_Gizmo_01
+item;8594;Insect Analysis Report;INV_Misc_Note_05
+item;8595;Blue Mechanostrider;Ability_Mount_MechaStrider
+item;8603;Thistleshrub;INV_Potion_77
+item;8623;OOX-17/TN Distress Beacon;INV_Egg_05
+item;8643;Extraordinary Egg;INV_Egg_03
+item;8644;Fine Egg;INV_Egg_03
+item;8645;Ordinary Egg;INV_Egg_01
+item;8646;Bad Egg;INV_Egg_01
+item;8647;Egg Crate;INV_Box_01
+item;8683;Clara's Fresh Apples;INV_Misc_Food_19
+item;8684;Hinterlands Honey Ripple;INV_Drink_10
+item;8704;OOX-09/HL Distress Beacon;INV_Egg_05
+item;8705;OOX-22/FE Distress Beacon;INV_Egg_05
+item;8707;Gahz'rilla's Electrified Scale;INV_Misc_MonsterScales_03
+item;8723;Caliph Scorpidsting's Head;INV_Misc_Head_Human_01
+item;8766;Morning Glory Dew;INV_Drink_27
+item;8806;Remove Lesser Curse;INV_Misc_Book_07
+item;8909;Holy Strike;INV_Misc_Book_08
+item;8952;Roasted Quail;INV_Misc_Food_15
+item;8968;Mana Burn;INV_Misc_Book_09
+item;8973;Thick Yeti Hides;INV_Misc_Pelt_Boar_01
+item;8974;Mind Control;INV_Misc_Book_09
+item;9049;Fire Nova;INV_Misc_StoneTablet_05
+item;9153;Rig Blueprints;INV_Misc_Note_06
+item;9189;Shay\'s Bell;INV_Misc_Bell_01
+item;9234;Tiara of the Deep;INV_Jewelry_Amulet_05
+item;9238;Uncracked Scarab Shell;INV_Misc_MonsterScales_03
+item;9240;Mallet of Zul'Farrak;INV_Hammer_19
+item;9244;Stoley's Shipment;INV_Cask_01
+item;9245;Stoley\'s Bottle;INV_Drink_11
+item;9246;Firebeard's Head;INV_Misc_Head_Human_01
+item;9249;Captain\'s Key;INV_Misc_Key_01
+item;9250;Ship Schedule;INV_Scroll_03
+item;9255;Lahassa Essence;INV_Misc_Gem_Amethyst_03
+item;9256;Imbel Essence;INV_Stone_02
+item;9257;Samha Essence;INV_Ore_Thorium_01
+item;9258;Byltan Essence;INV_Misc_Gem_Sapphire_02
+item;9259;Troll Tribal Necklace;INV_Jewelry_Necklace_09
+item;9263;Troyas\' Stave;INV_Staff_08
+item;9276;Pirate\'s Footlocker;INV_Box_03
+item;9277;Memory Core;INV_Battery_01
+item;9278;Essential Artificials;INV_Gizmo_01
+item;9279;White Punch Card;INV_Ingot_01
+item;9280;Yellow Punch Card;INV_Ingot_01
+item;9281;Red Punch Card;INV_Ingot_01
+item;9282;Blue Punch Card;INV_Ingot_01
+item;9283;Empty Leaden Collection Phial;INV_Drink_01
+item;9299;Safe Combination;INV_Misc_Note_05
+item;9309;Robo-mechanical Guts;INV_Gizmo_02
+item;9319;Nimboya\'s Laden Pike;INV_Spear_02
+item;9320;Witherbark Skull;INV_Misc_Bone_OrcSkull_01
+item;9322;Undamaged Venom Sac;INV_Misc_Organ_02
+item;9326;Grime-Encrusted Ring;INV_Stone_04
+item;9328;Super Snapper FX;INV_Misc_Spyglass_03
+item;9329;A Short Note;INV_Letter_13
+item;9330;Snapshot of Gammerita;INV_Misc_MonsterHead_02
+item;9364;Heavy Leaden Collection Phial;INV_Drink_01
+item;9365;High Potency Radioactive Fallout;Spell_Nature_AbolishMagic
+item;9368;Jer\'kai\'s Signet Ring;INV_Jewelry_Ring_05
+item;9370;Gordunni Scroll;INV_Scroll_07
+item;9437;Untested Basilisk Sample;INV_Misc_MonsterScales_03
+item;9439;Untested Hyena Sample;INV_Misc_Pelt_Wolf_Ruin_03
+item;9442;Untested Scorpid Sample;Spell_Shadow_CarrionSwarm
+item;9445;Paw;INV_Gauntlets_17
+item;9449;Manual;INV_Mace_14
+item;9460;Grimtotem Horn;INV_Misc_Bone_04
+item;9461;Gears;INV_Misc_Gear_01
+item;9463;Gordunni Cobalt;INV_Stone_02
+item;9466;Orwin\'s Shovel;INV_Misc_Shovel_01
+item;9468;Sharpbeak\'s Feather;Spell_Magic_FeatherFall
+item;9471;Nekrum's Medallion;INV_Jewelry_Amulet_01
+item;9511;Scalp;INV_Sword_40
+item;9516;Astral Knot Blouse;INV_Shirt_11
+item;9523;Troll Temper;INV_Potion_25
+item;9530;Horn of Hatetalon;INV_Misc_Horn_02
+item;9539;Box of Rations;INV_Box_01
+item;9540;Box of Spells;INV_Box_02
+item;9541;Box of Goodies;INV_Box_04
+item;9589;Minerals;INV_Misc_Gem_Variety_02
+item;9590;Splintered Log;INV_TradeskillItem_03
+item;9591;Resilient Sinew;INV_Misc_LeatherScrap_08
+item;9593;Treant Muisek;Spell_Nature_ProtectionformNature
+item;9606;Treant Muisek Vessel;INV_Misc_Drum_01
+item;9618;Wildkin Muisek Vessel;INV_Misc_Drum_01
+item;9619;Hippogryph Muisek Vessel;INV_Misc_Drum_01
+item;9620;Faerie Dragon Muisek Vessel;INV_Misc_Drum_01
+item;9621;Mountain Giant Muisek Vessel;INV_Misc_Drum_01
+item;9628;Neeru\'s Herb Pouch;INV_Misc_Bag_12
+item;9681;Crawler Legs;Ability_PoisonSting
+item;9978;Gahz\'ridian Detector;INV_Helmet_49
+item;10000;Margol\'s Horn;INV_Misc_Horn_03
+item;10261;Bandanas;INV_Misc_Bandana_03
+item;10283;Samples;INV_Misc_Organ_02
+item;10327;Horn of Echeyakee;INV_Misc_Horn_01
+item;10338;Fresh Zhevra Carcass;INV_Misc_Pelt_Wolf_Ruin_01
+item;10441;Glowing Shard;INV_Stone_03
+item;10442;Mysterious Artifact;INV_Ore_Thorium_01
+item;10443;Singed Letter;INV_Letter_15
+item;10444;Standard Issue Flare Gun;INV_Musket_03
+item;10445;Drawing Kit;INV_Box_01
+item;10446;Heart of Obsidion;INV_Misc_Gem_Pearl_01
+item;10447;Head of Lathoric the Black;INV_Misc_Head_Dwarf_01
+item;10454;Essence of Eranikus;INV_Stone_03
+item;10458;Prayer to Elune;INV_Misc_StoneTablet_05
+item;10465;Egg of Hakkar;INV_Egg_03
+item;10479;Satchel;INV_Misc_Bag_07_Black
+item;10509;Heart of Flame;INV_Misc_Gem_Bloodstone_02
+item;10511;Golem Oil;INV_Misc_Gem_Pearl_01
+item;10515;Torch of Retribution;INV_Wand_04
+item;10552;Symbol of Ragnaros;INV_Jewelry_Talisman_04
+item;10560;Unstable Trigger;INV_Battery_01
+item;10561;Mithril Casing;INV_Gizmo_MithrilCasing_01
+item;10562;Hi-Explosive Bomb;INV_Misc_Bomb_07
+item;10567;Quills;INV_Weapon_Bow_01
+item;10569;Hoard of the Black Dragonflight;INV_Box_02
+item;10575;Black Dragonflight Molt;INV_Misc_ShadowEgg
+item;10592;Catseye Elixir;INV_Potion_36
+item;10593;Imperfect Draenethyst Fragment;INV_Misc_Gem_Crystal_03
+item;10660;First Mosh'aru Tablet;INV_Misc_Rune_04
+item;10661;Second Mosh'aru Tablet;INV_Misc_Rune_08
+item;10663;Essence of Hakkar;Spell_Shadow_DemonBreath
+item;10687;Empty Vial Labeled #1;INV_Drink_06
+item;10688;Empty Vial Labeled #2;INV_Drink_06
+item;10689;Empty Vial Labeled #3;INV_Drink_06
+item;10690;Empty Vial Labeled #4;INV_Drink_06
+item;10691;Filled Vial Labeled #1;INV_Potion_35
+item;10692;Filled Vial Labeled #2;INV_Potion_42
+item;10693;Filled Vial Labeled #3;INV_Potion_56
+item;10694;Filled Vial Labeled #4;INV_Potion_77
+item;10695;Box of Empty Vials;INV_Box_01
+item;10699;Yeh\'kinya\'s Bramble;INV_Wand_12
+item;10715;Kim'Jael's Scope;INV_Misc_Spyglass_03
+item;10717;Kim'Jael's Compass;INV_Misc_PocketWatch_01
+item;10718;Kim'Jael's Wizzlegoober;INV_Gizmo_03
+item;10722;Kim'Jael's Stuffed Chicken;Spell_Magic_PolymorphChicken
+item;10765;Fingers;INV_Gauntlets_09
+item;10798;Tusk;INV_Belt_15
+item;10819;Wildkin Feather;INV_Feather_14
+item;10938;Lesser Magic Essence;INV_Enchant_EssenceMagicSmall
+item;10999;Ironfel;INV_Hammer_23
+item;11018;Un\'Goro Soil;INV_Misc_Dust_08
+item;11058;Sha'ni's Nose-Ring;INV_Jewelry_Ring_14
+item;11102;Unhatched Sprite Darter Egg;INV_Egg_02
+item;11104;Large Compass;INV_Misc_PocketWatch_02
+item;11105;Curled Map Parchment;INV_Misc_Map_01
+item;11107;A Small Pack;INV_Misc_Bag_20
+item;11108;Faded Photograph;INV_Scroll_08
+item;11112;Research Equipment;INV_Gizmo_06
+item;11113;Crate of Foodstuffs;INV_Crate_04
+item;11114;Dinosaur Bone;INV_Misc_Bone_01
+item;11116;A Mangled Journal;INV_Misc_Book_11
+item;11127;Scavenged Goods;INV_Crate_06
+item;11128;Golden Rod;INV_Staff_10
+item;11129;Essence of the Elements;INV_Enchant_ShardGlowingLarge
+item;11131;Hive Wall Sample;INV_Potion_42
+item;11132;Unused Scraping Vial;INV_Potion_84
+item;11133;Linken\'s Training Sword;INV_Sword_47
+item;11140;Prison Cell Key;INV_Misc_Key_10
+item;11141;Bait;INV_Misc_Food_50
+item;11143;Nugget Slugs;INV_Misc_Gear_01
+item;11147;Samophlange Manual Cover;INV_Misc_Book_03
+item;11148;Samophlange Manual Page;INV_Misc_Note_06
+item;11169;Book of Aquor;INV_Misc_Book_10
+item;11172;Silvery Claws;INV_Misc_MonsterScales_17
+item;11173;Irontree Heart;INV_Stone_15
+item;11176;Dream Dust;INV_Enchant_DustDream
+item;11179;Golden Flame;INV_Shield_15
+item;11184;Blue Power Crystal;INV_Misc_Gem_Sapphire_03
+item;11185;Green Power Crystal;INV_Misc_Gem_Emerald_02
+item;11186;Red Power Crystal;INV_Misc_Gem_Ruby_03
+item;11188;Yellow Power Crystal;INV_Misc_Gem_Topaz_02
+item;11205;Herbalism;INV_Misc_Note_01
+item;11224;Frost Resistance;INV_Misc_Note_01
+item;11231;Altered Black Dragonflight Molt;INV_Misc_ShadowEgg
+item;11242;Evoroot;INV_Misc_Herb_12
+item;11243;Videre Elixir;INV_Potion_33
+item;11267;Elemental Shards;INV_Stone_02
+item;11285;Jagged Arrow;INV_Weapon_ShortBlade_25
+item;11287;Lesser Magic Wand;INV_Staff_02
+item;11288;Greater Magic Wand;INV_Staff_07
+item;11304;Fine Longbow;INV_Weapon_Bow_02
+item;11307;Massive Longbow;INV_Weapon_Bow_01
+item;11309;The Heart of the Mountain;INV_Misc_Gem_Bloodstone_02
+item;11312;Lost Thunderbrew Recipe;INV_Misc_Note_03
+item;11316;Bloodpetal;INV_Misc_Flower_04
+item;11318;Atal'ai Haze;INV_Misc_Gem_Stone_01
+item;11362;Medium Quiver;INV_Misc_Quiver_10
+item;11445;Flute of the Ancients;INV_Misc_Flute_01
+item;11446;A Crumpled Up Note;INV_Misc_Note_05
+item;11463;Undelivered Parcel;INV_Misc_Bag_07
+item;11466;Raschal\'s Report;INV_Scroll_07
+item;11467;Blackrock Medallion;INV_Jewelry_Talisman_06
+item;11470;Tablet Transcript;INV_Misc_Note_05
+item;11482;Crystal Pylon User\'s Manual;INV_Misc_Book_08
+item;11503;Blood Ambers;INV_Misc_Gem_Bloodstone_02
+item;11504;Piece of Threshadon Carcass;INV_Misc_Food_16
+item;11509;Ravasaur Pheromone Glands;INV_Misc_Organ_06
+item;11510;Lar'korwi's Head;Ability_Hunter_Pet_Raptor
+item;11511;Cenarion Beacon;INV_Misc_Lantern_01
+item;11515;Corrupted Soul Shard;INV_Enchant_ShardRadientSmall
+item;11516;Cenarion Plant Salve;INV_Drink_17
+item;11522;Silver Totem of Aquementas;INV_Wand_05
+item;11568;Torwa\'s Pouch;INV_Misc_Bag_09_Black
+item;11569;Preserved Threshadon Meat;INV_Misc_Food_14
+item;11570;Preserved Pheromone Mixture;INV_Potion_12
+item;11617;Eridan\'s Supplies;INV_Misc_Bag_14
+item;11668;Flute of Xavaric;INV_Misc_Flute_01
+item;11674;Jadefire Felbinds;INV_Mask_02
+item;11682;Eridan\'s Vial;INV_Potion_90
+item;11723;Goodsteel\'s Balanced Flameberge;INV_Sword_02
+item;11724;Overdue Package;INV_Crate_06
+item;11725;Solid Crystal Leg Shaft;INV_Misc_MonsterSpiderCarapace_01
+item;11727;Goodsteel Ledger;INV_Misc_Book_09
+item;11804;Spraggle\'s Canteen;INV_Drink_18
+item;11818;Grimesilt Outhouse Key;INV_Misc_Key_12
+item;11830;Webbed Diemetradon Scale;INV_Misc_MonsterScales_16
+item;11831;Webbed Pterrordax Scale;INV_Misc_MonsterScales_12
+item;11833;Gorishi Queen Lure;INV_Potion_29
+item;11834;Super Sticky Tar;INV_Ammo_FireTar
+item;11835;Gorishi Queen Brain;INV_Misc_Organ_03
+item;11837;Gorishi Scent Gland;INV_Misc_Organ_06
+item;11839;Monocle;INV_Helmet_44
+item;11912;Package of Empty Ooze Containers;INV_Crate_03
+item;11914;Empty Cursed Ooze Jar;INV_Potion_84
+item;11929;Haunt;INV_Pants_11
+item;11947;Filled Cursed Ooze Jar;INV_Potion_35
+item;11948;Empty Tainted Ooze Jar;INV_Potion_84
+item;11949;Filled Tainted Ooze Jar;INV_Potion_77
+item;11953;Empty Pure Sample Jar;INV_Potion_84
+item;11954;Filled Pure Sample Jar;INV_Potion_56
+item;11955;Bag of Empty Ooze Containers;INV_Misc_Bag_01
+item;11963;Penance;INV_Shoulder_25
+item;12191;Silver Dawning's Lockbox;INV_Box_03
+item;12192;Mist Veil's Lockbox;INV_Box_04
+item;12220;Intact Elemental Bracer;INV_Bracer_09
+item;12230;Felwood Slime Sample;INV_Potion_37
+item;12235;Un\'Goro Slime Sample;INV_Potion_79
+item;12237;Crab Chunks;INV_Misc_Food_51
+item;12238;Darkshore Grouper;INV_Misc_Fish_26
+item;12242;Sea Creature Bones;INV_Misc_Bone_02
+item;12247;Broad Bladed Knife;INV_Weapon_ShortBlade_04
+item;12249;Merciless Axe;INV_Axe_17
+item;12251;Big Stick;INV_Staff_21
+item;12252;Staff of Protection;INV_Staff_07
+item;12283;Broodling Essence;INV_Misc_Gem_Bloodstone_02
+item;12284;Draco-Incarcinatrix 900;INV_Gizmo_07
+item;12288;Encased Corrupt Ooze;INV_Cask_03
+item;12289;Sea Turtle Remains;INV_Misc_Bone_07
+item;12291;Merged Ooze Sample;INV_Misc_Slime_01
+item;12299;Netted;INV_Gauntlets_05
+item;12334;Frostmaul Shards;INV_Misc_Gem_Crystal_01
+item;12341;Blackwood Fruit Sample;INV_Misc_Food_57
+item;12342;Blackwood Grain Sample;INV_Misc_Food_Wheat_02
+item;12343;Blackwood Nut Sample;INV_Misc_Food_02
+item;12346;Empty Cleansing Bowl;INV_Misc_Bowl_01
+item;12347;Filled Cleansing Bowl;INV_Potion_01
+item;12350;Empty Sampling Tube;INV_Potion_85
+item;12355;Talisman of Corruption;INV_Jewelry_Talisman_04
+item;12359;Thorium Bar;INV_Ingot_07
+item;12366;Thick Yeti Fur;INV_Misc_Pelt_03
+item;12367;Pristine Yeti Horn;INV_Weapon_ShortBlade_21
+item;12383;Moontouched Feather;INV_Feather_13
+item;12402;Ancient Egg;INV_Egg_03
+item;12438;Tinkee\'s Letter;INV_Letter_13
+item;12444;Uncracked Chillwind Horns;INV_Misc_Horn_02
+item;12464;Talons;INV_Gauntlets_19
+item;12472;Krakle\'s Thermometer;INV_Gizmo_01
+item;12524;Blue-feathered Amulet;INV_Feather_12
+item;12525;Jaron's Supplies;INV_Crate_05
+item;12558;Blue-feathered Necklace;INV_Jewelry_Necklace_11
+item;12564;Assassination Note;INV_Letter_17
+item;12565;Winna\'s Kitten Carrier;INV_Box_PetCarrier_01
+item;12566;Hardened Flasket;INV_Potion_90
+item;12627;Temporal Displacer;INV_Misc_Horn_03
+item;12647;Felhas Ruby;INV_Misc_Gem_Ruby_02
+item;12722;Good Luck Other-Half-Charm;INV_Jewelry_Talisman_10
+item;12723;Good Luck Charm;INV_Jewelry_Talisman_11
+item;12724;Janice\'s Parcel;INV_Misc_Gift_05
+item;12733;Sacred Frostsaber Meat;INV_Misc_Food_16
+item;12737;Gloom Weed;INV_Misc_Herb_05
+item;12738;Dalson Outhouse Key;INV_Misc_Key_06
+item;12739;Dalson Cabinet Key;INV_Misc_Key_12
+item;12765;Secret Note #1;INV_Scroll_07
+item;12771;Empty Firewater Flask;INV_Potion_85
+item;12783;Hearts;INV_Sword_17
+item;12807;Scourge Banner;INV_Banner_03
+item;12814;Flame in a Bottle;INV_Drink_11
+item;12815;Beacon Torch;INV_Torch_Lit
+item;12822;Droplets;INV_Misc_Slime_01
+item;12840;Minion\'s Scourgestone;INV_Jewelry_Talisman_14
+item;12842;Crudely-written Log;INV_Misc_Book_08
+item;12843;Scourgestones;INV_Jewelry_Talisman_12
+item;12844;Argent Dawn Valor Token;INV_Jewelry_Talisman_08
+item;12846;Argent Dawn Commission;INV_Jewelry_Talisman_07
+item;12885;Pamela's Doll;INV_Misc_Idol_02
+item;12886;Pamela\'s Doll\'s Head;INV_Misc_Head_Gnome_01
+item;12887;Pamela\'s Doll\'s Left Side;INV_Misc_Idol_01
+item;12888;Pamela\'s Doll\'s Right Side;INV_Misc_Idol_01
+item;12891;Jaron\'s Pick;INV_Pick_02
+item;12894;Joseph's Wedding Ring;INV_Jewelry_Ring_03
+item;12896;First Relic Fragment;INV_Staff_15
+item;12897;Second Relic Fragment;INV_Staff_15
+item;12898;Third Relic Fragment;INV_Staff_15
+item;12899;Fourth Relic Fragment;INV_Staff_15
+item;12900;Annals of Darrowshire;INV_Misc_Book_07
+item;12906;Purified Moonwell Water;INV_Potion_13
+item;12907;Corrupt Moonwell Water;INV_Drink_01
+item;12922;Empty Canteen;INV_Drink_01
+item;12928;Umi\'s Mechanical Yeti;INV_Gizmo_09
+item;12956;Skull of Horgus;INV_Misc_Bone_ElfSkull_01
+item;12957;Shattered Sword of Marduk;INV_Sword_47
+item;13037;Stingers;INV_Weapon_Crossbow_04
+item;13063;Starfall;INV_Staff_02
+item;13140;Blood Red Key;INV_Misc_Key_01
+item;13155;Resonating Skulls;Spell_Shadow_ShadowWordPain
+item;13156;Mystic Crystal;INV_Misc_Gem_Diamond_02
+item;13194;Felstone Field Cauldron Key;INV_Misc_Key_11
+item;13195;Cauldron Key;INV_Misc_Key_13
+item;13196;Gahrron's Withering Cauldron Key;INV_Misc_Key_13
+item;13197;Writhing Haunt Cauldron Key;INV_Misc_Key_11
+item;13207;Shadow Lord Fel\'dan\'s Head;INV_Misc_Head_Orc_01
+item;13321;Green Mechanostrider;Ability_Mount_MechaStrider
+item;13322;Unpainted Mechanostrider;Ability_Mount_MechaStrider
+item;13446;Major Healing Potions;INV_Potion_54
+item;13515;Lightning Bolts;INV_Misc_Gear_06
+item;13536;Horn of Awakening;INV_Misc_Horn_03
+item;13542;Demon Box;INV_Box_01
+item;13545;Shellfish;INV_Misc_Fish_14
+item;13546;Bloodbelly Fish;INV_Misc_Fish_06
+item;13562;Remains of Trey Lightforge;INV_Misc_Bag_10
+item;13702;Doom Weed;INV_Misc_Herb_13
+item;13703;Kodo Bones;INV_Misc_Bone_09
+item;13724;Enriched Manna Biscuit;inv_misc_food_78
+item;13815;Some Rune;INV_Misc_Rune_05
+item;13850;Rumbleshot's Ammo;INV_Ammo_Bullet_02
+item;13872;Bundle of Wood;INV_TradeskillItem_03
+item;13892;Kodo Kombobulator;INV_Battery_01
+item;14047;Runecloth;INV_Fabric_PurpleFire_01
+item;14256;Felcloth;INV_Fabric_FelRag
+item;14338;Empty Water Tube;INV_Potion_85
+item;14339;Moonwell Water Tube;INV_Potion_20
+item;14395;Spells of Shadow;INV_Misc_Book_01
+item;14396;Incantations from the Nether;INV_Misc_Book_06
+item;14523;Demon Pick;Trade_Mining
+item;14544;Lieutenant\'s Insignia;INV_Misc_Rune_04
+item;14545;Ghost;INV_Pants_11
+item;14577;Skulls;INV_Pants_08
+item;14613;Taelan's Hammer;INV_Hammer_01
+item;14625;Symbol of Lost Honor;INV_Banner_02
+item;14628;Skeletal Fragments;Spell_Nature_SlowingTotem
+item;15002;Nimboya\'s Pike;INV_Spear_05
+item;15043;Plagueland Termites;INV_Misc_MonsterSpiderCarapace_01
+item;15044;Termites;INV_Cask_01
+item;15102;Un\'Goro Tested Sample;INV_Misc_Slime_01
+item;15103;Corrupt Tested Sample;INV_Misc_Slime_01
+item;15208;Cenarion Moondust;INV_Enchant_DustSoul
+item;15314;Relics;INV_Misc_Bag_10
+item;15326;Gleaming Throwing Axe;INV_ThrowingAxe_06
+item;15327;Wicked Throwing Dagger;INV_ThrowingKnife_03
+item;15396;Curvewood Dagger;INV_Weapon_ShortBlade_05
+item;15397;Oakthrush Staff;INV_Staff_08
+item;15398;Sandcomber Boots;INV_Boots_03
+item;15447;Living Rot;INV_Misc_Pelt_06
+item;15454;Mortar and Pestle;INV_Misc_Bowl_01
+item;15455;Dustfall Robes;INV_Chest_Cloth_32
+item;15710;Cenarion Lunardust;INV_Enchant_DustSoul
+item;15722;Spraggle's Canteen;INV_Drink_18
+item;15767;Hameya's Key;INV_Misc_Key_11
+item;15778;Mechanical Yeti;Ability_Hunter_Pet_Gorilla
+item;15788;Everlook Report;INV_Scroll_06
+item;15790;Studies in Spirit Speaking;INV_Misc_Book_05
+item;15803;Book of the Ancients;INV_Misc_Book_06
+item;15809;Heavy Crossbow;INV_Weapon_Crossbow_03
+item;15826;Curative Animal Salve;INV_Drink_14
+item;15844;Empty Cliffspring Falls Sampler;INV_Potion_15
+item;15847;Quel'Thalas Registry;INV_Misc_Book_11
+item;15848;Crate of Ghost Magnets;INV_Crate_03
+item;15849;Ghost-o-plasm;INV_Misc_Slime_01
+item;15874;Soft-shelled Clam;INV_Misc_Shell_03
+item;15877;Shrine Bauble;INV_Misc_Gem_Pearl_06
+item;15878;Rackmore's Silver Key;INV_Misc_Key_03
+item;15881;Golden Key;INV_Misc_Key_04
+item;15882;Half Pendant of Aquatic Endurance;INV_Jewelry_Talisman_09
+item;15883;Half Pendant of Aquatic Agility;INV_Jewelry_Talisman_10
+item;15885;Pendant of the Sea Lion;INV_Jewelry_Talisman_11
+item;15914;Taming Rod;Ability_Hunter_BeastTaming
+item;15915;Taming Rod;Ability_Hunter_BeastTaming
+item;15916;Taming Rod;Ability_Hunter_BeastTaming
+item;15917;Taming Rod;Ability_Hunter_BeastTaming
+item;15919;Taming Rod;Ability_Hunter_BeastTaming
+item;15920;Taming Rod;Ability_Hunter_BeastTaming
+item;15921;Taming Rod;Ability_Hunter_BeastTaming
+item;15922;Taming Rod;Ability_Hunter_BeastTaming
+item;15923;Taming Rod;Ability_Hunter_BeastTaming
+item;16001;SI:7 Insignia (Fredo);INV_Misc_ArmorKit_04
+item;16002;SI:7 Insignia (Turyen);INV_Misc_ArmorKit_04
+item;16003;SI:7 Insignia (Rutger);INV_Misc_ArmorKit_04
+item;16055;Bombs;INV_Scroll_06
+item;16084;Expert First Aid - Under Wraps;INV_Misc_Book_08
+item;16112;Manual: Heavy Silk Bandage;INV_Misc_Book_03
+item;16113;Manual: Mageweave Bandage;INV_Misc_Book_03
+item;16114;Foreman\'s Blackjack;INV_Mace_11
+item;16115;Osric\'s Crate;INV_Crate_03
+item;16208;Gaea Seeds;INV_Misc_Food_02
+item;16282;Hides;INV_Misc_LeatherScrap_03
+item;16302;Grimoire of Firebolt (Rank 2);INV_Misc_Book_06
+item;16303;Ursangous\'s Paw;INV_Gauntlets_07
+item;16304;Shadumbra\'s Head;Ability_Mount_BlackPanther
+item;16305;Sharptalon\'s Claw;Spell_Nature_NaturesWrath
+item;16311;Picks;INV_Pick_03
+item;16316;Grimoire of Firebolt (Rank 3);INV_Misc_Book_06
+item;16321;Grimoire of Blood Pact (Rank 1);INV_Misc_Book_06
+item;16332;Thazz'ril's Pick;INV_Pick_01
+item;16333;Samuel\'s Remains;INV_Misc_Bone_DwarfSkull_01
+item;16346;Grimoire of Torment (Rank 2);INV_Misc_Book_06
+item;16351;Grimoire of Sacrifice (Rank 1);INV_Misc_Book_06
+item;16408;Befouled Water Globe;Spell_Shadow_Teleport
+item;16645;Shredder Operating Manual - Page 1;INV_Misc_Note_06
+item;16646;Shredder Operating Manual - Page 2;INV_Misc_Note_06
+item;16647;Shredder Operating Manual - Page 3;INV_Misc_Note_06
+item;16648;Shredder Operating Manual - Page 4;INV_Misc_Note_06
+item;16649;Shredder Operating Manual - Page 5;INV_Misc_Note_06
+item;16650;Shredder Operating Manual - Page 6;INV_Misc_Note_06
+item;16651;Shredder Operating Manual - Page 7;INV_Misc_Note_06
+item;16652;Shredder Operating Manual - Page 8;INV_Misc_Note_06
+item;16653;Shredder Operating Manual - Page 9;INV_Misc_Note_06
+item;16654;Shredder Operating Manual - Page 10;INV_Misc_Note_06
+item;16655;Shredder Operating Manual - Page 11;INV_Misc_Note_06
+item;16656;Shredder Operating Manual - Page 12;INV_Misc_Note_06
+item;16762;Fathom Core;INV_Misc_StoneTablet_08
+item;16782;Strange Water Globe;Spell_Shadow_Teleport
+item;16784;Sapphire of Aku'Mai;INV_Misc_Gem_Sapphire_03
+item;16790;Damp Note;INV_Misc_Note_06
+item;16799;Bindings;INV_Belt_29
+item;16800;Boots;INV_Boots_07
+item;16802;Belt;INV_Belt_30
+item;16910;Fang;INV_Belt_23
+item;16991;Triage Bandage;INV_Misc_Bandage_12
+item;17008;Small Scroll;INV_Scroll_03
+item;17031;Rune of Teleportation;INV_Misc_Rune_06
+item;17032;Rune of Portals;INV_Misc_Rune_08
+item;17056;Light Feather;INV_Feather_04
+item;17057;Shiny Fish Scales;INV_Misc_MonsterScales_08
+item;17067;Grimoires;INV_Misc_Book_07
+item;17074;Shadowstrike;INV_Spear_08
+item;17077;Shock;INV_Staff_13
+item;17078;Sap;INV_Misc_Cape_16
+item;17117;Rat Catcher\'s Flute;INV_Misc_Flute_01
+item;17204;Fur;INV_Misc_Gem_Pearl_05
+item;17345;Silithid Goo;INV_Misc_Slime_01
+item;17346;Encrusted Silithid Object;INV_Shield_21
+item;17355;Rabine\'s Letter;INV_Letter_15
+item;17684;Theradric Crystal Carvings;INV_Jewelry_Talisman_07
+item;17693;Coated Cerulean Vial;INV_Potion_85
+item;17696;Filled Cerulean Vial;INV_Potion_24
+item;17702;Celebrian Rod;INV_Staff_19
+item;17703;Celebrian Diamond;INV_Jewelry_Talisman_08
+item;17705;Thrash;INV_Sword_36
+item;17733;Fist of Stone;INV_Hammer_17
+item;17756;Shadowshard Fragments;INV_Misc_Gem_Amethyst_03
+item;17757;Amulet of Spirits;INV_Jewelry_Amulet_02
+item;17758;Amulet of Union;INV_Jewelry_Amulet_04
+item;17760;Seed of Life;INV_Misc_Herb_18
+item;17761;Gem of the First Khan;INV_Misc_Gem_Ruby_02
+item;17762;Gem of the Second Khan;INV_Misc_Gem_Emerald_01
+item;17763;Gem of the Third Khan;INV_Misc_Gem_Topaz_01
+item;17764;Gem of the Fourth Khan;INV_Misc_Gem_Sapphire_02
+item;17765;Gem of the Fifth Khan;INV_Misc_Gem_Opal_01
+item;18152;Amethyst Phial;INV_Potion_18
+item;18204;Pelt;INV_Misc_Cape_07
+item;18375;Eclipse;INV_Bracer_07
+item;18412;Core Fragment;INV_Misc_Gem_Opal_01
+item;18671;Sceptre;INV_Mace_08
+item;18714;Sinew;INV_Misc_Quiver_03
+item;18772;Mechanostrider;Ability_Mount_MechaStrider
+item;18805;Tooth;INV_Weapon_ShortBlade_11
+item;18821;Quick Strike;INV_Jewelry_Ring_07
+item;18823;Gloves;INV_Gauntlets_23
+item;18839;Healing Potions;INV_Potion_39
+item;18904;Zorbin\'s Ultra-Shrinker;INV_Gizmo_09
+item;18922;Secret Plans: Fiery Flux;INV_Scroll_07
+item;18947;Rage Scar Yeti Hide;INV_Misc_Pelt_Bear_Ruin_04
+item;18956;Miniaturization Residue;INV_Enchant_DustSoul
+item;18959;Smithing Tuyere;INV_Musket_04
+item;18960;Lookout\'s Spyglass;INV_Misc_Spyglass_01
+item;18962;Glands;INV_Misc_Organ_06
+item;18969;Pristine Yeti Hide;INV_Misc_Pelt_Boar_02
+item;18972;Perfect Yeti Hide;INV_Misc_Pelt_Boar_02
+item;19023;Katoom's Best Lure;INV_Misc_MonsterTail_03
+item;19025;Plume;INV_Feather_13
+item;19034;Lard's Lunch;INV_Misc_Food_60
+item;19036;Final Message to the Wildhammer;INV_Spear_02
+item;19064;Shackle Key;INV_Misc_Key_13
+item;19069;Huntsman Malkhor's Skull;INV_Misc_Bone_OrcSkull_01
+item;19070;Huntsman Malkhor's Bones;INV_Misc_Bone_02
+item;19090;Cloth Belt;INV_Belt_04
+item;19130;Cold Snap;INV_Wand_01
+item;19343;Scrolls;INV_Scroll_08
+item;19353;Talon;INV_Axe_10
+item;19372;Endless Rage;INV_Helmet_10
+item;19376;Ring;INV_Jewelry_Ring_40
+item;19435;Essence;INV_Wand_06
+item;19526;Heal;INV_Misc_Cape_18
+item;19581;Berserk;INV_Bracer_06
+item;19670;Ribs;INV_Scroll_03
+item;19775;Sealed Azure Bag;INV_Misc_Bag_16
+item;19862;Blood;INV_Shield_12
+item;19970;Fishing;INV_Fishingpole_01
+item;20005;Claws;INV_Misc_MonsterClaw_02
+item;20017;Perfect Courser Antlers;INV_Misc_Root_02
+item;20019;Tooth of Morphaz;INV_Misc_MonsterFang_01
+item;20022;Azure Key;INV_Misc_Key_08
+item;20023;Encoded Fragments;INV_Misc_Note_01
+item;20027;Healthy Courser Glands;INV_Misc_Organ_06
+item;20028;Glittering Dust;INV_Misc_Dust_01
+item;20029;Enchanted Corals;INV_Stone_05
+item;20085;Arcane Shard;INV_Misc_Gem_Topaz_03
+item;20087;Wavethrasher Scales;INV_Misc_MonsterScales_12
+item;20213;Shrunken Heads;INV_Belt_13
+item;20216;Heads;INV_Belt_14
+item;20310;Flayed Demon Skin;INV_Misc_LeatherScrap_04
+item;20379;Noggle's Satchel;INV_Misc_Bag_12
+item;20394;Twilight Lexicon - Chapter 1;INV_Misc_Book_06
+item;20395;Twilight Lexicon - Chapter 2;INV_Misc_Book_01
+item;20404;Encrypted Twilight Text;INV_Misc_Note_06
+item;20424;Sandworm Meat;INV_Misc_Food_51
+item;20452;Smoked Desert Dumplings;INV_Misc_Food_64
+item;20455;Rubbings;INV_Scroll_09
+item;20461;Brann Bronzebeard\'s Lost Letter;INV_Letter_07
+item;20519;Southsea Pirate Hats;INV_Helmet_66
+item;20600;Signet Rings;INV_Jewelry_Ring_37
+item;20606;Amber Voodoo Feathers;INV_Feather_14
+item;20607;Blue Voodoo Feathers;INV_Feather_13
+item;20608;Green Voodoo Feathers;INV_Feather_12
+item;20613;Rotting Wood;INV_TradeskillItem_03
+item;20614;Bloodvenom Essence;INV_Misc_Slime_01
+item;20622;Necklaces;INV_Jewelry_Necklace_18
+item;20741;Deadwood Ritual Totem;Spell_Totem_WardOfDraining
+item;20742;Winterfall Ritual Totem;Spell_Fire_FrostResistanceTotem
+item;20770;Bubbling Green Ichor;Ability_Creature_Poison_06
+item;21180;Strike;Spell_Nature_AbolishMagic
+item;21185;Orb;INV_Misc_Gem_Pearl_06
+item;21232;Imp;INV_Staff_24
+item;21302;Poisons;INV_Misc_Book_10
+item;21377;Deadwood Headdress Feather;INV_Feather_13
+item;21404;Dagger;INV_Weapon_ShortBlade_27
+item;21485;Fragments;INV_Shield_22
+item;21608;Ash;INV_Jewelry_Necklace_AhnQiraj_01
+item;21664;Choker;INV_Jewelry_Necklace_AhnQiraj_02
+item;21702;Amulets;INV_Jewelry_Necklace_12
+item;21708;Scale;INV_Bracer_12
+item;22201;Reliquary of Purity;INV_Box_02
+item;22284;Cards;INV_Letter_03
+item;22432;Devilsaur Barb;INV_Spear_02
+item;22434;Bloodcaps;INV_Mushroom_07
+item;22435;Gorishi Stings;Spell_Nature_NullifyPoison
+item;22483;Bones;INV_Bracer_15
+item;22525;Crypt Fiend Parts;INV_Misc_AhnQirajTrinket_02
+item;22526;Bone Fragments;INV_Misc_Bone_07
+item;22527;Core of Elements;INV_Misc_Gem_Variety_02
+item;22528;Dark Iron Scraps;INV_Misc_ArmorKit_20
+item;22529;Savage Frond;Spell_Nature_ProtectionformNature
+item;22631;Staff;INV_Staff_Medivh
+item;22937;Neru;INV_Offhand_Naxxramas_D_01
+item;22938;Silk;INV_Misc_Cape_Naxxramas_02
+item;23015;Whiskers;INV_Box_PetCarrier_01
+item;23068;Carnage;INV_Pants_Plate_20
+item;23122;Sharpening Stones;INV_Stone_SharpeningStone_02
+item;23125;Chains;INV_Belt_18
+item;23468;Tome;INV_Misc_Book_15
+item;33090;Tremor;INV_Misc_StoneTablet_06
+item;33097;Idols;INV_Stone_05
+item;33356;Crystals;INV_Jewelry_Ring_20
+item;33363;Ravage;INV_Bracer_09
+item;36500;Sunfire;inv_misc_foxkit
+item;41118;Young Thalassian Boar Flank;INV_Misc_Food_13
+item;41119;Forest Hawkstrider Leg;INV_Misc_Food_60
+item;41120;Lynx Steak;INV_Misc_Food_70
+item;41121;Thalassian Daisies;INV_Misc_Flower_02
+item;41122;Feltouched Letter;INV_Letter_17
+item;41123;Charged Arcane Crystal;INV_Misc_QirajiCrystal_04
+item;41147;Armbands;INV_Misc_Bandage_06
+item;41165;Mana Wyrm Eye;INV_Misc_Gem_Pearl_04
+item;41198;Reefscale Naga Scale;INV_Misc_MonsterScales_12
+item;41412;Residue;INV_Enchant_DustSoul
+item;41737;Apples;INV_Misc_Food_20
+item;41740;Candles;INV_SummerFest_FireDrink
+item;41768;Essences;Spell_Nature_CorrosiveBreath
+item;41931;Mushrooms;inv_misc_deliciouspizza
+item;42137;Hooves;Ability_WarStomp
+item;42202;Shells;INV_Ammo_Bullet_03
+item;42207;Elemental Cores;INV_Misc_Gem_Pearl_06
+item;42236;Tusks;INV_Misc_Bone_05
+item;42268;Hoof;INV_Belt_12
+item;42313;Blueprints;INV_Misc_Note_04
+item;50625;Book;Ability_Ambush
+item;51702;Wings;INV_Qiraj_JewelBlessed
+item;51706;Pumpkins;INV_Misc_Bag_03
+item;51731;Venom;INV_Misc_Cape_01
+item;51763;Burnout;INV_Pants_06
+item;51890;Shirt;INV_Shirt_05
+item;55090;Scales;INV_Shield_23
+item;55182;Rings;INV_Misc_QuestionMark
+item;55258;Starfire;INV_Jewelry_Ring_29
+item;55274;Cloak;INV_Misc_Cape_21
+item;55275;Livers;INV_Misc_Gem_Amethyst_03
+item;55279;Branch;INV_Staff_22
+item;55285;Hands;INV_Gauntlets_05
+item;55352;Regeneration;INV_Misc_Cape_20
+item;55482;Pendant;INV_Jewelry_Necklace_29
+item;56031;Gems;BTNRingOfInfiniteGems
+item;56047;Earrings;INV_Jewelry_Ring_07
+item;56087;Key;INV_Misc_Key_07
+item;58106;Dust;INV_Chest_Leather_08
+item;58200;Eyes;INV_Helmet_19
+item;58239;Overheat;ability_upgrademoonglaive
+item;60099;Pummel;INV_Mace_14
+item;60109;Venom Sacs;INV_Misc_Organ_02
+item;60294;Bloodstone;INV_Sword_12
+item;60342;Pincer;INV_Misc_Birdbeck_02
+item;60384;Flee;INV_Sword_24
+item;60477;Supply Crate;INV_Crate_02
+item;60506;Vigilance;INV_Weapon_Crossbow_05
+item;60514;Pelts;INV_Misc_Pelt_Wolf_01
+item;60586;Meat;INV_Misc_Bag_10_Green
+item;60668;Badge;BTN_cr_GCOIN
+item;60775;Intervene;INV_Misc_Book_10
+item;60955;Tel'Abim Bananas;INV_Misc_Food_23
+item;60989;Parchments;INV_Misc_Bandage_18
+item;60993;Snuff;INV_Misc_Dust_02
+item;61006;Fins;INV_Sword_22
+item;61223;Potions;INV_Scroll_05
+item;61248;Blunderbuss;INV_Weapon_Rifle_TWoW_02_Gray
+item;61260;Scorch;INV_Helmet_34
+item;61448;Axes;INV_Weapon_Halberd_05
+item;61525;Nature;INV_Weapon_Bow_04
+item;61559;Overload;INV_Misc_EngGizmos_08
+item;61585;Trophy;INV_Misc_Bone_03
+item;61637;Antlers;INV_Misc_Root_02
+item;61732;Shard;INV_Misc_Gem_Pearl_04
+item;65032;Poison;Spell_Nature_NullifyPoison
+item;65104;Rod;INV_Chest_Plate07
+item;69111;Bandages;inv_misc_bandage_18
+item;70057;Sacrifice;inv_helmet_19
+item;70537;Helmet;INV_Helmet_72
+item;70539;Chest;INV_Chest_Plate03
+item;70597;Net;INV_Crown_02
+item;70600;Bracers;INV_Jewelry_Ring_23
+item;70601;Hand;INV_Gauntlets_17
+item;80103;Vulture Meat;INV_Misc_Food_69
+item;80211;Camping Knife;INV_Weapon_ShortBlade_05
+item;80443;Ram;Ability_Mount_MountainRam
+item;80774;Shackles;INV_Bracer_19
+item;80806;Healing Ward;INV_Banner_01
+item;81154;Armor;Ability_Hunter_Pet_Bear
+item;81158;Mane;Ability_Hunter_Pet_Bear
+item;81225;Horse;Ability_Mount_RidingHorse
+item;81243;Beaks;INV_Misc_Birdbeck_01
+item;81265;Skin;INV_Belt_16
+item;81266;Scimitars;INV_Sword_18
+item;81310;Water;INV_Chest_Chain_16
+item;83065;Feathers;INV_Shoulder_09
+item;83220;Tribal Necklaces;INV_Jewelry_Necklace_09
+item;83239;Voidwalker;INV_Jewelry_Ring_53Naxxramas
+item;83270;Ears;INV_Holiday_Christmas_Present_02
+item;83274;Collar;INV_Jewelry_Necklace_19
+item;83436;Head;INV_Misc_QuestionMark
+item;83448;Web;INV_Shoulder_09
+item;83469;Stone Circle;INV_Crown_01
+item;84005;Blind;INV_Misc_Bandana_03
+item;84006;Scarlet;INV_Banner_02
+item;84031;Sigil;Spell_Holy_InnerFire
+item;84600;Horn;INV_Mace_01
+item;92007;Invocation;Ability_Creature_Cursed_01
+item;92101;Severed Heads;INV_Misc_Head_Human_02
+item;910097;Shoot;INV_Wand_09
+spell;1;Word of Recall (OLD);Temp
+spell;3;Word of Mass Recall (OLD);Temp
+spell;10;Blizzard;Spell_Frost_IceStorm
+spell;17;Power Word: Shield;Spell_Holy_PowerWordShield
+spell;53;Backstab;Ability_BackStab
+spell;72;Shield Bash;Ability_Warrior_ShieldBash
+spell;100;Charge;Ability_Warrior_Charge
+spell;116;Frostbolt;Spell_Frost_FrostBolt02
+spell;118;Polymorph;Spell_Nature_Polymorph
+spell;120;Cone of Cold;Spell_Frost_Glacier
+spell;122;Frost Nova;Spell_Frost_FrostNova
+spell;130;Slow Fall;Spell_Magic_FeatherFall
+spell;131;Water Breathing;Spell_Shadow_DemonBreath
+spell;139;Renew;Spell_Holy_Renew
+spell;143;Fireball;Spell_Fire_FlameBolt
+spell;145;Fireball;Spell_Fire_FlameBolt
+spell;168;Frost Armor;Spell_Frost_FrostArmor02
+spell;172;Corruption;Spell_Shadow_AbominationExplosion
+spell;197;Two-Handed Axes;INV_Axe_04
+spell;198;One-Handed Maces;INV_Mace_01
+spell;199;Two-Handed Maces;INV_Mace_04
+spell;201;One-Handed Swords;Ability_MeleeDamage
+spell;202;Two-Handed Swords;Ability_MeleeDamage
+spell;205;Frostbolt;Spell_Frost_FrostBolt02
+spell;227;Staves;INV_Staff_08
+spell;264;Bows;INV_Weapon_Bow_05
+spell;265;Area Death (TEST);Spell_Shadow_ShadeTrueSight
+spell;266;Guns;INV_Weapon_Rifle_01
+spell;284;Heroic Strike;Ability_Rogue_Ambush
+spell;285;Heroic Strike;Ability_Rogue_Ambush
+spell;332;Healing Wave;Spell_Nature_MagicImmunity
+spell;348;Immolate;Spell_Fire_Immolation
+spell;355;Taunt;Spell_Nature_Reincarnation
+spell;370;Purge;Spell_Nature_Purge
+spell;467;Thorns;Spell_Nature_Thorns
+spell;527;Dispel Magic;Spell_Holy_DispelMagic
+spell;547;Healing Wave;Spell_Nature_MagicImmunity
+spell;556;Astral Recall;Spell_Nature_AstralRecal
+spell;588;Inner Fire;Spell_Holy_InnerFire
+spell;589;Shadow Word: Pain;Spell_Shadow_ShadowWordPain
+spell;591;Smite;Spell_Holy_HolySmite
+spell;602;Inner Fire;Spell_Holy_InnerFire
+spell;633;Lay on Hands;Spell_Holy_LayOnHands
+spell;647;Holy Light;Spell_Holy_HolyBolt
+spell;674;Dual Wield;Ability_DualWield
+spell;688;Summon Imp;Spell_Shadow_SummonImp
+spell;689;Drain Life;Spell_Shadow_LifeDrain02
+spell;695;Shadow Bolt;Spell_Shadow_ShadowBolt
+spell;705;Shadow Bolt;Spell_Shadow_ShadowBolt
+spell;706;Demon Armor;Spell_Shadow_RagingScream
+spell;707;Immolate;Spell_Fire_Immolation
+spell;735;Divine Protection;Spell_Shadow_AntiMagicShell
+spell;755;Health Funnel;Spell_Shadow_LifeDrain
+spell;759;Conjure Mana Agate;inv_mana_agate_01
+spell;768;Cat Form;Ability_Druid_CatForm
+spell;772;Rend;Ability_Gouge
+spell;783;Travel Form;Ability_Druid_TravelForm
+spell;818;Basic Campfire;Spell_Fire_Fire
+spell;825;Wolf Riding;Spell_Nature_Swiftness
+spell;826;Ram Riding;Spell_Nature_Swiftness
+spell;828;Tiger Riding;Spell_Nature_Swiftness
+spell;845;Cleave;Ability_Warrior_Cleave
+spell;905;Lightning Shield;Spell_Nature_LightningShield
+spell;913;Healing Wave;Spell_Nature_MagicImmunity
+spell;921;Pick Pocket;INV_Misc_Bag_11
+spell;943;Lightning Bolt;Spell_Nature_Lightning
+spell;970;Shadow Word: Pain;Spell_Shadow_ShadowWordPain
+spell;980;Curse of Agony;Spell_Shadow_CurseOfSargeras
+spell;992;Shadow Word: Pain;Spell_Shadow_ShadowWordPain
+spell;1014;Curse of Agony;Spell_Shadow_CurseOfSargeras
+spell;1075;Thorns;Spell_Nature_Thorns
+spell;1120;Drain Soul;Spell_Shadow_Haunting
+spell;1130;Hunter\'s Mark;Ability_Hunter_SniperShot
+spell;1152;Purify;Spell_Holy_Purify
+spell;1160;Demoralizing Shout;Ability_Warrior_WarCry
+spell;1180;Daggers;Ability_SteelMelee
+spell;1243;Power Word: Fortitude;Spell_Holy_WordFortitude
+spell;1430;Rejuvenation;Spell_Nature_Rejuvenation
+spell;1449;Arcane Explosion;Spell_Nature_WispSplode
+spell;1454;Life Tap;Spell_Shadow_BurningSpirit
+spell;1455;Life Tap;Spell_Shadow_BurningSpirit
+spell;1456;Life Tap;Spell_Shadow_BurningSpirit
+spell;1459;Arcane Intellect;Spell_Holy_MagicalSentry
+spell;1460;Arcane Intellect;Spell_Holy_MagicalSentry
+spell;1515;Tame Beast;Ability_Hunter_BeastTaming
+spell;1535;Fire Nova Totem;Spell_Fire_SealOfFire
+spell;1543;Flare;Spell_Fire_Flare
+spell;1671;Shield Bash;Ability_Warrior_ShieldBash
+spell;1672;Shield Bash;Ability_Warrior_ShieldBash
+spell;1680;Whirlwind;Ability_Whirlwind
+spell;1719;Recklessness;Ability_CriticalStrike
+spell;1725;Distract;Ability_Rogue_Distract
+spell;1757;Sinister Strike;Spell_Shadow_RitualOfSacrifice
+spell;1758;Sinister Strike;Spell_Shadow_RitualOfSacrifice
+spell;1760;Sinister Strike;Spell_Shadow_RitualOfSacrifice
+spell;1766;Kick;Ability_Kick
+spell;1776;Gouge;Ability_Gouge
+spell;1784;Stealth;Ability_Stealth
+spell;1785;Stealth;Ability_Stealth
+spell;1804;Pick Lock;Spell_Nature_MoonKey
+spell;1823;Rake;Ability_Druid_Disembowel
+spell;1824;Rake;Ability_Druid_Disembowel
+spell;1833;Cheap Shot;Ability_CheapShot
+spell;1842;Disarm Trap;Spell_Shadow_GrimWard
+spell;1850;Dash;Ability_Druid_Dash
+spell;1856;Vanish;Ability_Vanish
+spell;1943;Rupture;Ability_Rogue_Rupture
+spell;1949;Hellfire;Spell_Fire_Incinerate
+spell;1953;Blink;Spell_Arcane_Blink
+spell;1978;Serpent Sting;Ability_Hunter_Quickshot
+spell;2018;Blacksmithing;Trade_BlackSmithing
+spell;2020;Apprentice Blacksmith;Trade_BlackSmithing
+spell;2052;Lesser Heal;Spell_Holy_LesserHeal
+spell;2120;Flamestrike;Spell_Fire_SelfDestruct
+spell;2121;Flamestrike;Spell_Fire_SelfDestruct
+spell;2136;Fire Blast;Spell_Fire_Fireball
+spell;2137;Fire Blast;Spell_Fire_Fireball
+spell;2138;Fire Blast;Spell_Fire_Fireball
+spell;2362;Create Spellstone;INV_Misc_Gem_Sapphire_01
+spell;2366;Herb Gathering;Spell_Nature_NatureTouchGrow
+spell;2550;Cooking;INV_Misc_Food_15
+spell;2567;Thrown;INV_ThrowingKnife_02
+spell;2575;Mining;Trade_Mining
+spell;2580;Find Minerals;Spell_Nature_Earthquake
+spell;2581;Apprentice Miner;Trade_Mining
+spell;2641;Dismiss Pet;Spell_Nature_SpiritWolf
+spell;2643;Multi-Shot;Ability_UpgradeMoonGlaive
+spell;2645;Ghost Wolf;Spell_Nature_SpiritWolf
+spell;2652;Touch of Weakness;Spell_Shadow_DeadofNight
+spell;2687;Bloodrage;Ability_Racial_BloodRage
+spell;2767;Shadow Word: Pain;Spell_Shadow_ShadowWordPain
+spell;2828;Sharpen Blade;Temp
+spell;2941;Immolate;Spell_Fire_Immolation
+spell;2975;Claw;Ability_Druid_Rake
+spell;2976;Claw;Ability_Druid_Rake
+spell;2977;Claw;Ability_Druid_Rake
+spell;2981;Claw;Ability_Druid_Rake
+spell;2982;Claw;Ability_Druid_Rake
+spell;2983;Sprint;Ability_Rogue_Sprint
+spell;3029;Claw;Ability_Druid_Rake
+spell;3044;Arcane Shot;Ability_ImpalingBolt
+spell;3045;Rapid Fire;Ability_Hunter_RunningShot
+spell;3112;Enhance Blunt Weapon;Temp
+spell;3127;Parry;Ability_Parry
+spell;3140;Fireball;Spell_Fire_FlameBolt
+spell;3273;First Aid;Spell_Holy_SealOfSacrifice
+spell;3274;First Aid;Spell_Holy_SealOfSacrifice
+spell;3276;Heavy Linen Bandage;INV_Misc_Bandage_18
+spell;3277;Wool Bandage;INV_Misc_Bandage_14
+spell;3278;Heavy Wool Bandage;INV_Misc_Bandage_17
+spell;3561;Teleport: Stormwind;Spell_Arcane_TeleportStormWind
+spell;3562;Teleport: Ironforge;Spell_Arcane_TeleportIronForge
+spell;3563;Teleport: Undercity;Spell_Arcane_TeleportUnderCity
+spell;3565;Teleport: Darnassus;Spell_Arcane_TeleportDarnassus
+spell;3566;Teleport: Thunder Bluff;Spell_Arcane_TeleportThunderBluff
+spell;3567;Teleport: Orgrimmar;Spell_Arcane_TeleportOrgrimmar
+spell;3591;Blessing of the Holy Spring;Temp
+spell;3666;Claw;Ability_Druid_Rake
+spell;3678;Focusing;Temp
+spell;3747;Power Word: Shield;Spell_Holy_PowerWordShield
+spell;3908;Tailoring;Trade_Tailoring
+spell;4198;Great Stamina;Spell_Nature_UnyeildingStamina
+spell;5011;Crossbows;INV_Weapon_Crossbow_01
+spell;5116;Concussive Shot;Spell_Frost_Stun
+spell;5118;Aspect of the Cheetah;Ability_Mount_JungleTiger
+spell;5171;Slice and Dice;Ability_Rogue_SliceDice
+spell;5177;Wrath;Spell_Nature_AbolishMagic
+spell;5186;Healing Touch;Spell_Nature_HealingTouch
+spell;5201;Claw;Ability_Druid_Rake
+spell;5209;Challenging Roar;Ability_Druid_ChallangingRoar
+spell;5211;Bash;Ability_Druid_Bash
+spell;5242;Battle Shout;Ability_Warrior_BattleShout
+spell;5308;Execute;INV_Sword_48
+spell;5384;Feign Death;Ability_Rogue_FeignDeath
+spell;5782;Fear;Spell_Shadow_Possession
+spell;5809;Create Scrying Bowl;INV_Misc_Bowl_01
+spell;6066;Power Word: Shield;Spell_Holy_PowerWordShield
+spell;6074;Renew;Spell_Holy_Renew
+spell;6077;Renew;Spell_Holy_Renew
+spell;6078;Renew;Spell_Holy_Renew
+spell;6178;Charge;Ability_Warrior_Charge
+spell;6192;Battle Shout;Ability_Warrior_BattleShout
+spell;6202;Create Healthstone (Lesser);INV_Stone_04
+spell;6213;Fear;Spell_Shadow_Possession
+spell;6217;Curse of Agony;Spell_Shadow_CurseOfSargeras
+spell;6222;Corruption;Spell_Shadow_AbominationExplosion
+spell;6223;Corruption;Spell_Shadow_AbominationExplosion
+spell;6229;Shadow Ward;Spell_Shadow_AntiShadow
+spell;6343;Thunder Clap;Spell_Nature_ThunderClap
+spell;6405;Furbolg Form;INV_Misc_MonsterClaw_04
+spell;6477;Opening;Temp
+spell;6478;Opening;Temp
+spell;6546;Rend;Ability_Gouge
+spell;6673;Battle Shout;Ability_Warrior_BattleShout
+spell;6756;Mark of the Wild;Spell_Nature_Regeneration
+spell;6760;Eviscerate;Ability_Rogue_Eviscerate
+spell;6761;Eviscerate;Ability_Rogue_Eviscerate
+spell;6762;Eviscerate;Ability_Rogue_Eviscerate
+spell;6774;Slice and Dice;Ability_Rogue_SliceDice
+spell;6789;Death Coil;Spell_Shadow_DeathCoil
+spell;7178;Water Breathing;Spell_Frost_ManaRecharge
+spell;7369;Cleave;Ability_Warrior_Cleave
+spell;7384;Overpower;Ability_MeleeDamage
+spell;7411;Enchanting;Trade_Engraving
+spell;7623;Brown Linen Robe;INV_Chest_Cloth_21
+spell;7648;Corruption;Spell_Shadow_AbominationExplosion
+spell;7728;Summon Voidwalker;Spell_Shadow_SummonVoidWalker
+spell;7734;Journeyman Fishing;Trade_Fishing
+spell;7887;Overpower;Ability_MeleeDamage
+spell;7928;Silk Bandage;INV_Misc_Bandage_01
+spell;7932;Anti-Venom;Spell_Nature_NullifyPoison_02
+spell;7934;Anti-Venom;antitoxin_01
+spell;8017;Rockbiter Weapon;Spell_Nature_RockBiter
+spell;8019;Rockbiter Weapon;Spell_Nature_RockBiter
+spell;8042;Earth Shock;Spell_Nature_EarthShock
+spell;8044;Earth Shock;Spell_Nature_EarthShock
+spell;8045;Earth Shock;Spell_Nature_EarthShock
+spell;8046;Earth Shock;Spell_Nature_EarthShock
+spell;8050;Flame Shock;Spell_Fire_FlameShock
+spell;8052;Flame Shock;Spell_Fire_FlameShock
+spell;8053;Flame Shock;Spell_Fire_FlameShock
+spell;8058;Frost Shock;Spell_Frost_FrostShock
+spell;8087;Shiny Bauble;INV_Misc_Orb_03
+spell;8092;Mind Blast;Spell_Shadow_UnholyFrenzy
+spell;8102;Mind Blast;Spell_Shadow_UnholyFrenzy
+spell;8103;Mind Blast;Spell_Shadow_UnholyFrenzy
+spell;8104;Mind Blast;Spell_Shadow_UnholyFrenzy
+spell;8105;Mind Blast;Spell_Shadow_UnholyFrenzy
+spell;8106;Mind Blast;Spell_Shadow_UnholyFrenzy
+spell;8122;Psychic Scream;Spell_Shadow_PsychicScream
+spell;8134;Lightning Shield;Spell_Nature_LightningShield
+spell;8190;Magma Totem;Spell_Fire_SelfDestruct
+spell;8198;Thunder Clap;Spell_Nature_ThunderClap
+spell;8202;Sapta Sight;Ability_CheapShot
+spell;8380;Sunder Armor;Ability_Warrior_Sunder
+spell;8400;Fireball;Spell_Fire_FlameBolt
+spell;8407;Frostbolt;Spell_Frost_FrostBolt02
+spell;8412;Fire Blast;Spell_Fire_Fireball
+spell;8413;Fire Blast;Spell_Fire_Fireball
+spell;8422;Flamestrike;Spell_Fire_SelfDestruct
+spell;8423;Flamestrike;Spell_Fire_SelfDestruct
+spell;8427;Blizzard;Spell_Frost_IceStorm
+spell;8492;Cone of Cold;Spell_Frost_Glacier
+spell;8495;Mana Shield;Spell_Shadow_DetectLesserInvisibility
+spell;8498;Fire Nova Totem;Spell_Fire_SealOfFire
+spell;8593;Symbol of Life;Spell_Holy_Resurrection
+spell;8613;Skinning;INV_Misc_Pelt_Wolf_01
+spell;8621;Sinister Strike;Spell_Shadow_RitualOfSacrifice
+spell;8623;Eviscerate;Ability_Rogue_Eviscerate
+spell;8624;Eviscerate;Ability_Rogue_Eviscerate
+spell;8643;Kidney Shot;Ability_Rogue_KidneyShot
+spell;8674;Summon Succubus;Spell_Shadow_SummonSuccubus
+spell;8676;Ambush;Ability_Rogue_Ambush
+spell;8679;Instant Poison;Ability_Poisons
+spell;8687;Instant Poison II;Ability_Poisons
+spell;8691;Instant Poison III;Ability_Poisons
+spell;8696;Sprint;Ability_Rogue_Sprint
+spell;8712;Summon Felhunter;Spell_Shadow_SummonSuccubus
+spell;8820;Slam;Ability_Warrior_DecisiveStrike
+spell;8898;Sapta Sight;Ability_CheapShot
+spell;8899;Sapta Sight;Ability_CheapShot
+spell;8913;Sacred Cleansing;Spell_Holy_Excorcism_02
+spell;8914;Thorns;Spell_Nature_Thorns
+spell;8921;Moonfire;Spell_Nature_StarFall
+spell;8924;Moonfire;Spell_Nature_StarFall
+spell;8926;Moonfire;Spell_Nature_StarFall
+spell;8936;Regrowth;Spell_Nature_ResistNature
+spell;9005;Pounce;Ability_Druid_SupriseAttack
+spell;9221;Summon Voidwalker;Spell_Shadow_SummonVoidWalker
+spell;9224;Summon Succubus;Spell_Shadow_SummonSuccubus
+spell;9473;Flash Heal;Spell_Holy_FlashHeal
+spell;9493;Rip;Ability_GhoulFrenzy
+spell;9634;Dire Bear Form;Ability_Racial_BearForm
+spell;9750;Regrowth;Spell_Nature_ResistNature
+spell;9752;Rip;Ability_GhoulFrenzy
+spell;9810;Touch of Zanzil;Temp
+spell;9821;Dash;Ability_Druid_Dash
+spell;9823;Pounce;Ability_Druid_SupriseAttack
+spell;9850;Claw;Ability_Druid_Rake
+spell;9857;Regrowth;Spell_Nature_ResistNature
+spell;9884;Mark of the Wild;Spell_Nature_Regeneration
+spell;9894;Rip;Ability_GhoulFrenzy
+spell;9904;Rake;Ability_Druid_Disembowel
+spell;9991;Touch of Zanzil;Spell_Shadow_UnsummonBuilding
+spell;10054;Conjure Mana Ruby;inv_mana_ruby_01
+spell;10138;Conjure Water;INV_Drink_09
+spell;10156;Arcane Intellect;Spell_Holy_MagicalSentry
+spell;10157;Arcane Intellect;Spell_Holy_MagicalSentry
+spell;10159;Cone of Cold;Spell_Frost_Glacier
+spell;10160;Cone of Cold;Spell_Frost_Glacier
+spell;10180;Frostbolt;Spell_Frost_FrostBolt02
+spell;10185;Blizzard;Spell_Frost_IceStorm
+spell;10186;Blizzard;Spell_Frost_IceStorm
+spell;10197;Fire Blast;Spell_Fire_Fireball
+spell;10199;Fire Blast;Spell_Fire_Fireball
+spell;10215;Flamestrike;Spell_Fire_SelfDestruct
+spell;10391;Lightning Bolt;Spell_Nature_Lightning
+spell;10408;Stoneskin Totem;Spell_Nature_StoneSkinTotem
+spell;10412;Earth Shock;Spell_Nature_EarthShock
+spell;10431;Lightning Shield;Spell_Nature_LightningShield
+spell;10432;Lightning Shield;Spell_Nature_LightningShield
+spell;10437;Searing Totem;Spell_Fire_SearingTotem
+spell;10467;Lesser Healing Wave;Spell_Nature_HealingWaveLesser
+spell;10472;Frost Shock;Spell_Frost_FrostShock
+spell;10473;Frost Shock;Spell_Frost_FrostShock
+spell;10586;Magma Totem;Spell_Fire_SelfDestruct
+spell;10723;Touch of Zanzil Cure;Spell_Shadow_UnsummonBuilding
+spell;10861;Raptor Riding;Spell_Nature_Swiftness
+spell;10892;Shadow Word: Pain;Spell_Shadow_ShadowWordPain
+spell;10893;Shadow Word: Pain;Spell_Shadow_ShadowWordPain
+spell;10898;Power Word: Shield;Spell_Holy_PowerWordShield
+spell;10899;Power Word: Shield;Spell_Holy_PowerWordShield
+spell;10900;Power Word: Shield;Spell_Holy_PowerWordShield
+spell;10906;Undead Horsemanship;Spell_Nature_Swiftness
+spell;10907;Mechanostrider Piloting;Spell_Nature_Swiftness
+spell;10927;Renew;Spell_Holy_Renew
+spell;10929;Renew;Spell_Holy_Renew
+spell;10945;Mind Blast;Spell_Shadow_UnholyFrenzy
+spell;10946;Mind Blast;Spell_Shadow_UnholyFrenzy
+spell;10947;Mind Blast;Spell_Shadow_UnholyFrenzy
+spell;10951;Inner Fire;Spell_Holy_InnerFire
+spell;11293;Sinister Strike;Spell_Shadow_RitualOfSacrifice
+spell;11294;Sinister Strike;Spell_Shadow_RitualOfSacrifice
+spell;11299;Eviscerate;Ability_Rogue_Eviscerate
+spell;11300;Eviscerate;Ability_Rogue_Eviscerate
+spell;11305;Sprint;Ability_Rogue_Sprint
+spell;11314;Fire Nova Totem;Spell_Fire_SealOfFire
+spell;11341;Instant Poison IV;Ability_Poisons
+spell;11342;Instant Poison V;Ability_Poisons
+spell;11417;Portal: Orgrimmar;Spell_Arcane_PortalOrgrimmar
+spell;11418;Portal: Undercity;Spell_Arcane_PortalUnderCity
+spell;11550;Battle Shout;Ability_Warrior_BattleShout
+spell;11551;Battle Shout;Ability_Warrior_BattleShout
+spell;11554;Demoralizing Shout;Ability_Warrior_WarCry
+spell;11564;Heroic Strike;Ability_Rogue_Ambush
+spell;11578;Charge;Ability_Warrior_Charge
+spell;11584;Overpower;Ability_MeleeDamage
+spell;11597;Sunder Armor;Ability_Warrior_Sunder
+spell;11605;Slam;Ability_Warrior_DecisiveStrike
+spell;11608;Cleave;Ability_Warrior_Cleave
+spell;11665;Immolate;Spell_Fire_Immolation
+spell;11671;Corruption;Spell_Shadow_AbominationExplosion
+spell;11675;Drain Soul;Spell_Shadow_Haunting
+spell;11689;Life Tap;Spell_Shadow_BurningSpirit
+spell;11699;Drain Life;Spell_Shadow_LifeDrain02
+spell;11711;Curse of Agony;Spell_Shadow_CurseOfSargeras
+spell;11712;Curse of Agony;Spell_Shadow_CurseOfSargeras
+spell;11713;Curse of Agony;Spell_Shadow_CurseOfSargeras
+spell;11733;Demon Armor;Spell_Shadow_RagingScream
+spell;11992;Detect Gahz\'ridian;Spell_Nature_AstralRecal
+spell;12051;Evocation;Spell_Nature_Purge
+spell;12283;Xiggs Signal Flare;Temp
+spell;12608;Stealth Detection;Ability_EyeOfTheOwl
+spell;13165;Aspect of the Hawk;Spell_Nature_RavenForm
+spell;13543;Mend Pet;Ability_Hunter_MendPet
+spell;13549;Serpent Sting;Ability_Hunter_Quickshot
+spell;13552;Serpent Sting;Ability_Hunter_Quickshot
+spell;13553;Serpent Sting;Ability_Hunter_Quickshot
+spell;13554;Serpent Sting;Ability_Hunter_Quickshot
+spell;13795;Immolation Trap;Spell_Fire_FlameShock
+spell;13908;Desperate Prayer;Spell_Holy_Restoration
+spell;13978;Summon Aquementas;Temp
+spell;14008;Miblon\'s Bait;INV_Misc_Food_50
+spell;14050;Quest Suicide;Spell_Shadow_LifeDrain
+spell;14247;Blazerunner Dispel;INV_Staff_11
+spell;14262;Raptor Strike;Ability_MeleeDamage
+spell;14263;Raptor Strike;Ability_MeleeDamage
+spell;14281;Arcane Shot;Ability_ImpalingBolt
+spell;14284;Arcane Shot;Ability_ImpalingBolt
+spell;14285;Arcane Shot;Ability_ImpalingBolt
+spell;14289;Multi-Shot;Ability_UpgradeMoonGlaive
+spell;14290;Multi-Shot;Ability_UpgradeMoonGlaive
+spell;14293;Lesser Magic Wand;INV_Staff_02
+spell;14303;Immolation Trap;Spell_Fire_FlameShock
+spell;14304;Immolation Trap;Spell_Fire_FlameShock
+spell;14305;Immolation Trap;Spell_Fire_FlameShock
+spell;14318;Aspect of the Hawk;Spell_Nature_RavenForm
+spell;14319;Aspect of the Hawk;Spell_Nature_RavenForm
+spell;14320;Aspect of the Hawk;Spell_Nature_RavenForm
+spell;14321;Aspect of the Hawk;Spell_Nature_RavenForm
+spell;14322;Aspect of the Hawk;Spell_Nature_RavenForm
+spell;14323;Hunter\'s Mark;Ability_Hunter_SniperShot
+spell;14324;Hunter\'s Mark;Ability_Hunter_SniperShot
+spell;14914;Holy Fire;Spell_Holy_SearingLight
+spell;14925;Growl;Ability_Physical_Taunt
+spell;15118;Place Threshadon Carcass;INV_Misc_Bowl_01
+spell;15119;Apply Seduction Gland;INV_Misc_Bowl_01
+spell;15207;Lightning Bolt;Spell_Nature_Lightning
+spell;15264;Holy Fire;Spell_Holy_SearingLight
+spell;15267;Holy Fire;Spell_Holy_SearingLight
+spell;15366;Songflower Serenade;Spell_Holy_MindVision
+spell;15627;Applying the Lure;Temp
+spell;15647;Summon Common Kitten;INV_Box_PetCarrier_01
+spell;16072;Purify and Place Food;INV_Misc_Bowl_01
+spell;16314;Rockbiter Weapon;Spell_Nature_RockBiter
+spell;16315;Rockbiter Weapon;Spell_Nature_RockBiter
+spell;16589;Noggenfogger Elixir;Temp
+spell;16618;Spirit of the Wind;Spell_Nature_EarthBind
+spell;16828;Claw;Ability_Druid_Rake
+spell;16829;Claw;Ability_Druid_Rake
+spell;16830;Claw;Ability_Druid_Rake
+spell;16831;Claw;Ability_Druid_Rake
+spell;17263;Bite;Ability_Racial_Cannibalize
+spell;17264;Bite;Ability_Racial_Cannibalize
+spell;17265;Bite;Ability_Racial_Cannibalize
+spell;17266;Bite;Ability_Racial_Cannibalize
+spell;17267;Bite;Ability_Racial_Cannibalize
+spell;17670;Argent Dawn Commission;INV_Jewelry_Talisman_07
+spell;17925;Death Coil;Spell_Shadow_DeathCoil
+spell;18629;Runecloth Bandage;INV_Misc_Bandage_11
+spell;18960;Teleport: Moonglade;Spell_Arcane_TeleportMoonglade
+spell;18974;Summon Lunaclaw;Temp
+spell;19028;Soul Link;Spell_Shadow_GatherShadows
+spell;19719;Use Bauble;Temp
+spell;19740;Blessing of Might;Spell_Holy_FistOfJustice
+spell;19752;Divine Intervention;Spell_Nature_TimeStop
+spell;19834;Blessing of Might;Spell_Holy_FistOfJustice
+spell;19835;Blessing of Might;Spell_Holy_FistOfJustice
+spell;19885;Track Hidden;Ability_Stealth
+spell;20270;Firebolt;Spell_Fire_FireBolt
+spell;20271;Judgement;Spell_Holy_RighteousFury
+spell;20317;Torment;Spell_Shadow_GatherShadows
+spell;20397;Blood Pact;Spell_Shadow_BloodBoil
+spell;20594;Stoneform;Spell_Shadow_UnholyStrength
+spell;20658;Execute;INV_Sword_48
+spell;20660;Execute;INV_Sword_48
+spell;20661;Execute;INV_Sword_48
+spell;20662;Execute;INV_Sword_48
+spell;22568;Ferocious Bite;Ability_Druid_FerociousBite
+spell;22812;Barkskin;Spell_Nature_StoneClawTotem
+spell;22828;Ferocious Bite;Ability_Druid_FerociousBite
+spell;22829;Ferocious Bite;Ability_Druid_FerociousBite
+spell;23111;Dash;Ability_Druid_Dash
+spell;24494;Nature Resistance;Spell_Nature_ResistNature
+spell;24547;Natural Armor;Spell_Nature_SpiritArmor
+spell;24556;Natural Armor;Spell_Nature_SpiritArmor
+spell;24557;Natural Armor;Spell_Nature_SpiritArmor
+spell;24558;Natural Armor;Spell_Nature_SpiritArmor
+spell;24559;Natural Armor;Spell_Nature_SpiritArmor
+spell;24560;Natural Armor;Spell_Nature_SpiritArmor
+spell;24561;Natural Armor;Spell_Nature_SpiritArmor
+spell;24562;Natural Armor;Spell_Nature_SpiritArmor
+spell;24631;Natural Armor;Spell_Nature_SpiritArmor

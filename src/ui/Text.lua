@@ -144,7 +144,7 @@ local function withObjectiveProgress(text, el)
   if string.find(text, "%(x%d+%)") then
     return string.gsub(text, "%(x%d+%)", progress, 1)
   end
-  return text .. " " .. progress
+  return text .. "  " .. progress
 end
 
 function Text.element(el)
@@ -171,7 +171,7 @@ function Text.element(el)
     local id = tonumber(args[1])
     local need = tonumber(args[2]) or 1
     local have = (id and TG.GetItemCount) and TG:GetItemCount(id) or 0
-    return "Collect: " .. colorName(itemName(id, el.text), ITEM_COLOR) .. " " .. countText(have, need)
+    return "Collect: " .. colorName(itemName(id, el.text), ITEM_COLOR) .. "  " .. countText(have, need)
   end
   if inline ~= "" then
     return inline
@@ -217,7 +217,8 @@ function Text.entries(step)
   local function add(text, state, el, element)
     if text and text ~= "" then
       local raw = element and element.text or text
-      local contentIcon = Icons.content(raw)
+      local contentIcons = Icons.contents(text)
+      local contentIcon = contentIcons[1] and contentIcons[1].texture or Icons.content(raw)
       local icon = (element and Icons.forElement(element)) or Icons.forText(text)
       if element and element.t == "cmd" and element.tag == "complete" then
         icon = nil
@@ -240,6 +241,7 @@ function Text.entries(step)
         icon = icon,
         iconColor = iconColor,
         contentIcon = contentIcon,
+        contentIcons = contentIcons,
         bulletIcon = icon and Icons.isBullet(icon) or false,
         child = child,
       })
@@ -378,7 +380,7 @@ local function wordsOf(text)
   local pos = 1
   local length = string.len(text)
   while pos <= length do
-    local s, e = string.find(text, "%S+", pos)
+    local s, e = string.find(text, "%S+%s*", pos)
     if not s then
       break
     end
@@ -404,7 +406,7 @@ local function wrapSegment(font, segment, maxWidth, result)
   end
   local current = ""
   for _, word in ipairs(words) do
-    local candidate = (current == "") and word or (current .. " " .. word)
+    local candidate = current .. word
     if widthOf(font, candidate) <= maxWidth then
       current = candidate
     else

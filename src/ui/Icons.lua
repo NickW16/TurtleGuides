@@ -10,13 +10,13 @@ local ACTIVE_ICON = "Interface\\GossipFrame\\ActiveQuestIcon"
 local INCOMPLETE_ICON = "Interface\\GossipFrame\\IncompleteQuestIcon"
 local COMPLETE_ICON = "Interface\\Buttons\\UI-CheckBox-Check"
 local FLY_ICON = "Interface\\GossipFrame\\TaxiGossipIcon"
-local HS_ICON = "Interface\\Cursor\\Innkeeper"
+local HS_ICON = "Interface\\Icons\\INV_Misc_Rune_01"
 local TRAIN_ICON = "Interface\\GossipFrame\\TrainerGossipIcon"
 local TALK_ICON = "Interface\\GossipFrame\\GossipGossipIcon"
 local MOB_ICON = "Interface\\Cursor\\Attack"
-local BAG_ICON = "Interface\\Icons\\INV_Misc_Bag_01"
+local BAG_ICON = "Interface\\Icons\\INV_Misc_Bag_08"
 local BUY_ICON = "Interface\\Cursor\\Buy"
-local TRAVEL_ICON = "Interface\\Icons\\Ability_Rogue_Sprint"
+local TRAVEL_ICON = "Interface\\GossipFrame\\TaxiGossipIcon"
 
 Icons.QUEST_ICON = AVAILABLE_ICON
 Icons.TURNIN_ICON = ACTIVE_ICON
@@ -70,16 +70,29 @@ function Icons.fromText(text)
   if not text then
     return nil
   end
-  local token = string.match(text, "|T(%d+):")
-  if token and TG.ItemIcons then
-    return TG.ItemIcons[tonumber(token)]
+  local token = string.match(text, "|T([^:|]+):")
+  if not token then
+    return nil
+  end
+  local num = tonumber(token)
+  if num then
+    return TG.ItemIcons and TG.ItemIcons[num] or nil
+  end
+  if string.find(token, "\\", 1, true) or string.find(token, "/", 1, true) then
+    return token
   end
   return nil
 end
 
 function Icons.spell(id)
   local num = tonumber(id)
-  if not num or not GetSpellInfo then
+  if not num then
+    return nil
+  end
+  if TG.OctoWowIcons and TG.OctoWowIcons.spells[num] then
+    return TG.OctoWowIcons.spells[num]
+  end
+  if not GetSpellInfo then
     return nil
   end
   local _, _, texture = GetSpellInfo(num)
@@ -90,6 +103,9 @@ function Icons.item(id)
   local num = tonumber(id)
   if not num then
     return nil
+  end
+  if TG.OctoWowIcons and TG.OctoWowIcons.items[num] then
+    return TG.OctoWowIcons.items[num]
   end
   if TG.ItemIcons and TG.ItemIcons[num] then
     return TG.ItemIcons[num]
@@ -135,6 +151,29 @@ function Icons.addBracketIcons(text)
   end)
 end
 
+function Icons.byName(name)
+  if not name or name == "" then
+    return nil
+  end
+  local plain = string.gsub(string.gsub(name, "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
+  plain = TG.Util.strtrim(plain)
+  if plain == "" then
+    return nil
+  end
+  local candidates = { plain }
+  if string.sub(plain, -1) == "s" then
+    table.insert(candidates, string.sub(plain, 1, -2))
+  end
+  for _, candidate in ipairs(candidates) do
+    local texture = TG.OctoWowIcons and TG.OctoWowIcons.names[candidate] or nil
+    texture = texture or (TG.ItemIconNames and TG.ItemIconNames[candidate]) or Icons.itemByName(candidate)
+    if texture and not string.find(texture, "INV_Misc_QuestionMark", 1, true) then
+      return texture
+    end
+  end
+  return nil
+end
+
 function Icons.content(text)
   if not text or text == "" then
     return nil
@@ -143,13 +182,46 @@ function Icons.content(text)
   if icon then
     return icon
   end
-  string.gsub(text, "%[([^]]+)%]", function(name)
-    if not icon then
-      local plain = string.gsub(string.gsub(name, "|c%x%x%x%x%x%x%x%x", ""), "|r", "")
-      icon = TG.ItemIconNames and TG.ItemIconNames[plain] or nil
-    end
-  end)
+  local patterns = { "%[([^]]+)%]", "|cRXP_LOOT_([^|]+)|r", "|cRXP_ITEM_([^|]+)|r", "|cffffd100([^|]+)|r" }
+  for _, pattern in ipairs(patterns) do
+    string.gsub(text, pattern, function(name)
+      if not icon then
+        icon = Icons.byName(name)
+      end
+    end)
+  end
   return icon
+end
+
+function Icons.contents(text)
+  local matches = {}
+  local patterns = { "%[([^]]+)%]", "|cRXP_LOOT_([^|]+)|r", "|cRXP_ITEM_([^|]+)|r", "|cffffd100([^|]+)|r" }
+  for _, pattern in ipairs(patterns) do
+    local search = 1
+    while true do
+      local start, finish, name = string.find(text or "", pattern, search)
+      if not start then
+        break
+      end
+      local texture = Icons.byName(name)
+      if texture then
+        table.insert(matches, { start = start, finish = finish, texture = texture })
+      end
+      search = finish + 1
+    end
+  end
+  table.sort(matches, function(left, right)
+    return left.start < right.start
+  end)
+  local chosen = {}
+  local lastFinish = 0
+  for _, match in ipairs(matches) do
+    if match.start > lastFinish then
+      table.insert(chosen, match)
+      lastFinish = match.finish
+    end
+  end
+  return chosen
 end
 
 function Icons.forText(text)
@@ -157,6 +229,9 @@ function Icons.forText(text)
     return nil
   end
   local lower = string.lower(text)
+  if string.find(lower, "^%s*hearth") then
+    return HS_ICON
+  end
   if string.find(lower, "talk", 1, true) or string.find(lower, "speak", 1, true) then
     return TALK_ICON
   end

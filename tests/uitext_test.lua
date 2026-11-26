@@ -13,6 +13,11 @@ local function fresh()
 end
 
 return {
+  test_wrap_preserves_icon_gap = function()
+    local TG = fresh()
+    env.eq(TG.UI.Text.wrap("[Hearthstone]    from your bag", 400, 10), "[Hearthstone]    from your bag")
+  end,
+
   test_text_element_preserves_colors = function()
     local TG = fresh()
     env.eq(TG.UI.Text.element({ t = "text", text = "|cffff0000Hello|r world" }), "|cffff0000Hello|r world")
@@ -29,7 +34,7 @@ return {
     end
     env.eq(
       TG.UI.Text.element({ t = "cmd", tag = "collect", args = { "42", "5" }, text = "Bear Fur" }),
-      "Collect: |cffffd100Bear Fur|r 2/5"
+      "Collect: |cffffd100Bear Fur|r  2/5"
     )
   end,
 

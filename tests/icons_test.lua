@@ -8,6 +8,7 @@ local function fresh()
     "src/compat/Text.lua",
     "src/ui/State.lua",
     "src/guides/ItemIcons.lua",
+    "src/guides/OctoWowIcons.lua",
     "src/ui/Icons.lua",
     "src/ui/Text.lua"
   )
@@ -99,10 +100,16 @@ return {
     env.eq(iconFor({ t = "cmd", tag = "turnin", args = { "1" }, text = "" }), "Interface\\GossipFrame\\ActiveQuestIcon")
   end,
 
+  test_hearth_text_uses_hearthstone_icon = function()
+    local TG = fresh()
+    env.eq(TG.UI.Icons.forText("Hearth to Colridge Valley"), "Interface\\Icons\\INV_Misc_Rune_01")
+    env.eq(TG.UI.Icons.forText("Delete the [Hearthstone] from your bag"), nil)
+  end,
+
   test_travel_icon_for_goto_and_travel_text = function()
     local TG = fresh()
     local icons = TG.UI.Icons
-    local travel = "Interface\\Icons\\Ability_Rogue_Sprint"
+    local travel = "Interface\\GossipFrame\\TaxiGossipIcon"
     env.eq(icons.forElement({ t = "cmd", tag = "goto", args = { "Dun Morogh", "34", "51" } }), travel)
     env.eq(icons.forText("Travel toward Tundra MacGrann"), travel)
     env.eq(icons.forText("Travel toward Tundra MacGrann. Kill Boars en-route"), travel)
@@ -134,6 +141,52 @@ return {
     env.eq(TG.UI.Icons.content("Loot [Tough Wolf Meat]"), "Interface\\ICONS\\INV_Misc_Food_16")
   end,
 
+  test_octowow_list_resolves_item_and_spell_ids = function()
+    local TG = fresh()
+    env.eq(TG.OctoWowIcons.source, "octowow")
+    env.eq(TG.UI.Icons.item(159), "Interface\\ICONS\\INV_Drink_07")
+    env.eq(TG.UI.Icons.spell(6673), "Interface\\ICONS\\Ability_Warrior_BattleShout")
+    env.eq(TG.UI.Icons.content("Use [Refreshing Spring Water]"), "Interface\\ICONS\\INV_Drink_07")
+  end,
+
+  test_path_tokens_resolve_without_a_numeric_id = function()
+    local TG = fresh()
+    local icons = TG.UI.Icons
+    env.eq(
+      icons.fromText("|TInterface/GossipFrame/HealerGossipIcon:0|tClick"),
+      "Interface/GossipFrame/HealerGossipIcon"
+    )
+    env.eq(icons.fromText("|TInterface\\ICONS\\INV_Drink_07:0|tWater"), "Interface\\ICONS\\INV_Drink_07")
+    env.eq(icons.fromText("|T132333:0|t[Battle Shout]"), "Interface\\ICONS\\Ability_Warrior_BattleShout")
+  end,
+
+  test_plural_item_name_falls_back_to_singular = function()
+    local TG = fresh()
+    TG.GetItemIdByName = function(_, name)
+      if name == "Kobold Candle" then
+        return 999998
+      end
+      return nil
+    end
+    _G.GetItemInfo = function()
+      return "Kobold Candle", nil, nil, nil, nil, nil, nil, nil, "Interface\\ICONS\\INV_Misc_Candle_01"
+    end
+    env.eq(TG.UI.Icons.byName("Kobold Candles"), "Interface\\ICONS\\INV_Misc_Candle_01")
+  end,
+
+  test_unknown_name_does_not_use_question_mark_icon = function()
+    local TG = fresh()
+    env.eq(TG.UI.Icons.byName("Head"), nil)
+  end,
+
+  test_content_resolves_loot_names_with_octowow = function()
+    local TG = fresh()
+    local path = "Interface\\ICONS\\INV_Misc_Food_14"
+    TG.OctoWowIcons.names["Chunks of Boar Meat"] = path
+    env.eq(TG.UI.Icons.content("Loot |cRXP_LOOT_Chunks of Boar Meat|r"), path)
+    env.eq(TG.UI.Icons.content("Loot [Chunks of Boar Meat]"), path)
+  end,
+
   test_collect_step_resolves_item_icon = function()
     local TG = fresh()
     TG.GetItemCount = function()
@@ -144,6 +197,6 @@ return {
     end
     local step = { elements = { { t = "cmd", tag = "collect", args = { "159", "15" }, text = "" } } }
     local entries = TG.UI.Text.entries(step)
-    env.eq(entries[1].icon, "Interface\\Icons\\INV_Misc_Bag_01")
+    env.eq(entries[1].icon, "Interface\\Icons\\INV_Misc_Bag_08")
   end,
 }

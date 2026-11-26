@@ -62,6 +62,7 @@ src\guides\Survival-Horde-Barrens-15-23.lua
 src\guides\Registry.lua
 src\guides\Loader.lua
 src\guides\ItemIcons.lua
+src\guides\OctoWowIcons.lua
 src\guides\Suggestions.lua
 src\engine\State.lua
 src\engine\Quests.lua
