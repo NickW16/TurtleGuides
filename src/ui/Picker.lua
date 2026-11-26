@@ -81,15 +81,31 @@ local function showLinkPopup(url)
     Text.register(label, 10)
 
     local close = CreateFrame("Button", nil, popup)
-    close:SetWidth(12)
-    close:SetHeight(12)
-    close:SetPoint("TOPRIGHT", popup, "TOPRIGHT", -6, -6)
-    close:SetNormalTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
-    close:SetPushedTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
-    local icon = close.GetNormalTexture and close:GetNormalTexture() or nil
-    if icon and icon.SetVertexColor then
-      icon:SetVertexColor(TITLE_COLOR[1], TITLE_COLOR[2], TITLE_COLOR[3])
-    end
+    close:SetWidth(16)
+    close:SetHeight(16)
+    close:SetPoint("TOPRIGHT", popup, "TOPRIGHT", -4, -3)
+    close:SetBackdrop({
+      bgFile = "Interface\\Buttons\\WHITE8X8",
+      edgeFile = "Interface\\Buttons\\WHITE8X8",
+      tile = true,
+      tileSize = 4,
+      edgeSize = 1,
+      insets = { left = 1, right = 1, top = 1, bottom = 1 },
+    })
+    close:SetBackdropColor(0, 0, 0, 0)
+    close:SetBackdropBorderColor(0.40, 0.36, 0.30, 0.90)
+    local closeIcon = close:CreateTexture(nil, "ARTWORK")
+    closeIcon:SetWidth(10)
+    closeIcon:SetHeight(10)
+    closeIcon:SetPoint("CENTER", close, "CENTER", 0, 0)
+    closeIcon:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\Close")
+    closeIcon:SetVertexColor(0.85, 0.75, 0.40, 1)
+    close:SetScript("OnEnter", function()
+      closeIcon:SetVertexColor(1.00, 0.92, 0.55, 1)
+    end)
+    close:SetScript("OnLeave", function()
+      closeIcon:SetVertexColor(0.85, 0.75, 0.40, 1)
+    end)
     close:SetScript("OnClick", function()
       popup:Hide()
     end)
