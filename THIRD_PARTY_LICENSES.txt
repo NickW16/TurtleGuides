@@ -1,9 +1,11 @@
 Third-party notices for TurtleGuides
 
-EasyRoute arrow texture
-Source: https://octowow.st/git/stealthzi/EasyRoute
-Used in: Media/Arrow.tga
-License: MIT
+RestedXP Guides
+Source: https://github.com/RestedXP/RXPGuides
+Used in: src/guides/*.lua (bundled guide data)
+License: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+License URL: https://creativecommons.org/licenses/by-nc-sa/4.0/
+Note: The bundled routes are adapted from RestedXP's free classic guides, with syntax and route adjustments for Turtle WoW 1.12.1. The adapted guide data is shared under the same licence. TurtleGuides is free and not sold.
 
 EasyRoute find my place logic
 Source: https://octowow.st/git/stealthzi/EasyRoute
