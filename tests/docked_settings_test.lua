@@ -12,71 +12,103 @@ local function fresh()
     "src/ui/Picker.lua",
     "src/ui/Settings.lua"
   )
+  TG.GetGuidesForPicker = function()
+    return { { name = "Starter", guides = {} } }
+  end
   TG.db = {}
   return TG
 end
 
-local function withGuides(TG)
-  TG.GetGuidesForPicker = function()
-    return { { name = "Starter", guides = { { key = "human", group = "Alliance", name = "Human 1-10" } } } }
-  end
-end
-
 return {
-  test_picker_has_flipper_instead_of_cog = function()
+  test_escape_binding_is_temporary = function()
     local TG = fresh()
-    withGuides(TG)
-    TG:ShowGuidePicker()
+    env.bindings.ESCAPE = "TOGGLEGAMEMENU"
+    TG:ShowMenu("guides")
+    env.eq(env.bindings.ESCAPE, "CLICK TurtleGuidesMenuCloseButton:LeftButton")
+    TG:HideMenu()
+    env.eq(env.bindings.ESCAPE, "TOGGLEGAMEMENU")
+  end,
+
+  test_menu_does_not_capture_keyboard = function()
+    local TG = fresh()
+    TG:ShowMenu("guides")
     local picker = TG.UI.State.picker
+    env.eq(picker.keyboardEnabled, nil)
+    env.eq(picker.scripts.OnKeyDown, nil)
+  end,
+
+  test_opening_menu_does_not_focus_search = function()
+    local TG = fresh()
+    TG:ShowMenu("guides")
+    local picker = TG.UI.State.picker
+    picker.search.SetFocus = function()
+      error("search must not steal movement keys")
+    end
+    TG:ShowMenu("guides")
+  end,
+
+  test_picker_default_size = function()
+    local TG = fresh()
+    TG:ShowMenu("guides")
+    local picker = TG.UI.State.picker
+    env.eq(picker.width, 400)
+    env.eq(picker.height, 360)
+  end,
+
+  test_picker_has_sidebar_flipper = function()
+    local TG = fresh()
+    TG:ShowMenu("guides")
+    local picker = TG.UI.State.picker
+    env.eq(picker.sidebar ~= nil, true)
     env.eq(picker.flipper ~= nil, true)
     env.eq(string.find(picker.flipper.arrow.path or "", "NavChevron", 1, true) ~= nil, true)
   end,
 
-  test_show_picker_docks_settings = function()
+  test_sidebar_starts_open_and_flipper_toggles_it = function()
     local TG = fresh()
-    withGuides(TG)
-    TG:ShowGuidePicker()
+    TG:ShowMenu("guides")
     local picker = TG.UI.State.picker
-    local settings = TG.UI.State.settings
-    env.eq(picker:IsShown(), true)
-    env.eq(settings:IsShown(), true)
-    env.eq(picker.flipper.arrow.path, "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronRight")
+    env.eq(picker.sidebar:IsVisible(), true)
+    TG:ToggleSidebar()
+    env.eq(picker.sidebar:IsVisible(), false)
+    TG:ToggleSidebar()
+    env.eq(picker.sidebar:IsVisible(), true)
   end,
 
-  test_flipper_toggles_settings = function()
+  test_flipper_uses_borderless_chevrons = function()
     local TG = fresh()
-    withGuides(TG)
-    TG:ShowGuidePicker()
-    local settings = TG.UI.State.settings
-    TG:ToggleSettingsDocked()
-    env.eq(settings:IsShown(), false)
-    env.eq(TG.UI.State.picker.flipper.arrow.path, "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronLeft")
-    TG:ToggleSettingsDocked()
-    env.eq(settings:IsShown(), true)
+    TG:ShowMenu("guides")
+    local arrow = TG.UI.State.picker.flipper.arrow
+    env.eq(arrow.path, "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronRight_Flat")
+    TG:ToggleSidebar()
+    env.eq(arrow.path, "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronLeft_Flat")
   end,
 
-  test_windows_share_main_bar_style = function()
+  test_only_active_sidebar_item_is_gold = function()
     local TG = fresh()
-    withGuides(TG)
-    TG:ShowGuidePicker()
+    TG:ShowMenu("guides")
+    local buttons = TG.UI.State.picker.sidebarButtons
+    local colors = {}
+    for i, button in ipairs(buttons) do
+      button.text.SetTextColor = function(_, r, g, b)
+        colors[i] = { r, g, b }
+      end
+    end
+    TG:ShowMenu("guides")
+    env.eq(colors[1][3] < colors[2][3], true)
+    TG:ShowMenu("settings")
+    env.eq(colors[2][3] < colors[1][3], true)
+  end,
+
+  test_menu_keeps_topbar = function()
+    local TG = fresh()
+    TG:ShowMenu("guides")
     local bars = 0
     for _, texture in ipairs(env.textures) do
       if texture.path == "Interface\\AddOns\\TurtleGuides\\Media\\BarTexture" then
         bars = bars + 1
       end
     end
-    env.eq(bars >= 4, true)
-  end,
-
-  test_escape_hides_picker_and_settings = function()
-    local TG = fresh()
-    withGuides(TG)
-    TG:ShowGuidePicker()
-    local picker = TG.UI.State.picker
-    local settings = TG.UI.State.settings
-    _G.arg1 = "ESCAPE"
-    picker.scripts.OnKeyDown()
-    env.eq(picker:IsShown(), false)
-    env.eq(settings:IsShown(), false)
+    env.eq(bars >= 1, true)
   end,
 }

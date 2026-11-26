@@ -2,14 +2,21 @@ local env = dofile("tests/env.lua")
 
 local function fresh()
   env.reset()
-  return env.load(
+  local TG = env.load(
     "src/Core.lua",
     "src/core/Util.lua",
     "src/ui/State.lua",
     "src/ui/Icons.lua",
     "src/ui/Text.lua",
+    "src/ui/Scrollbar.lua",
+    "src/ui/Picker.lua",
     "src/ui/Settings.lua"
   )
+  TG.GetGuidesForPicker = function()
+    return {}
+  end
+  TG.db = {}
+  return TG
 end
 
 return {
@@ -18,6 +25,7 @@ return {
     TG.db = { showArrow = false }
     TG:ShowSettings()
     local frame = TG.UI.State.settings
+    env.eq(TG.UI.State.picker:IsShown(), true)
     env.eq(frame:IsShown(), true)
     env.eq(table.getn(frame.rows), 10)
     local arrow = frame.rows[1]
@@ -33,24 +41,35 @@ return {
     TG.RefreshFonts = function() end
     TG:ShowSettings()
     local plus
-    for _, frame_ in ipairs(env.frames) do
-      if frame_.kind == "Button" and frame_.text and frame_.text.value == "+" then
-        plus = frame_
+    for _, frame in ipairs(env.frames) do
+      if frame.kind == "Button" and frame.text and frame.text.value == "+" then
+        plus = frame
       end
     end
     plus.scripts.OnClick()
     env.eq(TG.db.fontScale, 1.1)
   end,
 
-  test_settings_does_not_capture_keyboard = function()
+  test_escape_hides_the_menu = function()
     local TG = fresh()
-    TG.db = {}
     TG:ShowSettings()
-    local frame = TG.UI.State.settings
-    env.eq(frame.keyboardEnabled, nil)
-    env.eq(frame.scripts.OnKeyDown, nil)
-    env.eq(env.bindings.ESCAPE, "CLICK TurtleGuidesSettingsCloseButton:LeftButton")
-    frame:Hide()
-    env.eq(env.bindings.ESCAPE, "TOGGLEGAMEMENU")
+    local picker = TG.UI.State.picker
+    env.eq(picker:IsShown(), true)
+    _G.arg1 = "ESCAPE"
+    picker.search.scripts.OnKeyDown()
+    env.eq(picker:IsShown(), false)
+  end,
+
+  test_menu_switches_views = function()
+    local TG = fresh()
+    TG:ShowMenu("guides")
+    local picker = TG.UI.State.picker
+    env.eq(picker.title.value, "TurtleGuides 0.1.0")
+    env.eq(picker.fieldBox:IsVisible(), true)
+    env.eq(TG.UI.State.settings, nil)
+    TG:ShowMenu("settings")
+    env.eq(picker.title.value, "TurtleGuides 0.1.0")
+    env.eq(picker.fieldBox:IsVisible(), false)
+    env.eq(TG.UI.State.settings:IsShown(), true)
   end,
 }
