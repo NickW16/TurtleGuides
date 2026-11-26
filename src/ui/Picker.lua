@@ -293,6 +293,10 @@ end
 function TG:CreateGuidePicker()
   local picker = CreateFrame("Frame", "TurtleGuidesPickerFrame", UIParent)
   State.picker = picker
+  picker:SetFrameStrata("HIGH")
+  if picker.SetToplevel then
+    picker:SetToplevel(true)
+  end
   picker:SetWidth(WINDOW_W)
   picker:SetHeight(WINDOW_H)
   picker:SetPoint("CENTER", UIParent, "CENTER", 0, 0)

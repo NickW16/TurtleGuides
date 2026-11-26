@@ -434,6 +434,7 @@ function TG:InitUI()
   end
   local main = CreateFrame("Frame", "TurtleGuidesMainFrame", UIParent)
   State.main = main
+  main:SetFrameStrata("MEDIUM")
   panel(main, 0.92)
   local p = TG.db.frame or { point = "RIGHT", relPoint = "RIGHT", x = -40, y = 0, w = 200, h = 230 }
   main:SetWidth(math.min(p.w or 200, 210))
