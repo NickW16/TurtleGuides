@@ -4,8 +4,14 @@ local State = TG.UI.State
 local Text = TG.UI.Text
 
 local ROW_HEIGHT = 16
+local WINDOW_W = 400
+local WINDOW_H = 360
 local BAR = "Interface\\AddOns\\TurtleGuides\\Media\\BarTexture"
 local DOT = "Interface\\Buttons\\WHITE8X8"
+local FLIP_W = 10
+local SIDEBAR_W = 96
+local TITLE_COLOR = { 0.85, 0.85, 0.88 }
+local ACTIVE_COLOR = { 0.85, 0.75, 0.40 }
 
 local results = {}
 local selected = 1
@@ -22,6 +28,41 @@ local function panel(frame)
   })
   frame:SetBackdropColor(0.06, 0.06, 0.06, 0.95)
   frame:SetBackdropBorderColor(0.40, 0.36, 0.30, 0.90)
+end
+
+local function applyMenuLayout(picker, sidebarShown)
+  local x = sidebarShown and (2 + SIDEBAR_W + 2) or 14
+  local width = WINDOW_W - x - 8
+  picker.fieldBox:SetPoint("TOPLEFT", picker, "TOPLEFT", x, -32)
+  picker.fieldBox:SetWidth(width)
+  picker.search:SetWidth(width - 28)
+  picker.scroll:SetPoint("TOPLEFT", picker, "TOPLEFT", x, -60)
+  picker.content:SetWidth(width)
+  for _, row in ipairs(picker.rows or {}) do
+    row:SetWidth(width)
+  end
+  local settings = State.settings
+  if settings then
+    settings:SetPoint("TOPLEFT", picker, "TOPLEFT", x, -32)
+    settings:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 8)
+  end
+  if picker.sidebar then
+    if sidebarShown then
+      picker.sidebar:Show()
+    else
+      picker.sidebar:Hide()
+    end
+  end
+  if picker.flipper then
+    picker.flipper:SetPoint("LEFT", picker, "LEFT", sidebarShown and x - FLIP_W or 1, 0)
+    if picker.flipper.arrow then
+      picker.flipper.arrow:SetTexture(
+        sidebarShown and "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronRight_Flat"
+          or "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronLeft_Flat"
+      )
+    end
+  end
+  picker._sidebarShown = sidebarShown and true or false
 end
 
 local function moveSelection(delta)
@@ -66,46 +107,84 @@ local function handleKey(key)
   elseif key == "ENTER" then
     TG:LoadPickedGuide(selected)
   elseif key == "ESCAPE" and State.picker then
-    if State.settings then
-      State.settings:Hide()
-    end
     State.picker:Hide()
   end
 end
 
-function TG:ShowGuidePicker()
+function TG:ShowMenu(view)
   if not State.picker then
     self:CreateGuidePicker()
   end
-  self:RefreshGuidePicker()
-  State.picker:Show()
-  if State.picker.search.SetFocus then
-    State.picker.search:SetFocus()
+  local picker = State.picker
+  local guides = view ~= "settings"
+  if not guides and not State.settings then
+    self:CreateSettings()
   end
-  if self.ShowSettings then
-    self:ShowSettings()
+  for _, el in ipairs(picker.guideElements or {}) do
+    if guides then
+      el:Show()
+    else
+      el:Hide()
+    end
   end
-  if self.RefreshPickerFlipper then
-    self:RefreshPickerFlipper()
+  if State.settings then
+    if guides then
+      State.settings:Hide()
+    else
+      State.settings:Show()
+    end
   end
+  if picker.title then
+    picker.title:SetText("TurtleGuides 0.1.0")
+  end
+  for _, button in ipairs(picker.sidebarButtons or {}) do
+    local active = (guides and button.view == "guides") or (not guides and button.view == "settings")
+    local color = active and ACTIVE_COLOR or TITLE_COLOR
+    button.text:SetTextColor(color[1], color[2], color[3])
+  end
+  applyMenuLayout(picker, picker._sidebarShown)
+  picker:Show()
+  if guides then
+    self:RefreshGuidePicker()
+    if picker.search.SetFocus then
+      picker.search:SetFocus()
+    end
+  elseif self.RefreshSettings then
+    self:RefreshSettings()
+  end
+end
+
+function TG:ShowGuidePicker()
+  self:ShowMenu("guides")
+end
+
+function TG:ShowSettings()
+  self:ShowMenu("settings")
+end
+
+function TG:ToggleSidebar()
+  local picker = State.picker
+  if not picker then
+    return
+  end
+  applyMenuLayout(picker, not picker._sidebarShown)
+end
+
+function TG:ToggleSettingsDocked()
+  self:ToggleSidebar()
 end
 
 function TG:RefreshPickerFlipper()
   local picker = State.picker
-  if not picker or not picker.flipper then
+  if not picker then
     return
   end
-  local settings = State.settings
-  local shown = settings and settings:IsShown() and true or false
-  picker.flipper.arrow:SetTexture(
-    shown and "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronRight"
-      or "Interface\\AddOns\\TurtleGuides\\Media\\NavChevronLeft"
-  )
+  applyMenuLayout(picker, picker._sidebarShown)
 end
 
 local function makePickerRow(picker, i)
   local row = CreateFrame("Button", nil, picker.content)
-  row:SetWidth(324)
+  row:SetWidth(WINDOW_W - 16)
   row:SetHeight(ROW_HEIGHT)
   row:SetPoint("TOPLEFT", picker.content, "TOPLEFT", 0, -(i - 1) * ROW_HEIGHT)
   local text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -143,8 +222,8 @@ end
 function TG:CreateGuidePicker()
   local picker = CreateFrame("Frame", "TurtleGuidesPickerFrame", UIParent)
   State.picker = picker
-  picker:SetWidth(340)
-  picker:SetHeight(272)
+  picker:SetWidth(WINDOW_W)
+  picker:SetHeight(WINDOW_H)
   picker:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
   picker:SetMovable(true)
   if picker.EnableKeyboard then
@@ -159,9 +238,6 @@ function TG:CreateGuidePicker()
   end)
   picker:SetScript("OnDragStop", function()
     this:StopMovingOrSizing()
-    if TG.AnchorSettings and State.settings and State.settings:IsShown() then
-      TG:AnchorSettings()
-    end
   end)
   picker:SetScript("OnKeyDown", function()
     handleKey(arg1)
@@ -183,23 +259,48 @@ function TG:CreateGuidePicker()
   topbarLine:SetHeight(1)
   topbarLine:SetVertexColor(0.85, 0.85, 0.88, 0.08)
 
-  local footer = picker:CreateTexture(nil, "BORDER")
-  footer:SetTexture(BAR)
-  footer:SetPoint("BOTTOMLEFT", picker, "BOTTOMLEFT", 1, 1)
-  footer:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -1, 1)
-  footer:SetHeight(16)
-  footer:SetVertexColor(0.92, 0.90, 0.86, 1.00)
-
   local title = picker:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   title:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -7)
-  title:SetText("Guides")
-  title:SetTextColor(0.85, 0.75, 0.40)
+  title:SetText("TurtleGuides 0.1.0")
+  title:SetTextColor(TITLE_COLOR[1], TITLE_COLOR[2], TITLE_COLOR[3])
   Text.register(title, 12)
+  picker.title = title
+
+  local sidebar = CreateFrame("Frame", nil, picker)
+  sidebar:SetWidth(SIDEBAR_W)
+  sidebar:SetPoint("TOPLEFT", picker, "TOPLEFT", 2, -26)
+  sidebar:SetPoint("BOTTOMLEFT", picker, "BOTTOMLEFT", 2, 8)
+  sidebar:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8" })
+  sidebar:SetBackdropColor(0.09, 0.09, 0.10, 0.95)
+  picker.sidebar = sidebar
+  picker._sidebarShown = true
+  picker.sidebarButtons = {}
+
+  local function sidebarButton(label, y, view)
+    local button = CreateFrame("Button", nil, sidebar)
+    button:SetWidth(SIDEBAR_W - 4)
+    button:SetHeight(16)
+    button:SetPoint("TOPLEFT", sidebar, "TOPLEFT", 2, y)
+    local text = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    text:SetPoint("LEFT", button, "LEFT", 2, 0)
+    text:SetText(label)
+    text:SetTextColor(TITLE_COLOR[1], TITLE_COLOR[2], TITLE_COLOR[3])
+    Text.register(text, 10)
+    button.text = text
+    button.view = view
+    button:SetScript("OnClick", function()
+      TG:ShowMenu(view)
+    end)
+    table.insert(picker.sidebarButtons, button)
+    return button
+  end
+  sidebarButton("Guides", -4, "guides")
+  sidebarButton("Settings", -22, "settings")
 
   local flipper = CreateFrame("Button", "TurtleGuidesPickerFlipper", picker)
-  flipper:SetWidth(12)
-  flipper:SetHeight(30)
-  flipper:SetPoint("TOPLEFT", picker, "TOPLEFT", -12, -48)
+  flipper:SetWidth(FLIP_W)
+  flipper:SetHeight(28)
+  flipper:SetPoint("LEFT", picker, "LEFT", 1, 0)
   flipper:SetBackdrop({
     bgFile = "Interface\\Buttons\\WHITE8X8",
     edgeFile = "Interface\\Buttons\\WHITE8X8",
@@ -211,15 +312,13 @@ function TG:CreateGuidePicker()
   flipper:SetBackdropColor(0.06, 0.06, 0.06, 0.95)
   flipper:SetBackdropBorderColor(0.40, 0.36, 0.30, 0.90)
   local flipperArrow = flipper:CreateTexture(nil, "ARTWORK")
-  flipperArrow:SetWidth(12)
-  flipperArrow:SetHeight(12)
+  flipperArrow:SetWidth(FLIP_W)
+  flipperArrow:SetHeight(FLIP_W)
   flipperArrow:SetPoint("CENTER", flipper, "CENTER", 0, 0)
-  flipperArrow:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\NavChevronLeft")
+  flipperArrow:SetTexture("Interface\\AddOns\\TurtleGuides\\Media\\NavChevronRight_Flat")
   flipper.arrow = flipperArrow
   flipper:SetScript("OnClick", function()
-    if TG.ToggleSettingsDocked then
-      TG:ToggleSettingsDocked()
-    end
+    TG:ToggleSidebar()
   end)
   picker.flipper = flipper
 
@@ -234,14 +333,11 @@ function TG:CreateGuidePicker()
   end
   close:SetPoint("TOPRIGHT", picker, "TOPRIGHT", -6, -6)
   close:SetScript("OnClick", function()
-    if State.settings then
-      State.settings:Hide()
-    end
     picker:Hide()
   end)
 
   local fieldBox = CreateFrame("Frame", nil, picker)
-  fieldBox:SetWidth(324)
+  fieldBox:SetWidth(WINDOW_W - 16)
   fieldBox:SetHeight(22)
   fieldBox:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -32)
   fieldBox:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8" })
@@ -249,7 +345,7 @@ function TG:CreateGuidePicker()
   picker.fieldBox = fieldBox
 
   local search = CreateFrame("EditBox", "TurtleGuidesPickerSearch", picker)
-  search:SetWidth(296)
+  search:SetWidth(WINDOW_W - 44)
   search:SetHeight(18)
   search:SetPoint("TOPLEFT", fieldBox, "TOPLEFT", 16, -2)
   search:SetAutoFocus(false)
@@ -278,22 +374,24 @@ function TG:CreateGuidePicker()
   picker.search = search
 
   local placeholder = picker:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  placeholder:SetDrawLayer("OVERLAY", 2)
   placeholder:SetPoint("TOPLEFT", fieldBox, "TOPLEFT", 16, -2)
   placeholder:SetText("Search Guides")
   Text.register(placeholder, 12)
-  placeholder:SetTextColor(0.92, 0.92, 0.94, 1.00)
+  placeholder:SetTextColor(1.00, 1.00, 1.00, 1.00)
   placeholder:SetAlpha(1.00)
   picker.placeholder = placeholder
 
   local scroll = CreateFrame("ScrollFrame", "TurtleGuidesPickerScroll", picker)
   scroll:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -60)
-  scroll:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 20)
+  scroll:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 8)
   local content = CreateFrame("Frame", nil, scroll)
-  content:SetWidth(324)
+  content:SetWidth(WINDOW_W - 16)
   content:SetHeight(1)
   scroll:SetScrollChild(content)
   picker.scroll = scroll
   picker.content = content
+  picker.guideElements = { fieldBox, search, placeholder, scroll }
   picker.scrollbar = TG.UI.Scrollbar.create(scroll, content)
 
   picker.rows = {}
@@ -329,7 +427,7 @@ function TG:RefreshGuidePicker()
   end
   local query = string.lower(picker.search:GetText() or "")
   picker.placeholder:SetText(query == "" and "Search Guides" or "")
-  picker.placeholder:SetTextColor(0.92, 0.92, 0.94, 1.00)
+  picker.placeholder:SetTextColor(1.00, 1.00, 1.00, 1.00)
 
   local recommended = {}
   if self.SuggestGuides then
@@ -391,8 +489,8 @@ function TG:RefreshGuidePicker()
         row.text:ClearAllPoints()
         row.text:SetPoint("LEFT", row, "LEFT", 16, 0)
         row.chevron:SetTexture(
-          item.hidden and "Interface\\AddOns\\TurtleGuides\\Media\\ChevronDown"
-            or "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp"
+          item.hidden and "Interface\\AddOns\\TurtleGuides\\Media\\ChevronDown_Flat"
+            or "Interface\\AddOns\\TurtleGuides\\Media\\ChevronUp_Flat"
         )
         row.chevron:Show()
         row.background:SetVertexColor(0.13, 0.13, 0.14, 0.75)
