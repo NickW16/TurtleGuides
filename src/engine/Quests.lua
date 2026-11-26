@@ -203,11 +203,10 @@ function TG:GetQuestEvidence(id, title)
   end
   if result.id then
     local numeric = tonumber(result.id)
-    result.turnedIn = not result.inLog
-        and (ledger.turnedIn[numeric] or ledger.accountTurnedIn[numeric] or (self.cdb and self.cdb.turnedIn and self.cdb.turnedIn[numeric]) or (type(
-          pfQuest_history
-        ) == "table" and pfQuest_history[numeric]))
-      or false
+    result.turnedIn = false
+    if not result.inLog and (ledger.turnedIn[numeric] or ledger.accountTurnedIn[numeric]) then
+      result.turnedIn = true
+    end
   end
   if key and not result.inLog and ledger.turnedInTitles[key] then
     result.turnedIn = true
