@@ -88,11 +88,20 @@ end
 
 function Icons.item(id)
   local num = tonumber(id)
-  if not num or not GetItemInfo then
+  if not num then
     return nil
   end
-  local _, _, _, _, _, _, _, _, _, texture = GetItemInfo(num)
-  return texture
+  if TG.ItemIcons and TG.ItemIcons[num] then
+    return TG.ItemIcons[num]
+  end
+  if not GetItemInfo then
+    return nil
+  end
+  local texture = select(9, GetItemInfo(num))
+  if type(texture) == "string" and texture ~= "" then
+    return texture
+  end
+  return nil
 end
 
 function Icons.itemByName(name)
