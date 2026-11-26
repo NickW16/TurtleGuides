@@ -357,6 +357,7 @@ function env.reset()
       text.SetNonSpaceWrap = noop
       text.SetAlpha = noop
       text.SetTextColor = noop
+      text.SetDrawLayer = noop
       text.Hide = noop
       text.Show = noop
       text.GetStringHeight = function()
