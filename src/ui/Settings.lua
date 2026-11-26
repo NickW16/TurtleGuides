@@ -46,7 +46,7 @@ function TG:CreateSettings()
   scroll:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
   scroll:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
   local content = CreateFrame("Frame", nil, scroll)
-  content:SetWidth(240)
+  content:SetWidth(232)
   content:SetHeight(1)
   scroll:SetScrollChild(content)
   frame.scroll = scroll
@@ -287,7 +287,7 @@ function TG:RefreshSettings()
     frame.fontValue:SetText(string.format("%.1f", tonumber(TG.db.fontScale) or 1.0))
   end
   if frame.content and frame.GetWidth then
-    local width = (frame:GetWidth() or 240) - 4
+    local width = (frame:GetWidth() or 240) - 8
     if width > 0 then
       frame.content:SetWidth(width)
     end

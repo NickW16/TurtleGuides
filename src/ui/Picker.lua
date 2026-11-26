@@ -6,6 +6,7 @@ local ROW_HEIGHT = 16
 local WINDOW_W = 280
 local WINDOW_H = 360
 local FOOTER_H = 16
+local SCROLLBAR_W = 8
 local BAR = "Interface\\AddOns\\TurtleGuides\\Media\\BarTexture"
 local DOT = "Interface\\Buttons\\WHITE8X8"
 local TITLE_COLOR = { 0.85, 0.85, 0.88 }
@@ -148,9 +149,10 @@ local function applyMenuLayout(picker)
   picker.scroll:ClearAllPoints()
   picker.scroll:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -60)
   picker.scroll:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 8 + FOOTER_H)
-  picker.content:SetWidth(width)
+  local contentW = width - SCROLLBAR_W
+  picker.content:SetWidth(contentW)
   for _, row in ipairs(picker.rows or {}) do
-    row:SetWidth(width)
+    row:SetWidth(contentW)
   end
   local settings = State.settings
   if settings then
@@ -271,7 +273,7 @@ end
 
 local function makePickerRow(picker, i)
   local row = CreateFrame("Button", nil, picker.content)
-  row:SetWidth(WINDOW_W - 16)
+  row:SetWidth(WINDOW_W - 16 - SCROLLBAR_W)
   row:SetHeight(ROW_HEIGHT)
   row:SetPoint("TOPLEFT", picker.content, "TOPLEFT", 0, -(i - 1) * ROW_HEIGHT)
   local text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -515,7 +517,7 @@ function TG:CreateGuidePicker()
   scroll:SetPoint("TOPLEFT", picker, "TOPLEFT", 8, -60)
   scroll:SetPoint("BOTTOMRIGHT", picker, "BOTTOMRIGHT", -8, 8 + FOOTER_H)
   local content = CreateFrame("Frame", nil, scroll)
-  content:SetWidth(WINDOW_W - 16)
+  content:SetWidth(WINDOW_W - 16 - SCROLLBAR_W)
   content:SetHeight(1)
   scroll:SetScrollChild(content)
   picker.scroll = scroll

@@ -307,6 +307,9 @@ function env.reset()
     frame.GetFrameLevel = function()
       return 1
     end
+    frame.GetParent = function()
+      return frame.parent
+    end
     frame.SetScale = function(_, value)
       frame.scale = value
     end

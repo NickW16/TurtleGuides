@@ -61,7 +61,7 @@ function Scrollbar.create(scroll, content, width)
   thumb:EnableMouse(true)
   thumb:SetMovable(true)
   if thumb.SetFrameLevel then
-    thumb:SetFrameLevel(scroll:GetFrameLevel() + 2)
+    thumb:SetFrameLevel((scroll.GetFrameLevel and scroll:GetFrameLevel() or 0) + 10)
   end
 
   local bar = {
@@ -175,7 +175,16 @@ function Scrollbar.create(scroll, content, width)
     bar:update()
   end)
 
+  local function stopDrag()
+    bar.dragging = nil
+    thumb:SetScript("OnUpdate", nil)
+  end
   local function dragUpdate()
+    local isDown = _G.IsMouseButtonDown
+    if isDown and not isDown("LeftButton") then
+      stopDrag()
+      return
+    end
     if not GetCursorPosition or not scroll.GetCenter or getRange(scroll, content) <= 0 then
       return
     end
@@ -198,8 +207,7 @@ function Scrollbar.create(scroll, content, width)
     thumb:SetScript("OnUpdate", dragUpdate)
   end)
   thumb:SetScript("OnMouseUp", function()
-    bar.dragging = nil
-    thumb:SetScript("OnUpdate", nil)
+    stopDrag()
   end)
   return bar
 end
