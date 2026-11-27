@@ -11,6 +11,7 @@ local function fresh()
     "src/core/Output.lua",
     "src/core/State.lua",
     "src/engine/State.lua",
+    "src/engine/QuestDiff.lua",
     "src/engine/Quests.lua"
   )
 end
@@ -63,7 +64,7 @@ return {
     _G.GetTime = function()
       return 10
     end
-    local entries = { { title = "Foo", complete = 1, id = 42 } }
+    local entries = { { title = "Foo", complete = nil, id = 42 } }
     local function applyLog()
       _G.GetNumQuestLogEntries = function()
         return table.getn(entries)
@@ -83,6 +84,61 @@ return {
     TG:ScanQuestTurnins()
     env.eq(TG:IsQuestTurnedIn(42), false)
     env.eq(TG._turnedInTitles.Foo, nil)
+  end,
+
+  test_scan_turnins_confirms_complete_removal_without_dialog = function()
+    local TG = fresh()
+    TG.cdb = {}
+    _G.GetTime = function()
+      return 10
+    end
+    local entries = { { title = "Foo", complete = 1, id = 42 } }
+    local function applyLog()
+      _G.GetNumQuestLogEntries = function()
+        return table.getn(entries)
+      end
+      _G.GetQuestLogTitle = function(i)
+        local e = entries[i]
+        if not e then
+          return
+        end
+        return e.title, 1, nil, false, false, e.complete, nil, e.id
+      end
+    end
+    applyLog()
+    TG:ScanQuestTurnins()
+    entries = {}
+    applyLog()
+    TG:ScanQuestTurnins()
+    env.eq(TG:IsQuestTurnedIn(42), true)
+    env.eq(TG.cdb.questState[42].level ~= nil, true)
+  end,
+
+  test_scan_turnins_detects_accept_without_event = function()
+    local TG = fresh()
+    TG.cdb = {}
+    _G.GetTime = function()
+      return 10
+    end
+    local entries = {}
+    local function applyLog()
+      _G.GetNumQuestLogEntries = function()
+        return table.getn(entries)
+      end
+      _G.GetQuestLogTitle = function(i)
+        local e = entries[i]
+        if not e then
+          return
+        end
+        return e.title, 1, nil, false, false, e.complete, nil, e.id
+      end
+    end
+    applyLog()
+    TG:ScanQuestTurnins()
+    entries = { { title = "Foo", complete = nil, id = 42 } }
+    applyLog()
+    TG:ScanQuestTurnins()
+    env.eq(TG.Engine.Quests.recentlyAccepted(42), true)
   end,
 
   test_scan_turnins_confirms_after_dialog_close = function()
@@ -125,6 +181,7 @@ return {
     end
     TG:OnQuestAccepted(1)
     env.eq(TG._turnedInTitles.Foo, nil)
+    env.eq(TG.cdb.turnedIn[42], nil)
     env.eq(TG:IsQuestTurnedIn(42), false)
   end,
 

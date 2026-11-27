@@ -14,6 +14,7 @@ local function fresh()
     "src/core/Output.lua",
     "src/core/State.lua",
     "src/engine/State.lua",
+    "src/engine/QuestDiff.lua",
     "src/engine/Quests.lua",
     "src/engine/Conditions.lua"
   )

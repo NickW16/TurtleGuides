@@ -129,6 +129,96 @@ return {
     env.eq(TG.currentStepIndex, 3)
   end,
 
+  test_find_my_place_resolves_negative_quest_ids_and_seeds_log = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        { elements = { { t = "text", text = "before" } } },
+        { elements = { { t = "cmd", tag = "turnin", args = { "-414" } } } },
+        { elements = { { t = "text", text = "after" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = { turnedIn = { [414] = true } }
+    TG.guideByKey = { [g.key] = g }
+    TG.GetQuestTitleById = function()
+      return "Foo"
+    end
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG._questLogSeeded = false
+    TG:SetGuide(g.key, 1)
+    TG:FindMyPlace(true)
+    env.eq(TG._questLogSeeded, true)
+    env.eq(TG.currentStepIndex, 3)
+  end,
+
+  test_find_my_place_keeps_confirmed_cap_over_weak_later_evidence = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        { elements = { { t = "text", text = "before" } } },
+        { elements = { { t = "cmd", tag = "turnin", args = { "99" }, text = "Early" } } },
+        { elements = { { t = "text", text = "middle" } } },
+        { elements = { { t = "cmd", tag = "turnin", args = { "414" }, text = "Later" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = {}
+    TG.guideByKey = { [g.key] = g }
+    TG.GetQuestTitleById = function()
+      return "Later"
+    end
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    _G.GetNumQuestLogEntries = function()
+      return 1
+    end
+    _G.GetQuestLogTitle = function()
+      return "Early", 1, nil, false, false, nil, nil, 99
+    end
+    _G.pfQuest_history = { [414] = true }
+    TG:SetGuide(g.key, 1)
+    TG:FindMyPlace(true)
+    env.eq(TG.currentStepIndex, 2)
+  end,
+
+  test_find_my_place_does_not_move_backwards_on_weak_evidence = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        {
+          elements = {
+            { t = "cmd", tag = "turnin", args = { "414" }, text = "Later" },
+            { t = "cmd", tag = "collect", args = { "5", "1", "999" }, text = "Pending" },
+          },
+        },
+        { elements = { { t = "text", text = "two" } } },
+        { elements = { { t = "text", text = "three" } } },
+        { elements = { { t = "text", text = "four" } } },
+        { elements = { { t = "text", text = "five" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = {}
+    TG.guideByKey = { [g.key] = g }
+    TG.GetQuestTitleById = function()
+      return "Later"
+    end
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    _G.pfQuest_history = { [414] = true }
+    TG:SetGuide(g.key, 5)
+    TG:FindMyPlace(true)
+    env.eq(TG.currentStepIndex, 5)
+  end,
+
   test_saved_cursor_is_per_guide_and_explicit_step_wins = function()
     local TG = loadEngine()
     local a = {

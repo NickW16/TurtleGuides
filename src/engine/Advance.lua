@@ -75,9 +75,13 @@ function TG:CheckAdvance()
 end
 
 function TG:OnQuestLogUpdate()
-  self._questLogSeeded = true
-  if self.InvalidateQuestLedger then
-    self:InvalidateQuestLedger()
+  if self.SeedQuestLog then
+    self:SeedQuestLog()
+  else
+    self._questLogSeeded = true
+    if self.InvalidateQuestLedger then
+      self:InvalidateQuestLedger()
+    end
   end
   self:ScanQuestTurnins()
   self:CheckAdvance("event")

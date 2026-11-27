@@ -1,7 +1,6 @@
 -- guide selection and step navigation
 local TG = _G.TurtleGuides
 local Shared = TG.Engine.Shared
-local strtrim = TG.Util.strtrim
 local Navigation = {}
 TG.Engine.Navigation = Navigation
 
@@ -354,71 +353,63 @@ function TG:PrevStep()
   end
 end
 
-local function findQuestEvidence(el)
+local CONFIDENCE_RANK = { weak = 1, confirmed = 2 }
+
+local function atLeastAsStrong(a, b)
+  return (CONFIDENCE_RANK[a] or 0) >= (CONFIDENCE_RANK[b] or 0)
+end
+
+local function findQuestEvidence(self, el)
   if not el or el.t ~= "cmd" then
     return nil
   end
   if el.tag ~= "accept" and el.tag ~= "turnin" and el.tag ~= "complete" then
     return nil
   end
-  local id = tonumber(el.args and el.args[1])
-  local title = el.text
-  if title and title ~= "" then
-    title = string.gsub(title, "^Accept%s+", "")
-    title = string.gsub(title, "^Turn in%s+", "")
-    title = string.gsub(title, "^Turn In%s+", "")
-    title = strtrim(title)
-    if title == "" then
-      title = nil
-    end
-  end
-  if not title and id and TG.GetQuestTitleById then
-    title = TG:GetQuestTitleById(id)
-  end
+  local title, id = self:ResolveQuestTitle(el)
   if not id and not title then
     return nil
   end
 
-  local evidence = TG.GetQuestEvidence and TG:GetQuestEvidence(id, title) or nil
-  if evidence then
-    return {
-      id = evidence.id,
-      title = evidence.title,
-      inLog = evidence.inLog == true,
-      complete = evidence.complete == true,
-      turnedIn = evidence.turnedIn == true,
-    }
-  end
-
-  local inLog = false
-  if id and TG.GetQuestLogIndexById and TG:GetQuestLogIndexById(id) then
-    inLog = true
-  end
-  if not inLog and title and TG.IsQuestInLog and TG:IsQuestInLog(title) then
-    inLog = true
-  end
-  local turnedIn = false
-  if id and TG.IsQuestTurnedIn and TG:IsQuestTurnedIn(id) then
-    turnedIn = true
-  end
-  if not turnedIn and title and TG._turnedInTitles and TG._turnedInTitles[title] then
-    turnedIn = true
-  end
-  local complete = false
-  if inLog then
-    local done
-    if id and TG.GetQuestLogIndexById then
-      local idx = TG:GetQuestLogIndexById(id)
-      if idx and GetQuestLogTitle then
-        local _, _, _, _, _, d = GetQuestLogTitle(idx)
-        done = d
-      end
-    elseif title and TG.IsQuestComplete then
-      done = TG:IsQuestComplete(title)
+  local evidence = self.GetQuestEvidence and self:GetQuestEvidence(id, title) or nil
+  local confidence = self.QuestEvidenceConfidence and self:QuestEvidenceConfidence(id, title) or nil
+  if not evidence then
+    local inLog = false
+    if id and TG.GetQuestLogIndexById and TG:GetQuestLogIndexById(id) then
+      inLog = true
     end
-    complete = (done == 1 or done == -1)
+    if not inLog and title and TG.IsQuestInLog and TG:IsQuestInLog(title) then
+      inLog = true
+    end
+    local turnedIn = false
+    if id and TG.IsQuestTurnedIn and TG:IsQuestTurnedIn(id) then
+      turnedIn = true
+    end
+    if not turnedIn and title and TG._turnedInTitles and TG._turnedInTitles[title] then
+      turnedIn = true
+    end
+    if not inLog and not turnedIn then
+      return nil
+    end
+    local complete = false
+    if inLog then
+      local done
+      if id and TG.GetQuestLogIndexById then
+        local idx = TG:GetQuestLogIndexById(id)
+        if idx and GetQuestLogTitle then
+          local _, _, _, _, _, d = GetQuestLogTitle(idx)
+          done = d
+        end
+      elseif title and TG.IsQuestComplete then
+        done = TG:IsQuestComplete(title)
+      end
+      complete = (done == 1 or done == -1)
+    end
+    evidence = { id = id, title = title, inLog = inLog, complete = complete, turnedIn = turnedIn }
+    confidence = inLog and "confirmed" or "weak"
   end
-  return { id = id, title = title, inLog = inLog, complete = complete, turnedIn = turnedIn }
+  evidence.confidence = confidence or "weak"
+  return evidence
 end
 
 function TG:FindMyPlace(quiet)
@@ -430,10 +421,11 @@ function TG:FindMyPlace(quiet)
     return nil
   end
   if not self._questLogSeeded then
-    if not quiet then
-      self:Print("Find my place: the quest log has not been read yet. Try again in a moment.")
+    if self.SeedQuestLog then
+      self:SeedQuestLog()
+    else
+      self._questLogSeeded = true
     end
-    return nil
   end
   local steps = guide.steps or {}
   local n = table.getn(steps)
@@ -445,27 +437,28 @@ function TG:FindMyPlace(quiet)
   end
 
   local last, cap, evidence = 1, nil, nil
+  local lastConfidence, capConfidence
   for i, step in ipairs(steps) do
     for _, el in ipairs(step.elements or {}) do
-      local ev = findQuestEvidence(el)
+      local ev = findQuestEvidence(self, el)
       if ev then
         if el.tag == "accept" then
           if ev.inLog or ev.turnedIn then
-            last, evidence = i, ev
+            last, evidence, lastConfidence = i, ev, ev.confidence
           end
         elseif el.tag == "turnin" or el.tag == "complete" then
           if ev.turnedIn then
-            last, evidence = i, ev
+            last, evidence, lastConfidence = i, ev, ev.confidence
           end
           if not cap and ev.inLog and not ev.complete and not ev.turnedIn then
-            cap = i
+            cap, capConfidence = i, ev.confidence
           end
         end
       end
     end
   end
   local start = last
-  if cap and cap < start then
+  if cap and cap < start and atLeastAsStrong(capConfidence, lastConfidence) then
     start = cap
   end
   if start < 1 then
@@ -498,6 +491,9 @@ function TG:FindMyPlace(quiet)
   end
   if pos > n then
     pos = n
+  end
+  if pos < self.currentStepIndex and lastConfidence ~= "confirmed" then
+    pos = self.currentStepIndex
   end
 
   self.currentStepIndex = pos

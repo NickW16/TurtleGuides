@@ -16,6 +16,7 @@ local function loadEngine()
     "src/core/State.lua",
     "src/core/Events.lua",
     "src/engine/State.lua",
+    "src/engine/QuestDiff.lua",
     "src/engine/Quests.lua",
     "src/engine/Conditions.lua",
     "src/engine/Manual.lua",
