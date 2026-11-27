@@ -167,6 +167,9 @@ function TG:FindResumeIndex(guide, context)
       return self.StepSkipState and self:StepSkipState(step) or false
     end,
     complete = context.complete or function(step)
+      if self.CachedStepComplete then
+        return self:CachedStepComplete(step)
+      end
       return self:IsStepComplete(step)
     end,
     hasManual = context.hasManual or function(step)
@@ -177,6 +180,53 @@ function TG:FindResumeIndex(guide, context)
       or nil,
   }
   return Resume.findIndex(merged)
+end
+
+function TG:QueueResume()
+  self._resumeDirtyAt = GetTime and GetTime() or 0
+end
+
+function TG:ClearResumeQueue()
+  self._resumeDirtyAt = nil
+end
+
+function TG:MaybeResume()
+  if not self.db or not self.db.autoResume then
+    return false
+  end
+  if not self.currentGuide or not self._questLogSeeded then
+    return false
+  end
+  if self.IsManualNavHeld and self:IsManualNavHeld() then
+    local reason = self._manualNavReason
+    if reason ~= "guide load" and reason ~= "Find my place" then
+      return false
+    end
+  end
+  if self._manualCheckTime then
+    return false
+  end
+  local step = self:CurrentStep()
+  if not step then
+    return false
+  end
+  local skip = self.ShouldAutoSkipStep and self:ShouldAutoSkipStep(step) or false
+  local complete = self:IsStepComplete(step)
+  local hasWork = Shared.stepHasObjective(step)
+    or Shared.stepHasItemCountCondition(step)
+    or self:StepHasManualAction(step)
+  if not (skip == true or complete == true or not hasWork) then
+    return false
+  end
+  local result = self:FindResumeIndex(self.currentGuide)
+  if not result or not result.index or result.index <= self.currentStepIndex then
+    return false
+  end
+  if self.GoToStep and self:GoToStep(result.index) then
+    self:Print("Skipped to step " .. result.index .. ": " .. result.reason)
+    return true
+  end
+  return false
 end
 
 function Resume.expected(steps, upTo, evidence)

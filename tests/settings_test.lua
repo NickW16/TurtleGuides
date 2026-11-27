@@ -27,12 +27,29 @@ return {
     local frame = TG.UI.State.settings
     env.eq(TG.UI.State.picker:IsShown(), true)
     env.eq(frame:IsShown(), true)
-    env.eq(table.getn(frame.rows), 10)
+    env.eq(table.getn(frame.rows), 11)
     local arrow = frame.rows[1]
     env.eq(arrow.checked, false)
     arrow.scripts.OnClick()
     env.eq(TG.db.showArrow, true)
     env.eq(arrow.checked, true)
+  end,
+
+  test_auto_resume_toggle_is_bound_to_db = function()
+    local TG = fresh()
+    TG.db = { autoResume = false }
+    TG:ShowSettings()
+    local row
+    for _, candidate in ipairs(TG.UI.State.settings.rows) do
+      if candidate.key == "autoResume" then
+        row = candidate
+      end
+    end
+    env.eq(row ~= nil, true)
+    env.eq(row.checked, false)
+    row.scripts.OnClick()
+    env.eq(TG.db.autoResume, true)
+    env.eq(row.checked, true)
   end,
 
   test_font_size_buttons_change_scale = function()

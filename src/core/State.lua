@@ -9,6 +9,7 @@ local defaults = {
     arrowColor = "royal",
     arrowScale = 1.0,
     disableAutoSkip = false,
+    autoResume = false,
     autoTurnIn = false,
     autoSellJunk = false,
     autoUseQuestItems = false,

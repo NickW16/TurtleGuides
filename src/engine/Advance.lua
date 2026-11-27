@@ -84,6 +84,12 @@ function TG:OnQuestLogUpdate()
     end
   end
   self:ScanQuestTurnins()
+  if self.InvalidateStepCompletionCache then
+    self:InvalidateStepCompletionCache()
+  end
+  if self.QueueResume then
+    self:QueueResume()
+  end
   self:CheckAdvance("event")
   self:MarkUIDirty()
 end

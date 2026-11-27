@@ -16,6 +16,7 @@ local testFiles = {
   "tests/engine_manual_test.lua",
   "tests/engine_navigation_test.lua",
   "tests/engine_resume_test.lua",
+  "tests/engine_resume_events_test.lua",
   "tests/engine_questdiff_test.lua",
   "tests/engine_quests_test.lua",
   "tests/engine_state_test.lua",

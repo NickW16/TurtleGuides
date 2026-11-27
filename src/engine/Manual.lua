@@ -89,6 +89,9 @@ function TG:SignalManualAction(tag)
     self._manualSignals = {}
   end
   self._manualSignals[tostring(step) .. ":" .. tag] = true
+  if self.InvalidateStepCompletionCache then
+    self:InvalidateStepCompletionCache(step)
+  end
   if self.CheckAdvance then
     self:CheckAdvance("event")
   end
@@ -236,6 +239,9 @@ function TG:SetElementManualDone(el, value)
   if not self:IsElementTrackable(el) then
     return false
   end
+  if self.InvalidateStepCompletionCache then
+    self:InvalidateStepCompletionCache()
+  end
   if value then
     el._tgManualDone = true
     self._manualCheckTime = GetTime and GetTime() or 0
@@ -257,6 +263,9 @@ function TG:ClearManualElementStates(step)
   end
   for _, el in ipairs(step.elements or {}) do
     el._tgManualDone = nil
+  end
+  if self.InvalidateStepCompletionCache then
+    self:InvalidateStepCompletionCache(step)
   end
 end
 

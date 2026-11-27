@@ -4,11 +4,12 @@ local Shared = {}
 TG.Engine = TG.Engine or {}
 TG.Engine.Shared = Shared
 
-Shared.RECENT_ACCEPT_WINDOW = 5
+Shared.RECENT_ACCEPT_WINDOW = 2
 Shared.TURNIN_CONFIRM_WINDOW = 5
 Shared.MANUAL_CHECK_VISIBLE_DELAY = 0.6
 Shared.DEFAULT_GOTO_RADIUS = 8
 Shared.UNKNOWN_STATE_TIMEOUT = 1.5
+Shared.RESUME_DELAY = 0.5
 
 Shared.UNKNOWN_QUEST_GATES = {
   isOnQuest = true,
