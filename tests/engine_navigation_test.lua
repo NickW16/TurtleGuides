@@ -219,6 +219,81 @@ return {
     env.eq(TG.currentStepIndex, 5)
   end,
 
+  test_next_step_skips_already_complete_steps = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        { elements = { { t = "cmd", tag = "accept", args = { "1" }, text = "Accept One" } } },
+        { elements = { { t = "cmd", tag = "turnin", args = { "2" }, text = "Turn in Two" } } },
+        { elements = { { t = "cmd", tag = "accept", args = { "3" }, text = "Accept Three" } } },
+        { elements = { { t = "text", text = "after" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = { turnedIn = { [2] = true } }
+    TG.guideByKey = { [g.key] = g }
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG:SetGuide(g.key, 1, true, true)
+    TG:NextStep(false)
+    env.eq(TG.currentStepIndex, 3)
+    env.eq(TG.cdb.completedByGuide[g.key][2], true)
+  end,
+
+  test_set_guide_uses_resume_index = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        { elements = { { t = "cmd", tag = "accept", args = { "1" }, text = "Accept One" } } },
+        { elements = { { t = "cmd", tag = "turnin", args = { "2" }, text = "Turn in Two" } } },
+        { elements = { { t = "cmd", tag = "accept", args = { "3" }, text = "Accept Three" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = { turnedIn = { [2] = true } }
+    TG.guideByKey = { [g.key] = g }
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG:SetGuide(g.key, nil, true)
+    env.eq(TG.currentStepIndex, 3)
+  end,
+
+  test_saved_step_id_survives_guide_edit = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        { stepId = 10, elements = { { t = "text", text = "one" } } },
+        { stepId = 20, elements = { { t = "text", text = "two" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = {}
+    TG.guideByKey = { [g.key] = g }
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG:SetGuide(g.key, 2, true, true)
+    env.eq(TG.cdb.guideStepIds[g.key], 20)
+
+    local edited = {
+      key = g.key,
+      name = "Guide",
+      steps = {
+        { stepId = 10, elements = { { t = "text", text = "one" } } },
+        { stepId = 15, elements = { { t = "text", text = "inserted" } } },
+        { stepId = 20, elements = { { t = "text", text = "two" } } },
+      },
+    }
+    TG.guideByKey[g.key] = edited
+    TG:SetGuide(g.key, nil, true, true)
+    env.eq(TG.currentStepIndex, 3)
+  end,
+
   test_saved_cursor_is_per_guide_and_explicit_step_wins = function()
     local TG = loadEngine()
     local a = {

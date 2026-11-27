@@ -21,6 +21,7 @@ local function loadEngine()
     "src/engine/Conditions.lua",
     "src/engine/Manual.lua",
     "src/engine/Completion.lua",
+    "src/engine/Resume.lua",
     "src/engine/Goto.lua",
     "src/engine/Navigation.lua",
     "src/engine/Advance.lua",

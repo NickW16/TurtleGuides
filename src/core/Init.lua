@@ -25,7 +25,7 @@ function TG:OnInitialize()
     self:InitMinimap()
   end
   if self.cdb.currentGuideKey and self.guideByKey[self.cdb.currentGuideKey] then
-    self:SetGuide(self.cdb.currentGuideKey, self.cdb.stepIndex or 1, true)
+    self:SetGuide(self.cdb.currentGuideKey, nil, true)
   end
   self:Print("loaded. /tg to toggle, /tg guides to pick a guide.")
 end

@@ -30,6 +30,7 @@ local defaults = {
     currentGuideKey = nil,
     stepIndex = 1,
     guideCursors = {},
+    guideStepIds = {},
     completedSteps = {},
     turnedIn = {},
     junk = {},
