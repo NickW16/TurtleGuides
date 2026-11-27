@@ -117,6 +117,14 @@ return {
     end
   end,
 
+  test_southern_barrens_safe_route_is_available_to_horde = function()
+    local TG = fresh()
+    TG:BuildGuideIndex()
+    local guide = TG.guideByKey["Classic Survival Horde||25-27 Southern Barrens/Stonetalon"]
+    env.eq(guide ~= nil, true, "Horde Southern Barrens/Stonetalon safe route missing")
+    env.eq(guide and guide.category, "Survival", "wrong category for Southern Barrens/Stonetalon safe route")
+  end,
+
   test_tundra_macgrann_talk_step_has_no_backtrack_waypoints = function()
     local TG = fresh()
     _G.UnitFactionGroup = function()
