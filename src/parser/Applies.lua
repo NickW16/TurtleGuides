@@ -85,13 +85,11 @@ function Applies.evaluate(text, ctx)
   for part in gmatch(text, "[^/]+") do
     local all = true
     local anyTok = false
-    for tok in gmatch(part, "[^%s]+") do
-      if tok ~= "" then
-        anyTok = true
-        if not evalToken(tok, ctx) then
-          all = false
-          break
-        end
+    for tok in gmatch(part, "!?%w+") do
+      anyTok = true
+      if not evalToken(tok, ctx) then
+        all = false
+        break
       end
     end
     if anyTok and all then
