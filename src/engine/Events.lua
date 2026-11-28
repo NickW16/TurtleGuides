@@ -8,6 +8,19 @@ end)
 TG:RegisterEvent("QUEST_LOG_UPDATE", function()
   TG:OnQuestLogUpdate()
 end)
+local function onZoneChanged()
+  TG._wasStepComplete = nil
+  if TG.InvalidateStepCompletionCache then
+    TG:InvalidateStepCompletionCache()
+  end
+  if TG.CheckAdvance then
+    TG:CheckAdvance("zone")
+  end
+  TG:MarkUIDirty()
+end
+TG:RegisterEvent("ZONE_CHANGED", onZoneChanged)
+TG:RegisterEvent("ZONE_CHANGED_INDOORS", onZoneChanged)
+TG:RegisterEvent("ZONE_CHANGED_NEW_AREA", onZoneChanged)
 TG:RegisterEvent("QUEST_ACCEPTED", function(index)
   TG:OnQuestAccepted(index)
   if TG.QueueResume then
@@ -20,6 +33,17 @@ end)
 TG:RegisterEvent("MERCHANT_SHOW", function()
   TG:SignalManualAction("vendor")
   TG:SignalManualAction("repair")
+end)
+TG:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", function(_, unit, _, id)
+  if unit ~= "player" then
+    return
+  end
+  if TG.IsHearthstoneSpell and TG:IsHearthstoneSpell(id) then
+    TG:SignalHearthstoneUse()
+  end
+end)
+TG:RegisterEvent("SPELLCAST_STOP", function()
+  TG:PollHearthstoneUse()
 end)
 local function trainerFrameVisible()
   return ClassTrainerFrame and ClassTrainerFrame.IsVisible and ClassTrainerFrame:IsVisible() or false
@@ -64,9 +88,11 @@ TG:AddUpdater("trainerClose", 0.1, function()
   end
 end)
 TG:RegisterEvent("TAXIMAP_OPENED", function()
-  TG:SignalManualAction("fly")
-  TG:SignalManualAction("f")
-  TG:SignalManualAction("fp")
+  TG._wasStepComplete = nil
+  if TG.InvalidateStepCompletionCache then
+    TG:InvalidateStepCompletionCache()
+  end
+  TG:MarkUIDirty()
 end)
 TG:RegisterEvent("QUEST_FINISHED", function()
   TG:OnQuestFinished()
@@ -113,6 +139,9 @@ TG:AddUpdater("engine", 1.0, function()
 end)
 TG:AddUpdater("manualCheck", 0.1, function()
   TG:CheckManualCheckAdvance()
+end)
+TG:AddUpdater("hearthstoneCast", 0.1, function()
+  TG:PollHearthstoneUse()
 end)
 TG:AddUpdater("stepCache", 0.5, function()
   if not TG.db or not TG.db.autoResume then

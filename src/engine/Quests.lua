@@ -269,6 +269,60 @@ function TG:GetQuestEvidence(id, title)
   return result
 end
 
+-- A collect item that is consumed to start a quest is satisfied as soon as that
+-- quest is in the log. Scan the current step and the next one so guides that
+-- split the use, collect, and accept commands still work.
+function TG:QuestStarterAcceptedForItem(itemId)
+  itemId = tonumber(itemId)
+  if not itemId or not self.currentGuide then
+    return false
+  end
+  local steps = self.currentGuide.steps or {}
+  local from = self.currentStepIndex or 1
+  local last = math.min(from + 1, table.getn(steps))
+  local usedItem = false
+  local starterQuests = {}
+  local acceptedQuests = {}
+  local itemName = self.GetItemNameById and self:GetItemNameById(itemId) or nil
+  local wantedName = itemName and string.lower(itemName) or nil
+
+  for i = from, last do
+    for _, el in ipairs(steps[i].elements or {}) do
+      if el.t == "cmd" then
+        if el.tag == "use" and tonumber(el.args and el.args[1]) == itemId then
+          usedItem = true
+        elseif el.tag == "collect" and tonumber(el.args and el.args[1]) == itemId then
+          for _, id in ipairs(self:GetElementQuestIds(el)) do
+            starterQuests[id] = true
+          end
+        elseif el.tag == "accept" then
+          for _, id in ipairs(self:GetElementQuestIds(el)) do
+            acceptedQuests[id] = true
+          end
+        end
+      elseif wantedName and el.t == "text" then
+        local text = string.lower(el.text or "")
+        if string.find(text, "use", 1, true) and string.find(text, wantedName, 1, true) then
+          usedItem = true
+        end
+      end
+    end
+  end
+
+  if not usedItem then
+    return false
+  end
+  for id in pairs(starterQuests) do
+    if acceptedQuests[id] then
+      local evidence = self.GetQuestEvidence and self:GetQuestEvidence(id)
+      if evidence and (evidence.inLog or evidence.complete or evidence.turnedIn) then
+        return true
+      end
+    end
+  end
+  return false
+end
+
 function TG:GetElementQuestIds(el)
   if el and el.questIds and table.getn(el.questIds) > 0 then
     return el.questIds
@@ -292,12 +346,33 @@ function TG:ResolveQuestTitle(el)
     title = string.gsub(title, "^Accept%s+", "")
     title = string.gsub(title, "^Turn in%s+", "")
     title = string.gsub(title, "^Turn In%s+", "")
+    title = string.gsub(title, "^[Aa]bandon%s+", "")
     title = strtrim(title)
   end
   if (not title or title == "") and id and TG.GetQuestTitleById then
     title = TG:GetQuestTitleById(id)
   end
   return title, id
+end
+
+function TG:QuestAbsentFromLog(el)
+  if not self._questLogSeeded then
+    return false
+  end
+  local title, id = self:ResolveQuestTitle(el)
+  if self.GetQuestEvidence then
+    local evidence = self:GetQuestEvidence(id, title)
+    if evidence then
+      return evidence.inLog ~= true
+    end
+  end
+  if id and self.GetQuestLogIndexById and self:GetQuestLogIndexById(id) then
+    return false
+  end
+  if title and self.IsQuestInLog and self:IsQuestInLog(title) then
+    return false
+  end
+  return true
 end
 
 function TG:ParseXpArg(str)
@@ -337,20 +412,10 @@ function TG:IsElementTrackable(el)
   if not el or el._tgNoCheckbox then
     return false
   end
-  if el.t == "cmd" then
-    return Shared.isObjectiveElement(el) or Shared.MANUAL_ACTION_TAGS[el.tag] == true
-  end
-  if el.t ~= "text" or el.kind == "note" or el.kind == "info" then
+  if el.t ~= "cmd" then
     return false
   end
-  local text = el.text or ""
-  local plain = (TG.stripCodes and TG.stripCodes(text) or text)
-  plain = string.lower(TG.Util.strtrim(plain))
-  return string.find(text, "|cRXP_FRIENDLY_", 1, true) ~= nil
-    or string.find(text, "|cRXP_ENEMY_", 1, true) ~= nil
-    or string.find(text, "|T", 1, true) ~= nil
-    or string.find(plain, "^buy") == 1
-    or string.find(plain, "^purchase") == 1
+  return Shared.isObjectiveElement(el) or Shared.MANUAL_ACTION_TAGS[el.tag] == true
 end
 
 function TG:GetQuestLogIdByTitle(title)
@@ -432,6 +497,13 @@ function TG:OnQuestAccepted(questLogIndex)
     end
   end
   self:InvalidateQuestLedger()
+  self._wasStepComplete = nil
+  if self.InvalidateStepCompletionCache then
+    self:InvalidateStepCompletionCache()
+  end
+  if self.CheckAdvance then
+    self:CheckAdvance("event")
+  end
 end
 
 function TG:IsQuestTurnedIn(id)

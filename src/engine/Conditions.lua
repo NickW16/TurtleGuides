@@ -409,6 +409,37 @@ function TG:StepConditionsMet(step)
   return self:EvaluateConditions(step) ~= false
 end
 
+local function zoneMapUnavailable()
+  if WorldMapFrame and WorldMapFrame.IsVisible and WorldMapFrame:IsVisible() then
+    return false
+  end
+  if not GetMapInfo then
+    return false
+  end
+  local ok, map = pcall(GetMapInfo)
+  return not ok or not map or map == ""
+end
+
+function TG:ZoneElementDone(el)
+  local raw = el and el.args and el.args[1] or el and el.text
+  local name = tonumber(raw) and self.ZoneNameFromId and self:ZoneNameFromId(raw) or raw
+  if not name or name == "" then
+    return nil
+  end
+  local flags = tonumber(el.args and el.args[2]) or 0
+  if math.mod(math.floor(flags / 2), 2) == 1 and not zoneMapUnavailable() then
+    return false
+  end
+  local inZone = self.IsInNamedZone and self:IsInNamedZone(name, el.tag == "subzone")
+  if inZone == nil then
+    return nil
+  end
+  if math.mod(math.floor(flags), 2) == 1 then
+    return not inZone
+  end
+  return inZone
+end
+
 function TG:ShouldSkipStepByZone(step)
   if not step or not step.elements then
     return false

@@ -4,6 +4,15 @@ local Shared = TG.Engine.Shared
 local Manual = {}
 TG.Engine.Manual = Manual
 
+local HEARTHSTONE_ITEM_ID = 6948
+local HEARTHSTONE_SPELL_IDS = { [8690] = true, [556] = true }
+local HEARTHSTONE_SPELL_NAMES = { "Hearthstone", "Astral Recall" }
+local HEARTHSTONE_MIN_COOLDOWN = 300
+
+function TG:IsHearthstoneSpell(id)
+  return HEARTHSTONE_SPELL_IDS[tonumber(id)] == true
+end
+
 local function cleanBindText(s)
   s = (TG.stripCodes and TG.stripCodes(s)) or tostring(s or "")
   s = string.gsub(s, "^%s*(.-)%s*$", "%1")
@@ -61,10 +70,116 @@ function TG:CurrentBindLocation()
   return bind
 end
 
+local function hearthstoneCooldown()
+  local now = GetTime and GetTime() or 0
+  local start, duration
+
+  if GetItemCooldown then
+    local ok, itemStart, itemDuration = pcall(GetItemCooldown, HEARTHSTONE_ITEM_ID)
+    if
+      ok
+      and itemStart
+      and itemDuration
+      and itemDuration >= HEARTHSTONE_MIN_COOLDOWN
+      and (itemStart + itemDuration) > now
+    then
+      start, duration = itemStart, itemDuration
+    end
+  end
+
+  if not start and GetSpellCooldown then
+    for _, spell in ipairs(HEARTHSTONE_SPELL_NAMES) do
+      local ok, spellStart, spellDuration = pcall(GetSpellCooldown, spell)
+      if
+        ok
+        and spellStart
+        and spellDuration
+        and spellDuration >= HEARTHSTONE_MIN_COOLDOWN
+        and (spellStart + spellDuration) > now
+      then
+        start, duration = spellStart, spellDuration
+        break
+      end
+    end
+    if not start then
+      for id in pairs(HEARTHSTONE_SPELL_IDS) do
+        local ok, spellStart, spellDuration = pcall(GetSpellCooldown, id)
+        if
+          ok
+          and spellStart
+          and spellDuration
+          and spellDuration >= HEARTHSTONE_MIN_COOLDOWN
+          and (spellStart + spellDuration) > now
+        then
+          start, duration = spellStart, spellDuration
+          break
+        end
+      end
+    end
+  end
+
+  if not start then
+    return nil
+  end
+  return start, duration
+end
+
+local function cooldownKey(start, duration)
+  if not start then
+    return "none"
+  end
+  return tostring(math.floor(start * 100)) .. ":" .. tostring(math.floor(duration))
+end
+
+function TG:SignalHearthstoneUse()
+  local step = self:CurrentStep()
+  if not step then
+    return false
+  end
+  if not self._manualSignals then
+    self._manualSignals = {}
+  end
+  local stepKey = tostring(step)
+  local hsKey = stepKey .. ":hs"
+  local hearthKey = stepKey .. ":hearth"
+  if self._manualSignals[hsKey] and self._manualSignals[hearthKey] then
+    return false
+  end
+  self._manualSignals[hsKey] = true
+  self._manualSignals[hearthKey] = true
+  self._wasStepComplete = nil
+  if self.InvalidateStepCompletionCache then
+    self:InvalidateStepCompletionCache(step)
+  end
+  if self.CheckAdvance then
+    self:CheckAdvance("event")
+  end
+  return true
+end
+
+function TG:PollHearthstoneUse()
+  local start, duration = hearthstoneCooldown()
+  local key = cooldownKey(start, duration)
+  if self._hearthCooldownKey == nil then
+    self._hearthCooldownKey = key
+    return false
+  end
+  if key == self._hearthCooldownKey then
+    return false
+  end
+  self._hearthCooldownKey = key
+  if not start then
+    return false
+  end
+  return self:SignalHearthstoneUse()
+end
+
 function TG:ResetManualSignals()
   self._manualSignals = {}
   self._bindBaseline = self:CurrentBindLocation()
   self._bindSignal = nil
+  local start, duration = hearthstoneCooldown()
+  self._hearthCooldownKey = start and cooldownKey(start, duration) or nil
 end
 
 function TG:PollBindLocation()
@@ -80,8 +195,8 @@ function TG:PollBindLocation()
   end
 end
 
-function TG:SignalManualAction(tag)
-  local step = self:CurrentStep()
+function TG:SignalManualAction(tag, step)
+  step = step or self:CurrentStep()
   if not step then
     return
   end
@@ -89,6 +204,7 @@ function TG:SignalManualAction(tag)
     self._manualSignals = {}
   end
   self._manualSignals[tostring(step) .. ":" .. tag] = true
+  self._wasStepComplete = nil
   if self.InvalidateStepCompletionCache then
     self:InvalidateStepCompletionCache(step)
   end
@@ -99,6 +215,18 @@ end
 
 function TG:ManualActionDetected(el, stepKey)
   local tag = el and el.tag
+  if tag == "hs" or tag == "hearth" then
+    local signals = self._manualSignals
+    return (signals and signals[stepKey .. ":hs"] == true)
+      or (signals and signals[stepKey .. ":hearth"] == true)
+      or false
+  end
+  if tag == "abandon" then
+    return self:QuestAbsentFromLog(el) or false
+  end
+  if tag == "use" then
+    return self:QuestStarterAcceptedForItem(el.args and el.args[1]) or false
+  end
   if tag == "home" then
     local bind = self:CurrentBindLocation()
     local place = bindPlaceFromElement(el)
@@ -296,6 +424,7 @@ function TG:SetElementManualDone(el, value)
     end
     self._manualCheckTime = GetTime and GetTime() or 0
     self._manualCheckStep = self.currentStepIndex
+    self._wasStepComplete = nil
     if self.ClearManualNavHold then
       self:ClearManualNavHold("checkbox click")
     end

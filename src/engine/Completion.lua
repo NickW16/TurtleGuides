@@ -152,9 +152,14 @@ function TG:DetectElementDone(el)
       end
     end
     if itemId then
+      if self:QuestStarterAcceptedForItem(itemId) then
+        return true
+      end
       return self:GetItemCount(itemId) >= count
     end
     return nil
+  elseif tag == "zone" or tag == "subzone" then
+    return self:ZoneElementDone(el)
   elseif tag == "itemcount" then
     return self:IsItemCountConditionMet(el)
   elseif tag == "xp" then
