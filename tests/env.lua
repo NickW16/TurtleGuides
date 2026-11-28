@@ -360,6 +360,8 @@ function env.reset()
       text.SetNonSpaceWrap = noop
       text.SetAlpha = noop
       text.SetTextColor = noop
+      text.SetShadowColor = noop
+      text.SetShadowOffset = noop
       text.SetDrawLayer = noop
       text.Hide = noop
       text.Show = noop

@@ -134,15 +134,21 @@ end
 
 local function withObjectiveProgress(text, el)
   local have, need = questObjectiveProgress(el)
-  local guideNeed = tonumber(string.match(strip(text), "%(x(%d+)%)"))
+  local guideNeed = tonumber(string.match(strip(text), "%(x?(%d+)%)"))
   need = need or guideNeed
   if not need then
     return text
   end
   have = math.min(have or 0, need)
   local progress = "(" .. have .. "/" .. need .. ")"
+  local pattern
   if string.find(text, "%(x%d+%)") then
-    return string.gsub(text, "%(x%d+%)", progress, 1)
+    pattern = "%(x%d+%)"
+  elseif string.find(text, "%(%d+%)") then
+    pattern = "%(%d+%)"
+  end
+  if pattern then
+    return string.gsub(text, pattern, progress, 1)
   end
   return text .. "  " .. progress
 end
@@ -255,7 +261,12 @@ function Text.entries(step)
       local key = strip(elText)
       if elText and key ~= "" and not seen[key] then
         seen[key] = true
-        add(elText, "note", nil, el)
+        local trackable = el.t == "cmd" and TG.IsElementTrackable and TG:IsElementTrackable(el) or false
+        local state = "note"
+        if trackable then
+          state = TG.IsElementDone and TG:IsElementDone(el) or false
+        end
+        add(elText, state, trackable and el or nil, el)
       end
     end
   else
@@ -323,6 +334,7 @@ function Text.register(fs, base)
 end
 
 function Text.refresh()
+  Text.widthCache = {}
   for _, entry in ipairs(fontStrings) do
     Text.applyFont(entry.fs, entry.base)
   end
@@ -351,13 +363,25 @@ local function stripCodes(text)
   return text
 end
 
+local measureSize = 10
+Text.widthCache = {}
+
 local function widthOf(font, text)
   local measured = stripCodes(text)
-  font:SetText(measured)
-  if font.GetStringWidth then
-    return font:GetStringWidth() or 0
+  local key = tostring(measureSize) .. "|" .. measured
+  local cached = Text.widthCache[key]
+  if cached then
+    return cached
   end
-  return string.len(measured) * 5
+  font:SetText(measured)
+  local value
+  if font.GetStringWidth then
+    value = font:GetStringWidth() or 0
+  else
+    value = string.len(measured) * 5
+  end
+  Text.widthCache[key] = value
+  return value
 end
 
 local function splitLines(text)
@@ -437,7 +461,8 @@ end
 
 function Text.wrap(text, maxWidth, fontSize)
   local font = getMeasureFont()
-  Text.applyFont(font, fontSize or 10)
+  measureSize = fontSize or 10
+  Text.applyFont(font, measureSize)
   local plain = Icons.clean(text)
   if plain == "" then
     return "", 1

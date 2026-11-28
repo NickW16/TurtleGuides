@@ -26,7 +26,7 @@ local ARROW_COLORS = {
   { key = "white", r = 1.00, g = 1.00, b = 1.00 },
 }
 
-local frame, ring, dial, pointer, distText, driver
+local frame, ring, dial, pointer, distText, stepText, driver
 
 function TG:ArrowColors()
   return ARROW_COLORS
@@ -102,8 +102,19 @@ local function updateDistance()
   if not arrowVisible() then
     return
   end
-  local _, _, yards = State.direction()
-  distText:SetText(yards and string.format("%.0f yd", yards) or "~")
+  local _, _, yards, sameZone = State.direction()
+  local target = State.get()
+  local zone = target and target.zone or ""
+  local location = zone ~= "" and TG.ZoneName and TG:ZoneName(zone) or zone
+  if yards and sameZone then
+    distText:SetText(string.format("%.0f yd", yards))
+  else
+    distText:SetText(location ~= "" and ("Go to " .. location) or "~")
+  end
+  if stepText then
+    local index, total = TG.currentStepIndex, TG.currentGuide and table.getn(TG.currentGuide.steps or {})
+    stepText:SetText(index and total and ("Step " .. tostring(index) .. "/" .. tostring(total)) or "")
+  end
 end
 
 local function update()
@@ -118,7 +129,7 @@ local function build()
   end
   frame = CreateFrame("Frame", "TurtleGuidesArrow", UIParent)
   frame:SetWidth(220)
-  frame:SetHeight(72)
+  frame:SetHeight(100)
   if not TG.db.arrowFrame then
     TG.db.arrowFrame = {}
   end
@@ -162,7 +173,15 @@ local function build()
   TG:ApplyArrowColor()
 
   distText = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-  distText:SetPoint("TOP", pointer, "BOTTOM", 0, -2)
+  distText:SetShadowColor(0, 0, 0, 1)
+  distText:SetShadowOffset(1, -1)
+
+  stepText = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+  stepText:SetShadowColor(0, 0, 0, 1)
+  stepText:SetShadowOffset(1, -1)
+  stepText:SetPoint("TOP", pointer, "BOTTOM", 0, -2)
+
+  distText:SetPoint("TOP", stepText, "BOTTOM", 0, -2)
 
   frame:Hide()
 
