@@ -24,6 +24,7 @@ Icons.COMPLETE_ICON = COMPLETE_ICON
 Icons.COMPLETE_COLOR = { 0.85, 0.85, 0.88 }
 Icons.CHAT_ICON = TALK_ICON
 Icons.TRAVEL_ICON = TRAVEL_ICON
+Icons.BUY_ICON = BUY_ICON
 
 function Icons.isBullet(texture)
   return texture == AVAILABLE_ICON
@@ -228,9 +229,12 @@ function Icons.forText(text)
   if not text or text == "" then
     return nil
   end
-  local lower = string.lower(text)
+  local lower = string.lower(Icons.clean(text))
   if string.find(lower, "^%s*hearth") then
     return HS_ICON
+  end
+  if string.find(lower, "^%s*buy") or string.find(lower, "^%s*purchase") then
+    return BUY_ICON
   end
   if string.find(lower, "talk", 1, true) or string.find(lower, "speak", 1, true) then
     return TALK_ICON

@@ -58,6 +58,11 @@ local function parseGuide(text, source)
         end
       end
       if not currentStep._skip then
+        if currentStep.noCheckbox then
+          for _, el in ipairs(currentStep.elements) do
+            el._tgNoCheckbox = true
+          end
+        end
         if table.getn(currentStep.elements) > 0 or currentStep.label or currentStep.completewith then
           currentStep.index = table.getn(guide.steps) + 1
           currentStep.stepId = currentStepLine
@@ -161,6 +166,8 @@ local function parseGuide(text, source)
                 elseif count == 2 and lastGotoZone then
                   el.gotoZone = lastGotoZone
                 end
+              elseif el.t == "cmd" and el.tag == "disablecheckbox" then
+                currentStep.noCheckbox = true
               elseif el.t == "cmd" and el.tag == "deathskip" then
                 currentStep._deathskip = true
               end

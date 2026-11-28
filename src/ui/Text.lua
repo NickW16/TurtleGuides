@@ -257,19 +257,57 @@ function Text.entries(step)
     end
   end
   local elements = step.elements or {}
+  local pairs = {}
+  local consumed = {}
+  local itemTexts, collects = {}, {}
+  for i, el in ipairs(elements) do
+    if el.t == "text" and not el.kind and string.find(el.text or "", "|T%d") then
+      table.insert(itemTexts, i)
+    elseif el.t == "cmd" and el.tag == "collect" and (not el.text or el.text == "") then
+      table.insert(collects, i)
+    end
+  end
+  for k = 1, math.min(table.getn(itemTexts), table.getn(collects)) do
+    local textIndex, collectIndex = itemTexts[k], collects[k]
+    if textIndex < collectIndex then
+      pairs[textIndex] = elements[collectIndex]
+      consumed[collectIndex] = true
+    end
+  end
+  for i = 1, table.getn(elements) - 1 do
+    local el = elements[i]
+    if not pairs[i] and el.t == "text" and not el.kind then
+      local nextEl = elements[i + 1]
+      if
+        not consumed[i + 1]
+        and nextEl.t == "cmd"
+        and nextEl.tag == "collect"
+        and (not nextEl.text or nextEl.text == "")
+      then
+        pairs[i] = nextEl
+        consumed[i + 1] = true
+      end
+    end
+  end
+  local function addPaired(el, index, elText)
+    local trackEl = pairs[index] or el
+    local trackable = TG.IsElementTrackable and TG:IsElementTrackable(trackEl) or false
+    local state = "note"
+    if trackable then
+      state = TG.IsElementDone and TG:IsElementDone(trackEl) or false
+    end
+    add(elText, state, trackable and trackEl or nil, el)
+  end
   if step.sticky or step.completewith then
     local seen = {}
-    for _, el in ipairs(elements) do
-      local elText = Text.element(el)
-      local key = strip(elText)
-      if elText and key ~= "" and not seen[key] then
-        seen[key] = true
-        local trackable = TG.IsElementTrackable and TG:IsElementTrackable(el) or false
-        local state = "note"
-        if trackable then
-          state = TG.IsElementDone and TG:IsElementDone(el) or false
+    for i, el in ipairs(elements) do
+      if not consumed[i] then
+        local elText = Text.element(el)
+        local key = strip(elText)
+        if elText and key ~= "" and not seen[key] then
+          seen[key] = true
+          addPaired(el, i, elText)
         end
-        add(elText, state, trackable and el or nil, el)
       end
     end
   else
@@ -279,17 +317,14 @@ function Text.entries(step)
         hasOther = true
       end
     end
-    for _, el in ipairs(elements) do
-      local isGoto = el.t == "cmd" and el.tag == "goto"
-      if not isGoto or not hasOther then
-        local elText = Text.element(el)
-        if elText then
-          local trackable = TG.IsElementTrackable and TG:IsElementTrackable(el) or false
-          local state = "note"
-          if trackable then
-            state = TG.IsElementDone and TG:IsElementDone(el) or false
+    for i, el in ipairs(elements) do
+      if not consumed[i] then
+        local isGoto = el.t == "cmd" and el.tag == "goto"
+        if not isGoto or not hasOther then
+          local elText = Text.element(el)
+          if elText then
+            addPaired(el, i, elText)
           end
-          add(elText, state, trackable and el or nil, el)
         end
       end
     end

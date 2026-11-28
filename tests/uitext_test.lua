@@ -201,6 +201,28 @@ return {
     env.eq(entries[3].child, true)
   end,
 
+  test_text_and_following_command_share_one_row = function()
+    local TG = fresh()
+    TG.IsElementTrackable = function(_, el)
+      return el.t == "cmd" and el.tag == "collect"
+    end
+    TG.IsElementDone = function()
+      return false
+    end
+    local collect = { t = "cmd", tag = "collect", args = { "769", "10" } }
+    local step = {
+      elements = {
+        { t = "text", text = "Kill boars." },
+        collect,
+      },
+    }
+    local entries = TG.UI.Text.entries(step)
+    env.eq(table.getn(entries), 1)
+    env.eq(entries[1].text, "Kill boars.")
+    env.eq(entries[1].el, collect)
+    env.eq(entries[1].state, false)
+  end,
+
   test_automation_only_steps_get_a_label = function()
     local TG = fresh()
     local destroyed = TG.UI.Text.entries({ elements = { { t = "cmd", tag = "destroy", args = { "6948" } } } })

@@ -47,6 +47,13 @@ return {
     env.eq(guide.steps[2].elements[1].tag, "accept")
   end,
 
+  test_disablecheckbox_marks_step_elements = function()
+    local TG = fresh()
+    local guide = TG.Parser.ParseGuide("#name T\n#group G\nstep\n.accept 5\n.disablecheckbox\n", "test.lua")
+    env.eq(guide.steps[1].noCheckbox, true)
+    env.eq(guide.steps[1].elements[1]._tgNoCheckbox, true)
+  end,
+
   test_zone_line_parses_as_command = function()
     local TG = fresh()
     local guide = TG.Parser.ParseGuide("#name T\n#group G\nstep\n.zone Redridge\n", "test.lua")
