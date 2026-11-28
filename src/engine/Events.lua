@@ -81,6 +81,19 @@ TG:RegisterEvent("BAG_UPDATE", function()
   end
   TG:MarkUIDirty()
 end)
+TG:RegisterEvent("UNIT_INVENTORY_CHANGED", function(_, unit)
+  if unit and unit ~= "player" then
+    return
+  end
+  if TG.InvalidateStepCompletionCache then
+    TG:InvalidateStepCompletionCache()
+  end
+  TG:CheckAdvance("event")
+  if TG.QueueResume then
+    TG:QueueResume()
+  end
+  TG:MarkUIDirty()
+end)
 TG:RegisterEvent("PLAYER_LEVEL_UP", function()
   if TG.InvalidateStepCompletionCache then
     TG:InvalidateStepCompletionCache()

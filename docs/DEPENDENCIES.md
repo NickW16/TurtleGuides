@@ -25,6 +25,7 @@ ClassicAPI is a required dependency for full waypoint and marker behavior. It is
 - `CreateVector2D` is used for those map conversions when present in [`src/compat/Zone.lua`](../src/compat/Zone.lua).
 - `C_NamePlate.GetNamePlates` supplies visible nameplate tokens for NPC markers in [`src/engine/TargetMarker.lua`](../src/engine/TargetMarker.lua).
 - `GetPlayerFacing` drives the arrow sprite in [`src/ui/Arrow.lua`](../src/ui/Arrow.lua).
+- `GetItemStats` adds weapon DPS under `ITEM_MOD_DAMAGE_PER_SECOND_SHORT` in [`src/engine/Conditions.lua`](../src/engine/Conditions.lua). Stock 1.12.1 has `GetItemStats` but not that key, so gear gates treat a missing stat as unknown and keep the step rather than skipping it. Exact equipped-item checks use the native `GetInventoryItemID` and `GetInventoryItemLink`, and refresh on `UNIT_INVENTORY_CHANGED`.
 - Lua 5.1 helpers such as `string.match`, `string.gmatch`, and `table.wipe` are used throughout the parser and engine. [`src/compat/Runtime.lua`](../src/compat/Runtime.lua) installs the small set of shims the stock client needs.
 
 Several calls are guarded so the add-on still loads without ClassicAPI, but waypoint direction, unit markers, and world positions are reduced or unavailable. See [`docs/WAYPOINTS.md`](WAYPOINTS.md) for the coordinate caveats and `/tg waypoint` for live diagnostics.

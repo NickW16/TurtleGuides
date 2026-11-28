@@ -247,6 +247,91 @@ local function checkXpCap(el)
   return UnitLevel("player") < level
 end
 
+local function equippedItemId(slot)
+  if not GetInventoryItemID then
+    return nil
+  end
+  local ok, id = pcall(GetInventoryItemID, "player", slot)
+  if not ok then
+    return nil
+  end
+  return tonumber(id) or nil
+end
+
+local function equippedStat(slot, statName)
+  if not GetInventoryItemLink then
+    return nil
+  end
+  local ok, link = pcall(GetInventoryItemLink, "player", slot)
+  if not ok or not link or link == "" then
+    return nil
+  end
+  if statName == "QUALITY" then
+    local getQuality = _G.GetInventoryItemQuality
+    if not getQuality then
+      return nil
+    end
+    local okQuality, quality = pcall(getQuality, "player", slot)
+    return okQuality and tonumber(quality) or nil
+  elseif statName == "LEVEL" then
+    local id = tonumber(string.match(link, "item:(%d+)"))
+    if not id or not GetItemInfo then
+      return nil
+    end
+    local okInfo, _, _, _, level = pcall(GetItemInfo, id)
+    if okInfo then
+      return tonumber(level) or nil
+    end
+    return nil
+  end
+  local getStats = _G.GetItemStats
+  if not getStats then
+    return nil
+  end
+  local okStats, stats = pcall(getStats, link)
+  if not okStats or type(stats) ~= "table" then
+    return nil
+  end
+  return tonumber(stats[statName]) or nil
+end
+
+local function checkItemStat(el)
+  local a = el.args or {}
+  local slot = tonumber(a[1])
+  local statName = a[2]
+  local op, digits = string.match(tostring(a[3] or ""), "^%s*([<>=]?)%s*(%d+%.?%d*)%s*$")
+  if not slot or not statName or not digits then
+    return nil
+  end
+  local value = equippedStat(slot, statName)
+  if value == nil then
+    return nil
+  end
+  local want = tonumber(digits)
+  if op == "<" then
+    return value < want
+  elseif op == ">" then
+    return value > want
+  end
+  return value == want
+end
+
+local function checkEquip(el)
+  local a = el.args or {}
+  local slot = tonumber(a[1])
+  if not slot then
+    return nil
+  end
+  local id = equippedItemId(slot)
+  if not id then
+    return true
+  end
+  if a[2] then
+    return id ~= tonumber(a[2])
+  end
+  return false
+end
+
 function TG:IsItemCountConditionMet(el)
   return checkItemCountCondition(el) == true
 end
@@ -265,11 +350,19 @@ function TG:EvaluateConditions(step)
   self._skipDebug = nil
   self._unknownConditionTags = {}
   for _, el in ipairs(step.elements or {}) do
-    if el.t == "cmd" and (Shared.CONDITION_TAGS[el.tag] or isXpCapElement(el)) then
+    local lowTag = string.lower(el.tag or "")
+    if
+      el.t == "cmd"
+      and (Shared.CONDITION_TAGS[el.tag] or isXpCapElement(el) or lowTag == "itemstat" or lowTag == "equip")
+    then
       local tag = el.tag
       local ids = elementQuestIds(el)
       local value
-      if tag == "itemcount" then
+      if lowTag == "itemstat" then
+        value = checkItemStat(el)
+      elseif lowTag == "equip" then
+        value = checkEquip(el)
+      elseif tag == "itemcount" then
         value = checkItemCountCondition(el)
       elseif tag == "cooldown" then
         value = checkCooldownCondition(el)

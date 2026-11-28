@@ -51,6 +51,8 @@ function env.reset()
   _G.GetInventoryItemID = function() end
   _G.GetInventoryItemLink = function() end
   _G.GetItemInfo = function() end
+  _G.GetItemStats = nil
+  _G.GetInventoryItemQuality = nil
   _G.UnitSex = function()
     return 2
   end
