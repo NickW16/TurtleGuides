@@ -335,8 +335,11 @@ function TG:AutoTakeFlight(step, el)
             if node ~= "" and node == want then
               exact = i
               break
-            elseif not partial and node ~= "" and
-              (string.find(node, want, 1, true) or string.find(want, node, 1, true)) then
+            elseif
+              not partial
+              and node ~= ""
+              and (string.find(node, want, 1, true) or string.find(want, node, 1, true))
+            then
               partial = i
             end
           end

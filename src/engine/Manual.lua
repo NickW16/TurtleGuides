@@ -76,8 +76,13 @@ local function hearthstoneCooldown()
 
   if GetItemCooldown then
     local ok, itemStart, itemDuration = pcall(GetItemCooldown, HEARTHSTONE_ITEM_ID)
-    if ok and itemStart and itemDuration and itemDuration >= HEARTHSTONE_MIN_COOLDOWN
-      and (itemStart + itemDuration) > now then
+    if
+      ok
+      and itemStart
+      and itemDuration
+      and itemDuration >= HEARTHSTONE_MIN_COOLDOWN
+      and (itemStart + itemDuration) > now
+    then
       start, duration = itemStart, itemDuration
     end
   end
@@ -85,8 +90,13 @@ local function hearthstoneCooldown()
   if not start and GetSpellCooldown then
     for _, spell in ipairs(HEARTHSTONE_SPELL_NAMES) do
       local ok, spellStart, spellDuration = pcall(GetSpellCooldown, spell)
-      if ok and spellStart and spellDuration and spellDuration >= HEARTHSTONE_MIN_COOLDOWN
-        and (spellStart + spellDuration) > now then
+      if
+        ok
+        and spellStart
+        and spellDuration
+        and spellDuration >= HEARTHSTONE_MIN_COOLDOWN
+        and (spellStart + spellDuration) > now
+      then
         start, duration = spellStart, spellDuration
         break
       end
@@ -94,8 +104,13 @@ local function hearthstoneCooldown()
     if not start then
       for id in pairs(HEARTHSTONE_SPELL_IDS) do
         local ok, spellStart, spellDuration = pcall(GetSpellCooldown, id)
-        if ok and spellStart and spellDuration and spellDuration >= HEARTHSTONE_MIN_COOLDOWN
-          and (spellStart + spellDuration) > now then
+        if
+          ok
+          and spellStart
+          and spellDuration
+          and spellDuration >= HEARTHSTONE_MIN_COOLDOWN
+          and (spellStart + spellDuration) > now
+        then
           start, duration = spellStart, spellDuration
           break
         end
