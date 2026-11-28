@@ -8,14 +8,20 @@ return {
     env.eq(TG._tgDoneSource, "manual checkbox")
   end,
 
-  test_trackable_rows_are_objectives_and_named_actions = function()
+  test_only_step_requirements_are_trackable = function()
     local TG = loadEngine()
     env.eq(TG:IsElementTrackable({ t = "cmd", tag = "collect", args = { "1", "1" } }), true)
+    env.eq(TG:IsElementTrackable({ t = "cmd", tag = "accept", args = { "1" } }), true)
+    env.eq(TG:IsElementTrackable({ t = "cmd", tag = "turnin", args = { "1" } }), true)
+    env.eq(TG:IsElementTrackable({ t = "cmd", tag = "complete", args = { "1", "1" } }), true)
+    env.eq(TG:IsElementTrackable({ t = "cmd", tag = "xp", args = { "10" } }), true)
+    env.eq(TG:IsElementTrackable({ t = "cmd", tag = "use", args = { "1" } }), true)
+    env.eq(TG:IsElementTrackable({ t = "cmd", tag = "vendor" }), true)
     env.eq(TG:IsElementTrackable({ t = "cmd", tag = "goto", args = { "Dun Morogh", "1", "2" } }), false)
-    env.eq(TG:IsElementTrackable({ t = "text", text = "Buy some meat" }), true)
-    env.eq(TG:IsElementTrackable({ t = "text", text = "You can buy meat later" }), false)
-    env.eq(TG:IsElementTrackable({ t = "text", text = "Talk to |cRXP_FRIENDLY_Bob|r" }), true)
-    env.eq(TG:IsElementTrackable({ t = "text", text = "Buy |T134172:0|t[Snout]", kind = "note" }), false)
+    env.eq(TG:IsElementTrackable({ t = "text", text = "Buy some meat" }), false)
+    env.eq(TG:IsElementTrackable({ t = "text", text = "Talk to |cRXP_FRIENDLY_Bob|r" }), false)
+    env.eq(TG:IsElementTrackable({ t = "text", text = "Kill |cRXP_ENEMY_Bob|r" }), false)
+    env.eq(TG:IsElementTrackable({ t = "text", text = "Loot |T134172:0|t[Snout]" }), false)
     local el = { t = "cmd", tag = "collect", args = { "1", "1" }, _tgNoCheckbox = true }
     env.eq(TG:IsElementTrackable(el), false)
   end,
@@ -29,7 +35,7 @@ return {
       },
     }
     env.eq(TG:IsStepComplete(step), false)
-    env.eq(TG:IsElementTrackable(step.elements[1]), true)
+    env.eq(TG:IsElementTrackable(step.elements[1]), false)
     step.elements[1]._tgManualDone = true
     env.eq(TG:IsStepComplete(step), false)
     step.elements[2]._tgManualDone = true
@@ -48,6 +54,93 @@ return {
       return nil, 2
     end
     env.eq(TG:IsElementDone({ t = "cmd", tag = "collect", args = { "42", "2" } }), true)
+  end,
+
+  test_quest_starter_collect_and_use_complete_when_accepted = function()
+    local TG = loadEngine()
+    local use = { t = "cmd", tag = "use", args = { "1972" } }
+    local collect = { t = "cmd", tag = "collect", args = { "1972", "1", "184" }, questIds = { 184 } }
+    local accept = { t = "cmd", tag = "accept", args = { "184" }, questIds = { 184 } }
+    local step = { elements = { use, collect, accept } }
+    TG.currentGuide = { key = "k", steps = { step } }
+    TG.currentStepIndex = 1
+    TG.GetQuestEvidence = function(_, id)
+      if tonumber(id) == 184 then
+        return { id = 184, inLog = true, complete = false, turnedIn = false }
+      end
+      return nil
+    end
+    env.eq(TG:IsElementDone(accept), true)
+    env.eq(TG:IsElementDone(collect), true)
+    env.eq(TG:IsStepComplete(step), true)
+  end,
+
+  test_quest_starter_text_use_in_next_step_satisfies_collect = function()
+    local TG = loadEngine()
+    local collect = { t = "cmd", tag = "collect", args = { "1972", "1", "184" }, questIds = { 184 } }
+    local useText = { t = "text", text = "Use the |T134939:0|t[Westfall Deed] to start the quest" }
+    local accept = { t = "cmd", tag = "accept", args = { "184" }, questIds = { 184 } }
+    TG.currentGuide = { key = "k", steps = { { elements = { collect } }, { elements = { useText, accept } } } }
+    TG.currentStepIndex = 1
+    TG.GetItemNameById = function(_, id)
+      if tonumber(id) == 1972 then
+        return "Westfall Deed"
+      end
+      return nil
+    end
+    TG.GetQuestEvidence = function(_, id)
+      if tonumber(id) == 184 then
+        return { id = 184, inLog = true, complete = false, turnedIn = false }
+      end
+      return nil
+    end
+    TG.GetItemCount = function()
+      return 0
+    end
+    env.eq(TG:IsElementDone(collect), true)
+  end,
+
+  test_collect_without_use_stays_open_after_accept = function()
+    local TG = loadEngine()
+    local collect = { t = "cmd", tag = "collect", args = { "769", "50", "2178" }, questIds = { 2178 } }
+    local accept = { t = "cmd", tag = "accept", args = { "2178" }, questIds = { 2178 } }
+    local step = { elements = { collect, accept } }
+    TG.currentGuide = { key = "k", steps = { step } }
+    TG.currentStepIndex = 1
+    TG.GetQuestEvidence = function(_, id)
+      if tonumber(id) == 2178 then
+        return { id = 2178, inLog = true, complete = false, turnedIn = false }
+      end
+      return nil
+    end
+    TG.GetItemCount = function()
+      return 0
+    end
+    env.eq(TG:IsElementDone(collect), false)
+    env.eq(TG:IsStepComplete(step), false)
+  end,
+
+  test_quest_accept_invalidates_cached_step_completion = function()
+    local TG = loadEngine()
+    local accept = { t = "cmd", tag = "accept", args = { "9" }, text = "Accept The Killing Fields" }
+    local step = { elements = { accept } }
+    TG.currentGuide = { key = "k", steps = { step } }
+    TG.currentStepIndex = 1
+    TG.CheckAdvance = function() end
+    local inLog = false
+    TG.GetQuestEvidence = function()
+      return { id = 9, inLog = inLog, complete = false, turnedIn = false }
+    end
+    env.eq(TG:CachedStepComplete(step), false)
+    inLog = true
+    _G.GetTime = function()
+      return 10
+    end
+    _G.GetQuestLogTitle = function()
+      return "The Killing Fields", 1, nil, false, false, nil, nil, 9
+    end
+    TG:OnQuestAccepted(1)
+    env.eq(TG:CachedStepComplete(step), true)
   end,
 
   test_xp_uses_live_counters = function()

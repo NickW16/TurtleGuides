@@ -152,6 +152,9 @@ function TG:DetectElementDone(el)
       end
     end
     if itemId then
+      if self:QuestStarterAcceptedForItem(itemId) then
+        return true
+      end
       return self:GetItemCount(itemId) >= count
     end
     return nil

@@ -21,6 +21,17 @@ TG:RegisterEvent("MERCHANT_SHOW", function()
   TG:SignalManualAction("vendor")
   TG:SignalManualAction("repair")
 end)
+TG:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", function(_, unit, _, id)
+  if unit ~= "player" then
+    return
+  end
+  if TG.IsHearthstoneSpell and TG:IsHearthstoneSpell(id) then
+    TG:SignalHearthstoneUse()
+  end
+end)
+TG:RegisterEvent("SPELLCAST_STOP", function()
+  TG:PollHearthstoneUse()
+end)
 local function trainerFrameVisible()
   return ClassTrainerFrame and ClassTrainerFrame.IsVisible and ClassTrainerFrame:IsVisible() or false
 end
@@ -113,6 +124,9 @@ TG:AddUpdater("engine", 1.0, function()
 end)
 TG:AddUpdater("manualCheck", 0.1, function()
   TG:CheckManualCheckAdvance()
+end)
+TG:AddUpdater("hearthstoneCast", 0.1, function()
+  TG:PollHearthstoneUse()
 end)
 TG:AddUpdater("stepCache", 0.5, function()
   if not TG.db or not TG.db.autoResume then
