@@ -69,6 +69,34 @@ function TG:GetStepGotos(step)
   return gotos
 end
 
+local function stepGotoObjectives(step, gotos)
+  local groups = {}
+  local total = table.getn(gotos)
+  if total == 0 then
+    return groups
+  end
+  local index = 1
+  for _, el in ipairs(step.elements or {}) do
+    if el.t == "cmd" and el.tag == "goto" then
+      index = index + 1
+    elseif Shared.isObjectiveElement(el) then
+      local slot = math.min(index, total)
+      groups[slot] = groups[slot] or {}
+      table.insert(groups[slot], el)
+    end
+  end
+  return groups
+end
+
+local function gotoObjectivesDone(self, objectives)
+  for _, el in ipairs(objectives or {}) do
+    if not self.IsElementDone or self:IsElementDone(el) ~= true then
+      return false
+    end
+  end
+  return true
+end
+
 function TG:GetStepGoto(step)
   if not step or not step.elements then
     return nil
@@ -76,6 +104,12 @@ function TG:GetStepGoto(step)
   local gotos = self:GetStepGotos(step)
   if table.getn(gotos) == 0 then
     return nil
+  end
+  local groups = stepGotoObjectives(step, gotos)
+  for i, g in ipairs(gotos) do
+    if groups[i] and not gotoObjectivesDone(self, groups[i]) then
+      return g.zone, g.x, g.y, g.text, g.radius, g.optional
+    end
   end
   if not self._gotoIndex then
     self._gotoIndex = {}
@@ -193,7 +227,10 @@ local function advanceGotoIndex(self, stepKey, idx, total)
   end
 end
 
-local function selectNearestGoto(self, gotos, stepKey, current, reached)
+local function selectNearestGoto(self, gotos, stepKey, current, reached, groups)
+  if groups and not gotoObjectivesDone(self, groups[current]) then
+    return
+  end
   local best, bestDist
   for i, g in ipairs(gotos) do
     if not reached[i] then
@@ -245,12 +282,30 @@ function TG:CheckGotoAdvance()
   end
   self._gotoIndex[stepKey] = idx
 
-  selectNearestGoto(self, gotos, stepKey, idx, reached)
+  local groups = stepGotoObjectives(step, gotos)
+  for i = 1, total do
+    if groups[i] and not gotoObjectivesDone(self, groups[i]) then
+      for j = i, total do
+        reached[j] = nil
+      end
+      if idx ~= i then
+        idx = i
+        self._gotoIndex[stepKey] = idx
+      end
+      updateWaypoint(self)
+      break
+    end
+  end
+
+  selectNearestGoto(self, gotos, stepKey, idx, reached, groups)
   idx = self._gotoIndex[stepKey] or idx
   local g = gotos[idx]
 
   local reachedIdx
   for i, candidate in ipairs(gotos) do
+    if groups[i] and not gotoObjectivesDone(self, groups[i]) then
+      break
+    end
     if not reached[i] and not isDynamicGoto(candidate) then
       local d = gotoDistance(candidate)
       if d and d <= gotoRadius(candidate) then
@@ -272,7 +327,7 @@ function TG:CheckGotoAdvance()
     end
   end
 
-  if not reachedIdx then
+  if not reachedIdx and gotoObjectivesDone(self, groups[idx]) then
     local zoneNow = (GetZoneText and GetZoneText() or "")
     local currentZone = g.zone
     if self.ZoneName then
@@ -280,6 +335,9 @@ function TG:CheckGotoAdvance()
     end
     if zoneNow ~= "" and not zoneMatches(zoneNow, currentZone) then
       for j = idx + 1, total do
+        if groups[j] and not gotoObjectivesDone(self, groups[j]) then
+          break
+        end
         if not reached[j] then
           local nextZone = gotos[j].zone
           if self.ZoneName then
@@ -310,14 +368,7 @@ function TG:CheckGotoAdvance()
 
   local manualHold = self:StepHasManualAction(step) and not self:StepManualActionsSatisfied(step)
   if Shared.stepHasObjective(step) and not manualHold then
-    local allDone = true
-    for _, el in ipairs(step.elements or {}) do
-      if Shared.isObjectiveElement(el) and self:IsElementDone(el) ~= true then
-        allDone = false
-        break
-      end
-    end
-    if allDone then
+    if gotoObjectivesDone(self, groups[idx]) then
       advanceGotoIndex(self, stepKey, idx, total)
     end
   elseif not manualHold then

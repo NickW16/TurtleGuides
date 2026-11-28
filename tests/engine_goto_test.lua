@@ -321,4 +321,86 @@ return {
     TG:CheckGotoAdvance()
     env.eq(advanced, false)
   end,
+
+  test_pending_objective_overrides_cached_goto = function()
+    local TG = loadEngine()
+    local step = {
+      elements = {
+        { t = "cmd", tag = "accept", id = 1 },
+        { t = "cmd", tag = "goto", args = { "Dun Morogh", "10", "20" } },
+        { t = "cmd", tag = "accept", id = 2 },
+        { t = "cmd", tag = "goto", args = { "Dun Morogh", "80", "80" } },
+      },
+    }
+    TG.IsElementDone = function(_, el)
+      return el.id == 2
+    end
+    TG._gotoIndex = { [tostring(step)] = 2 }
+    local _, x = TG:GetStepGoto(step)
+    env.eq(x, 10)
+  end,
+
+  test_nearby_later_goto_does_not_skip_pending_objective = function()
+    local TG = loadEngine()
+    local step = {
+      elements = {
+        { t = "cmd", tag = "accept", id = 1 },
+        { t = "cmd", tag = "goto", args = { "Dun Morogh", "10", "20" } },
+        { t = "cmd", tag = "accept", id = 2 },
+        { t = "cmd", tag = "goto", args = { "Dun Morogh", "80", "80" } },
+      },
+    }
+    TG.currentGuide = { steps = { step } }
+    TG.currentStepIndex = 1
+    TG.db = {}
+    TG.IsElementDone = function(_, el)
+      return el.id == 2
+    end
+    TG.WorldDistanceToWaypoint = function(_, _, x)
+      if x == 80 then
+        return 2
+      end
+      return 60
+    end
+    local waypointX
+    TG.SetWaypoint = function(_, _, x)
+      waypointX = x
+    end
+    TG.ClearWaypoint = function() end
+    TG:CheckGotoAdvance()
+    local _, x = TG:GetStepGoto(step)
+    env.eq(x, 10)
+    env.eq(waypointX, 10)
+    env.eq(TG._gotoIndex[tostring(step)], 1)
+    env.eq(TG._gotoReached[tostring(step)][1], nil)
+  end,
+
+  test_completed_goto_advances_to_next_pending_objective = function()
+    local TG = loadEngine()
+    local step = {
+      elements = {
+        { t = "cmd", tag = "accept", id = 1 },
+        { t = "cmd", tag = "goto", args = { "Dun Morogh", "10", "20" } },
+        { t = "cmd", tag = "accept", id = 2 },
+        { t = "cmd", tag = "goto", args = { "Dun Morogh", "80", "80" } },
+      },
+    }
+    TG.currentGuide = { steps = { step } }
+    TG.currentStepIndex = 1
+    TG.db = {}
+    local done = { [1] = true, [2] = false }
+    TG.IsElementDone = function(_, el)
+      return done[el.id] == true
+    end
+    TG.WorldDistanceToWaypoint = function()
+      return 2
+    end
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG.NextStep = function() end
+    TG:CheckGotoAdvance()
+    local _, x = TG:GetStepGoto(step)
+    env.eq(x, 80)
+    env.eq(TG._gotoReached[tostring(step)][1], true)
+  end,
 }

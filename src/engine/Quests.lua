@@ -334,7 +334,23 @@ function TG:ParseXpArg(str)
 end
 
 function TG:IsElementTrackable(el)
-  return el ~= nil
+  if not el or el._tgNoCheckbox then
+    return false
+  end
+  if el.t == "cmd" then
+    return Shared.isObjectiveElement(el) or Shared.MANUAL_ACTION_TAGS[el.tag] == true
+  end
+  if el.t ~= "text" or el.kind == "note" or el.kind == "info" then
+    return false
+  end
+  local text = el.text or ""
+  local plain = (TG.stripCodes and TG.stripCodes(text) or text)
+  plain = string.lower(TG.Util.strtrim(plain))
+  return string.find(text, "|cRXP_FRIENDLY_", 1, true) ~= nil
+    or string.find(text, "|cRXP_ENEMY_", 1, true) ~= nil
+    or string.find(text, "|T", 1, true) ~= nil
+    or string.find(plain, "^buy") == 1
+    or string.find(plain, "^purchase") == 1
 end
 
 function TG:GetQuestLogIdByTitle(title)

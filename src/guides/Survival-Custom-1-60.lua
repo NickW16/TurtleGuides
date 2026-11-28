@@ -888,7 +888,7 @@ step << Mage
 .target Kyra Boucher
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>Buy the following items for faster turn ins at Duskwood shortly
 >>This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any
@@ -902,7 +902,7 @@ step
 .target Auctioneer Jaxon
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>Buy the following items for faster turn ins at Duskwood shortly
 >>This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any
@@ -2472,7 +2472,7 @@ step << !Warlock !Druid
 .target Newton Burnside
 step << !Warlock !Druid
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>|cRXP_BUY_Buy a|r |T134797:0|t[Elixir of Water Breathing] |cRXP_BUY_from the Auction House|r
 .collect 5996,1 
@@ -5022,7 +5022,7 @@ step
 .isQuestTurnedIn 391
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 +|cRXP_BUY_Buy a|r |T133024:0|t[Bronze Tube] |cRXP_BUY_from the Auction House|r
 >>|cRXP_WARN_Skip this step if you aren't able to get one|r
@@ -5030,7 +5030,7 @@ step
 .target Auctioneer Jaxon
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>|cRXP_BUY_Buy 7|r |T134743:0|t[Jungle Remedy] |cRXP_BUY_from the Auction House for a quest later in Stranglethorn Vale|r
 >>|cRXP_WARN_This is optional, you may also farm them from the mobs later|r
@@ -5812,7 +5812,7 @@ step << Mage
 .target Newton Burnside
 step << Mage
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>|cRXP_BUY_Buy 4|r |T134577:0|t[Lesser Bloodstone Ore] |cRXP_BUY_to complete an optional quest coming up in Stranglethorn Vale|r
 >>|cRXP_WARN_Skip this step if you cannot aquire them|r
@@ -5830,7 +5830,7 @@ step << Mage
 .target Zardeth of the Black Claw
 step << !Mage
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>|cRXP_BUY_Buy 4|r |T134577:0|t[Lesser Bloodstone Ore] |cRXP_BUY_to complete an optional quest coming up in Stranglethorn Vale|r
 >>|cRXP_WARN_Skip this step if you cannot aquire them|r
@@ -8564,7 +8564,7 @@ step << Mage
 .itemcount 5996,<1
 step << Mage
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 +|cRXP_BUY_Buy a|r |T134797:0|t[Elixir of Water Breathing] |cRXP_BUY_from the Auction House|r
 >>|cRXP_WARN_Skip this step if you aren't able to get one|r
@@ -12364,7 +12364,7 @@ step
 #completewith next
 #ah
 .goto Stormwind City,57.06,73.05
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 +|cRXP_WARN_Check your bank for any missing|r |T134332:0|t[Green Hills of Stranglethorn - Pages] |cRXP_WARN_and buy any that you still need from the Auction House|r
 >>|cRXP_WARN_Chapter.1 requires: Pages 1,4,6,8|r
 >>|cRXP_WARN_Chapter.2 requires: Pages 10,11,14,16|r
@@ -15032,7 +15032,7 @@ step
 step
 #completewith next
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>|cRXP_BUY_Buy a|r |T133222:0|t[Truesilver Bar] |cRXP_BUY_and 2|r |T134823:0|t[Elixir of Fortitudes]
 .collect 6037,1,50,1 
@@ -16019,7 +16019,7 @@ step << Warlock
 .target Spackle Thornberry
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>|cRXP_BUY_Buy the following items for a faster turn in at STV later|r
 >>|cRXP_WARN_This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any|r
@@ -16029,7 +16029,7 @@ step
 .target Auctioneer Jaxon
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>|cRXP_BUY_Buy the following items for a faster turn in at Un'Goro Crater later|r
 >>|cRXP_WARN_This will save you time as you won't need to run around looking for them. Skip this step if you wish to not buy any|r
@@ -18239,7 +18239,7 @@ step << Warlock
 .target Spackle Thornberry
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>|cRXP_BUY_Buy the following items for a faster turn in at Blasted Lands shortly|r
 >>|cRXP_WARN_This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any|r

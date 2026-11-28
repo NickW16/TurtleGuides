@@ -426,7 +426,7 @@ step << Gnome Rogue/Dwarf Rogue
     .target Marda Weller
 step << Gnome Rogue/Dwarf Rogue
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>Buy the following items for faster turn ins at Darkshore shortly
     >>This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any
@@ -4902,7 +4902,7 @@ step << Rogue
 step << Rogue
     #xprate >1.59
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>Buy the |T134437:0|t[Anti-Venom] for your |T132290:0|t[Poisons] quest later, and the rest for faster turn ins at Redridge Mountains shortly << !Dwarf
     >>Buy the following items for faster turn ins at Redridge Mountains shortly << Dwarf
@@ -6883,7 +6883,7 @@ step
     #xprate >1.59
     #ah
     #softcore
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>Buy the |T134437:0|t[Anti-Venom] for your |T132290:0|t[Poisons] quest later, and the rest for faster turn ins at Redridge Mountains shortly << !Dwarf Rogue
     >>Buy the following items for faster turn ins at Redridge Mountains and Westfall shortly << Paladin
@@ -6905,7 +6905,7 @@ step
     #xprate >1.59
     #ah
     #hardcore
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>Buy the |T134437:0|t[Anti-Venom] for your |T132290:0|t[Poisons] quest later, and the rest for faster turn ins at Redridge Mountains and Westfall shortly << !Dwarf Rogue
     >>Buy the following items for faster turn ins at Redridge Mountains and Westfall shortly << !Rogue/Dwarf Rogue
@@ -8457,7 +8457,7 @@ step << Rogue
     .xp <19,1
 step
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>Buy the |T134437:0|t[Anti-Venom] for your |T132290:0|t[Poisons] quest later, and the rest for faster turn ins at Redridge Mountains shortly << !Dwarf Rogue
     >>Buy the following items for faster turn ins at Redridge Mountains shortly << !Rogue/Dwarf Rogue
@@ -8999,7 +8999,7 @@ step
     .target Warden Thelwater
 step
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>Buy the |T134437:0|t[Anti-Venom] for your |T132290:0|t[Poisons] quest later, and the rest for faster turn ins at Redridge Mountains shortly << !Dwarf Rogue
     >>Buy the following items for faster turn ins at Redridge Mountains shortly << !Rogue/Dwarf Rogue

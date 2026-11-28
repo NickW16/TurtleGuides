@@ -100,6 +100,12 @@ return {
     env.eq(iconFor({ t = "cmd", tag = "turnin", args = { "1" }, text = "" }), "Interface\\GossipFrame\\ActiveQuestIcon")
   end,
 
+  test_buy_text_uses_buy_icon = function()
+    local TG = fresh()
+    env.eq(TG.UI.Icons.forText("Buy the following items"), "Interface\\Cursor\\Buy")
+    env.eq(TG.UI.Icons.forText("Talk to Auctioneer Jaxon"), "Interface\\GossipFrame\\GossipGossipIcon")
+  end,
+
   test_hearth_text_uses_hearthstone_icon = function()
     local TG = fresh()
     env.eq(TG.UI.Icons.forText("Hearth to Colridge Valley"), "Interface\\Icons\\INV_Misc_Rune_01")

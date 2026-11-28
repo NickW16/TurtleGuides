@@ -8,11 +8,23 @@ return {
     env.eq(TG._tgDoneSource, "manual checkbox")
   end,
 
+  test_trackable_rows_are_objectives_and_named_actions = function()
+    local TG = loadEngine()
+    env.eq(TG:IsElementTrackable({ t = "cmd", tag = "collect", args = { "1", "1" } }), true)
+    env.eq(TG:IsElementTrackable({ t = "cmd", tag = "goto", args = { "Dun Morogh", "1", "2" } }), false)
+    env.eq(TG:IsElementTrackable({ t = "text", text = "Buy some meat" }), true)
+    env.eq(TG:IsElementTrackable({ t = "text", text = "You can buy meat later" }), false)
+    env.eq(TG:IsElementTrackable({ t = "text", text = "Talk to |cRXP_FRIENDLY_Bob|r" }), true)
+    env.eq(TG:IsElementTrackable({ t = "text", text = "Buy |T134172:0|t[Snout]", kind = "note" }), false)
+    local el = { t = "cmd", tag = "collect", args = { "1", "1" }, _tgNoCheckbox = true }
+    env.eq(TG:IsElementTrackable(el), false)
+  end,
+
   test_all_manually_checked_elements_complete_step = function()
     local TG = loadEngine()
     local step = {
       elements = {
-        { t = "text", text = "Kill the crawlers." },
+        { t = "text", text = "Kill |cRXP_ENEMY_the crawlers|r." },
         { t = "cmd", tag = "collect", args = { "769", "6" } },
       },
     }

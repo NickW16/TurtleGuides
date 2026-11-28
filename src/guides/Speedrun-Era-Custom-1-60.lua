@@ -12801,7 +12801,7 @@ step << Mage
 .target Kyra Boucher
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>Buy the following items for faster turn ins at Duskwood shortly
 >>This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any
@@ -12819,7 +12819,7 @@ step
 .target Auctioneer Jaxon
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>Buy the following items for faster turn ins at Duskwood shortly
 >>This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any
@@ -12836,7 +12836,7 @@ step
 .target Auctioneer Jaxon
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>Buy the following items for faster turn ins at Duskwood shortly
 >>This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any
@@ -12851,7 +12851,7 @@ step
 .target Auctioneer Jaxon
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>Buy the following items for faster turn ins at Duskwood shortly
 >>This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any
@@ -16885,7 +16885,7 @@ step
 .target Newton Burnside
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>Buy the following items for faster turn ins at Duskwood shortly
 >>|T133024:0|t[Bronze Tube]
@@ -16894,7 +16894,7 @@ step
 .target Auctioneer Jaxon
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>|cRXP_BUY_Buy 7|r |T134743:0|t[Jungle Remedy] |cRXP_BUY_from the Auction House for a quest later in Stranglethorn Vale|r
 >>|cRXP_WARN_This is optional, you may also farm them from the mobs later|r
@@ -27417,7 +27417,7 @@ step << Hunter
 step
 #ah
 .goto Stormwind City,57.06,73.05
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 +|cRXP_WARN_Check your bank for any missing|r |T134332:0|t[Green Hills of Stranglethorn - Pages] |cRXP_WARN_and buy any that you still need from the Auction House|r
 >>|cRXP_WARN_Chapter.1 requires: Pages 1,4,6,8|r
 >>|cRXP_WARN_Chapter.2 requires: Pages 10,11,14,16|r
@@ -31990,7 +31990,7 @@ step
 .target Newton Burnside
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>|cRXP_BUY_Buy|r |T132905:0|t[Silk Cloth] |cRXP_BUY_from the Auction House for a quest later in Searing Gorge|r
 .collect 4306,15,4449,1 
@@ -32653,7 +32653,7 @@ TG:RegisterGuideText(
 #next 51-52 WPL
 step
 #ah
-.goto Stormwind City,53.612,59.764
+.goto StormwindClassic,53.612,59.764
 >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
 >>|cRXP_BUY_Buy the following items for a faster turn in at Blasted Lands shortly (Only do this if you are below level 52)|r
 >>|cRXP_WARN_This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any|r

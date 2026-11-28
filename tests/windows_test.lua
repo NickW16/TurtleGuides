@@ -95,7 +95,8 @@ return {
     TG:InitUI()
     local window = TG.UI.State.smalls[2]
     env.eq(window.title.value, "Step 1")
-    env.eq(string.find(window.rows[1].text.value, "Collect:", 1, true) ~= nil, true)
+    env.eq(string.find(window.rows[1].text.value, "Kill boars", 1, true) ~= nil, true)
+    env.eq(window.rows[1].el.tag, "collect")
     env.eq(window.rows[2]:IsShown(), false)
     env.eq(window.title.color[1], 0.55)
     env.eq(window.title.color[2], 0.66)

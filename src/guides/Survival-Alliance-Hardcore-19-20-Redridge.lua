@@ -158,7 +158,7 @@ step << Rogue
     .target Marda Weller
 step
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>Buy the following items for faster turn ins at Redridge Mountains shortly
     >>This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any
@@ -860,7 +860,7 @@ step << Rogue
     .target Marda Weller
 step << !Dwarf Rogue
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>Buy the |T134437:0|t[Anti-Venom] for your |T132290:0|t[Poisons] quest later
     >>This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy it
