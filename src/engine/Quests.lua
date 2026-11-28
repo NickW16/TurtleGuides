@@ -72,6 +72,9 @@ function TG:QuestEvidenceConfidence(id, title)
     if titleRec and titleRec.inLog then
       return "confirmed"
     end
+    if ledger.confirmedTitles[key] then
+      return "confirmed"
+    end
     if ledger.turnedInTitles[key] then
       return "weak"
     end
@@ -101,6 +104,7 @@ function TG:RefreshQuestLedger()
     turnedIn = {},
     accountTurnedIn = {},
     turnedInTitles = {},
+    confirmedTitles = {},
     recent = {},
     canReadIds = false,
   }
@@ -120,6 +124,11 @@ function TG:RefreshQuestLedger()
       if numeric then
         ledger.accountTurnedIn[numeric] = true
         ensureIdRecord(ledger, numeric)
+      else
+        local key = titleKey(id)
+        if key then
+          ledger.turnedInTitles[key] = true
+        end
       end
     end
   end
@@ -133,6 +142,13 @@ function TG:RefreshQuestLedger()
   for title in pairs(self._turnedInTitles or {}) do
     local key = titleKey(title)
     if key then
+      ledger.turnedInTitles[key] = true
+    end
+  end
+  for title in pairs(self.cdb and self.cdb.turnedInTitles or {}) do
+    local key = titleKey(title)
+    if key then
+      ledger.confirmedTitles[key] = true
       ledger.turnedInTitles[key] = true
     end
   end
@@ -215,6 +231,9 @@ function TG:GetQuestEvidence(id, title)
     rec = ledger.byId[titleRec.ids[1]]
   end
   if not rec and not titleRec then
+    if key and (ledger.confirmedTitles[key] or ledger.turnedInTitles[key]) then
+      return { id = numericId, title = title, inLog = false, complete = false, turnedIn = true, logIndex = nil }
+    end
     return nil
   end
 
@@ -387,17 +406,18 @@ function TG:OnQuestAccepted(questLogIndex)
             if self.cdb and self.cdb.turnedIn then
               self.cdb.turnedIn[numeric] = nil
             end
-            if self.cdb and self.cdb.questState then
-              self.cdb.questState[numeric] = nil
-            end
           end
         end
       end
     end
   end
   if title and title ~= "" then
+    local key = titleKey(title)
     self._turnedInTitles[title] = nil
     self._turninCandidates[title] = nil
+    if self.cdb and self.cdb.turnedInTitles then
+      self.cdb.turnedInTitles[key] = nil
+    end
   end
   self:InvalidateQuestLedger()
 end
@@ -422,14 +442,12 @@ function TG:MarkQuestTurnedIn(id, title)
     local numeric = tonumber(id)
     self.cdb.turnedIn = self.cdb.turnedIn or {}
     self.cdb.turnedIn[numeric] = true
-    self.cdb.questState = self.cdb.questState or {}
-    self.cdb.questState[numeric] = {
-      time = GetTime and GetTime() or 0,
-      level = UnitLevel and UnitLevel("player") or nil,
-    }
   end
-  if title then
+  if title and title ~= "" then
+    local key = titleKey(title)
     self._turnedInTitles[title] = true
+    self.cdb.turnedInTitles = self.cdb.turnedInTitles or {}
+    self.cdb.turnedInTitles[key] = true
   end
   self:InvalidateQuestLedger()
 end
@@ -477,6 +495,9 @@ local function candidateForTitle(self, title)
 end
 
 function TG:ApplyQuestLogDiff(previous, current)
+  if not QuestDiff then
+    return
+  end
   local diff = QuestDiff.diff(previous, current)
   local now = GetTime and GetTime() or 0
   for _, row in ipairs(diff.accepted) do
@@ -486,9 +507,6 @@ function TG:ApplyQuestLogDiff(previous, current)
         self._recentAccept[numeric] = now
         if self.cdb and self.cdb.turnedIn then
           self.cdb.turnedIn[numeric] = nil
-        end
-        if self.cdb and self.cdb.questState then
-          self.cdb.questState[numeric] = nil
         end
       end
     end

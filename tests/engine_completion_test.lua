@@ -30,7 +30,7 @@ return {
     env.eq(TG:IsElementDone({ t = "cmd", tag = "xp", args = { "10" } }), true)
   end,
 
-  test_complete_objective_ignores_account_quest_history = function()
+  test_complete_objective_uses_quest_turnin_evidence = function()
     local TG = loadEngine()
     _G.pfQuest_history = { [319] = true }
     TG.GetQuestTitleById = function()
@@ -43,8 +43,8 @@ return {
       return nil
     end
     local el = { t = "cmd", tag = "complete", args = { "319", "1" }, text = "" }
-    env.eq(TG:IsElementDone(el), false)
-    env.eq(TG:IsStepComplete({ elements = { el } }), false)
+    env.eq(TG:IsElementDone(el), true)
+    env.eq(TG:IsStepComplete({ elements = { el } }), true)
     TG.cdb = { turnedIn = { [319] = true } }
     env.eq(TG:IsElementDone(el), true)
   end,

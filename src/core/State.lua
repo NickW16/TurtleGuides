@@ -32,8 +32,9 @@ local defaults = {
     stepIndex = 1,
     guideCursors = {},
     guideStepIds = {},
-    completedSteps = {},
+    manualDoneByGuide = {},
     turnedIn = {},
+    turnedInTitles = {},
     junk = {},
   },
 }

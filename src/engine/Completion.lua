@@ -13,6 +13,12 @@ local function characterQuestTurnedIn(self, id, title)
   if title and self._turnedInTitles and self._turnedInTitles[title] then
     return true
   end
+  if title and self.cdb and self.cdb.turnedInTitles then
+    local key = string.lower(title)
+    if self.cdb.turnedInTitles[key] then
+      return true
+    end
+  end
   return false
 end
 
@@ -78,6 +84,9 @@ function TG:DetectElementDone(el)
       return true
     end
     if characterDone then
+      return true
+    end
+    if evidence and evidence.turnedIn then
       return true
     end
     if itemObjectiveSatisfied(self, el) then
