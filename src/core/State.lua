@@ -23,7 +23,7 @@ local defaults = {
     frameOrientation = "below",
     showMinimap = true,
     minimapPos = 220,
-    frame = { point = "RIGHT", relPoint = "RIGHT", x = -40, y = 0, w = 200, h = 230 },
+    frame = { point = "RIGHT", relPoint = "RIGHT", x = -40, y = 0, w = 200, h = 230, minimized = false },
     settingsFrame = { point = "CENTER", relPoint = "CENTER", x = 60, y = 40 },
     arrowFrame = { point = "TOP", relPoint = "TOP", x = 0, y = -110 },
   },

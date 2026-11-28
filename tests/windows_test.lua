@@ -180,6 +180,44 @@ return {
     env.eq(main.scroll:IsShown(), true)
   end,
 
+  test_minimize_state_persists_across_init = function()
+    local TG = fresh()
+    TG.db = { frame = { w = 200, h = 180, minimized = true } }
+    TG:InitUI()
+    local main = TG.UI.State.main
+    env.eq(main:GetHeight(), 40)
+    env.eq(main._tgMinimized, true)
+    env.eq(main.scroll:IsShown(), false)
+    env.eq(main.resizer:IsShown(), false)
+  end,
+
+  test_minimize_saves_and_restores_expanded_height = function()
+    local TG = fresh()
+    TG.db = { frame = { w = 200, h = 180, minimized = false } }
+    TG:InitUI()
+    local main = TG.UI.State.main
+    TG:SetMainWindowMinimized(true)
+    env.eq(TG.db.frame.minimized, true)
+    env.eq(TG.db.frame.h, 180)
+    env.eq(main:GetHeight(), 40)
+    TG:SetMainWindowMinimized(false)
+    env.eq(TG.db.frame.minimized, false)
+    env.eq(main:GetHeight(), 180)
+    env.eq(main.scroll:IsShown(), true)
+  end,
+
+  test_squeezed_window_auto_minimizes = function()
+    local TG = fresh()
+    TG.db = { frame = { w = 200, h = 180, minimized = false } }
+    TG:InitUI()
+    local main = TG.UI.State.main
+    main.height = 44
+    main.resizer.scripts.OnDragStop()
+    env.eq(TG.db.frame.minimized, true)
+    env.eq(main:GetHeight(), 40)
+    env.eq(main.scroll:IsShown(), false)
+  end,
+
   test_checkbox_click_marks_manual_done = function()
     local TG = fresh()
     withGuide(TG)

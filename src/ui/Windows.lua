@@ -19,6 +19,9 @@ local CLASS_ICON_COORDS = {
   PALADIN = { 0, 0.25, 0.5, 0.75 },
 }
 local BODY_SIZE = 10
+local MINIMIZED_HEIGHT = 40
+local AUTO_MINIMIZE_HEIGHT = 52
+local MIN_EXPANDED_HEIGHT = 120
 local MAX_SMALL = 3
 local MAX_SMALL_LINES = 5
 local MAX_STEPS = 4
@@ -479,28 +482,13 @@ local function iconButton(parent, texture, label, onClick, size)
   return button
 end
 
-function TG:SetMainWindowMinimized(value)
-  local main = State.main
-  if not main then
-    return
-  end
-  local minimized = value and true or false
-  if minimized == main._tgMinimized then
-    return
-  end
+local function applyMinimizeVisual(main, minimized)
   local children = { main.scroll, main.resizer }
-  if minimized then
-    main._tgSavedHeight = main:GetHeight()
-    main:SetHeight(40)
-    for _, child in ipairs(children) do
-      if child then
+  for _, child in ipairs(children) do
+    if child then
+      if minimized then
         child:Hide()
-      end
-    end
-  else
-    main:SetHeight(main._tgSavedHeight or 230)
-    for _, child in ipairs(children) do
-      if child then
+      else
         child:Show()
       end
     end
@@ -516,6 +504,35 @@ function TG:SetMainWindowMinimized(value)
       icon:SetVertexColor(0.82, 0.82, 0.82, 1.00)
     end
   end
+end
+
+local function expandedHeight()
+  local h = tonumber(TG.db and TG.db.frame and TG.db.frame.h) or 230
+  if h < MIN_EXPANDED_HEIGHT then
+    return 230
+  end
+  return math.min(h, 240)
+end
+
+function TG:SetMainWindowMinimized(value)
+  local main = State.main
+  if not main then
+    return
+  end
+  local minimized = value and true or false
+  if minimized == main._tgMinimized then
+    return
+  end
+  if TG.db and TG.db.frame then
+    TG.db.frame.minimized = minimized
+    if not minimized then
+      TG.db.frame.h = expandedHeight()
+    elseif main:GetHeight() >= MIN_EXPANDED_HEIGHT then
+      TG.db.frame.h = math.min(main:GetHeight(), 240)
+    end
+  end
+  main:SetHeight(minimized and MINIMIZED_HEIGHT or expandedHeight())
+  applyMinimizeVisual(main, minimized)
   if not minimized then
     self:UpdateUI()
   end
@@ -530,8 +547,17 @@ function TG:InitUI()
   main:SetFrameStrata("MEDIUM")
   panel(main, 0.92)
   local p = TG.db.frame or { point = "RIGHT", relPoint = "RIGHT", x = -40, y = 0, w = 200, h = 230 }
+  local savedHeight = math.min(p.h or 230, 240)
+  local minimized = p.minimized == true or (p.minimized == nil and savedHeight <= AUTO_MINIMIZE_HEIGHT)
+  if minimized and TG.db and TG.db.frame then
+    TG.db.frame.minimized = true
+    if savedHeight <= AUTO_MINIMIZE_HEIGHT then
+      savedHeight = 230
+      TG.db.frame.h = savedHeight
+    end
+  end
   main:SetWidth(math.min(p.w or 200, 210))
-  main:SetHeight(math.min(p.h or 230, 240))
+  main:SetHeight(minimized and MINIMIZED_HEIGHT or savedHeight)
   main:SetPoint(p.point or "RIGHT", UIParent, p.relPoint or "RIGHT", p.x or -40, p.y or 0)
   main:SetMovable(true)
   main:SetResizable(true)
@@ -547,7 +573,10 @@ function TG:InitUI()
     this:StopMovingOrSizing()
     local point, _, rel, x, y = this:GetPoint(1)
     TG.db.frame.point, TG.db.frame.relPoint, TG.db.frame.x, TG.db.frame.y = point, rel, x, y
-    TG.db.frame.w, TG.db.frame.h = this:GetWidth(), this:GetHeight()
+    TG.db.frame.w = this:GetWidth()
+    if not main._tgMinimized then
+      TG.db.frame.h = this:GetHeight()
+    end
     if TG.RefreshMainWindowLayout then
       TG:RefreshMainWindowLayout()
     end
@@ -726,7 +755,12 @@ function TG:InitUI()
   end)
   resizer:SetScript("OnDragStop", function()
     main:StopMovingOrSizing()
-    TG.db.frame.w, TG.db.frame.h = main:GetWidth(), main:GetHeight()
+    TG.db.frame.w = main:GetWidth()
+    TG.db.frame.h = main:GetHeight()
+    if main:GetHeight() <= AUTO_MINIMIZE_HEIGHT then
+      TG:SetMainWindowMinimized(true)
+      return
+    end
     if TG.RefreshMainWindowLayout then
       TG:RefreshMainWindowLayout()
     end
@@ -738,6 +772,7 @@ function TG:InitUI()
     table.insert(State.smalls, makeSmallWindow(i))
   end
 
+  applyMinimizeVisual(main, minimized)
   main:Show()
   TG.mainFrame = main
   self:UpdateUI()
