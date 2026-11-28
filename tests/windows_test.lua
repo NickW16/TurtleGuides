@@ -218,6 +218,25 @@ return {
     env.eq(main.scroll:IsShown(), false)
   end,
 
+  test_trackable_bullet_row_shows_checkbox = function()
+    local TG = fresh()
+    withGuide(TG)
+    TG.IsElementTrackable = function()
+      return true
+    end
+    TG.UI.Icons.forElement = function()
+      return "Interface\\GossipFrame\\GossipGossipIcon"
+    end
+    TG.UI.Icons.isBullet = function()
+      return true
+    end
+    TG.currentGuide.steps[2].elements = { { t = "text", text = "Talk to Einris Brightspear" } }
+    TG:InitUI()
+    local row = TG.UI.State.smalls[1].rows[1]
+    env.eq(row.check:IsShown(), true)
+    env.eq(row.itemIcon.path, "Interface\\GossipFrame\\GossipGossipIcon")
+  end,
+
   test_checkbox_click_marks_manual_done = function()
     local TG = fresh()
     withGuide(TG)

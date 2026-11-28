@@ -175,7 +175,23 @@ local function renderRow(
     row.stepNum:Hide()
   end
   local topPad = (topLine and not isHeader) and 2 or 0
-  local x = isHeader and 2 or (child and 22 or (bulletIcon and 16 or (icon and 26 or (row.trackable and 16 or 12))))
+  local showCheck = row.trackable and interactive == true
+  local x
+  if isHeader then
+    x = 2
+  elseif child then
+    x = 22
+  elseif showCheck and (bulletIcon or icon) then
+    x = 29
+  elseif bulletIcon then
+    x = 16
+  elseif icon then
+    x = 26
+  elseif row.trackable then
+    x = 16
+  else
+    x = 12
+  end
   local textWidth = math.max(20, width - x - 1 - (stepNum and 18 or 0))
   local anchors = {}
   if contentIcons and not isHeader then
@@ -327,11 +343,11 @@ local function renderRow(
     end
     row.itemIcon:SetVertexColor(unpack(tint))
     row.itemIcon:ClearAllPoints()
-    row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", bulletIcon and 3 or 16, -1 - topPad)
+    row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", showCheck and 16 or (bulletIcon and 3 or 16), -1 - topPad)
   else
     row.itemIcon:Hide()
   end
-  if bulletIcon then
+  if bulletIcon and not row.trackable then
     row.icon:Hide()
     row.check:Hide()
     return height

@@ -334,11 +334,7 @@ function TG:ParseXpArg(str)
 end
 
 function TG:IsElementTrackable(el)
-  if not el or el.t ~= "cmd" then
-    return false
-  end
-  local tag = el.tag
-  return tag == "accept" or tag == "turnin" or tag == "complete" or tag == "collect" or tag == "xp"
+  return el ~= nil
 end
 
 function TG:GetQuestLogIdByTitle(title)

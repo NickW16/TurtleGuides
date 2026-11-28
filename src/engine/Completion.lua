@@ -209,6 +209,19 @@ function TG:IsStepComplete(step)
   if not step then
     return false
   end
+  local elements = step.elements or {}
+  if table.getn(elements) > 0 then
+    local allManual = true
+    for _, el in ipairs(elements) do
+      if not el._tgManualDone then
+        allManual = false
+        break
+      end
+    end
+    if allManual then
+      return true
+    end
+  end
   local hasManual = self:StepHasManualAction(step)
   if hasManual and not self:StepManualActionsSatisfied(step) then
     return false

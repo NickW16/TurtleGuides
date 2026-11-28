@@ -264,7 +264,7 @@ function Text.entries(step)
       local key = strip(elText)
       if elText and key ~= "" and not seen[key] then
         seen[key] = true
-        local trackable = el.t == "cmd" and TG.IsElementTrackable and TG:IsElementTrackable(el) or false
+        local trackable = TG.IsElementTrackable and TG:IsElementTrackable(el) or false
         local state = "note"
         if trackable then
           state = TG.IsElementDone and TG:IsElementDone(el) or false
@@ -284,7 +284,7 @@ function Text.entries(step)
       if not isGoto or not hasOther then
         local elText = Text.element(el)
         if elText then
-          local trackable = el.t == "cmd" and TG.IsElementTrackable and TG:IsElementTrackable(el) or false
+          local trackable = TG.IsElementTrackable and TG:IsElementTrackable(el) or false
           local state = "note"
           if trackable then
             state = TG.IsElementDone and TG:IsElementDone(el) or false
