@@ -256,6 +256,7 @@ function TG:NextStep(manual, _isSkip)
     end
     self:SaveGuideCursor()
     self._gotoIndex = {}
+    self._gotoReached = {}
     if self.ResetManualSignals then
       self:ResetManualSignals()
     end
@@ -354,6 +355,7 @@ function TG:PrevStep()
     end
     self:SaveGuideCursor()
     self._gotoIndex = {}
+    self._gotoReached = {}
     if self.ResetManualSignals then
       self:ResetManualSignals()
     end
@@ -403,6 +405,7 @@ function TG:FindMyPlace(quiet)
   self.currentStepIndex = pos
   self:SaveGuideCursor()
   self._gotoIndex = {}
+  self._gotoReached = {}
   self._wasStepComplete = nil
   self._autoNavTime = nil
   if self.ResetManualSignals then
