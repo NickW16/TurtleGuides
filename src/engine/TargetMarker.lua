@@ -165,6 +165,42 @@ function Marker.scan()
   end
 end
 
+function Marker.findToken(name)
+  local want = cleanName(name)
+  if not want then
+    return nil
+  end
+  local tokens = {}
+  local seen = {}
+  local function addToken(token)
+    if token and not seen[token] then
+      seen[token] = true
+      table.insert(tokens, token)
+    end
+  end
+  local plates = nameplates()
+  if plates then
+    for _, plate in ipairs(plates) do
+      addToken(plate.namePlateUnitToken)
+    end
+  end
+  if _G.UnitExists then
+    if _G.UnitExists("target") then
+      addToken("target")
+    end
+    if _G.UnitExists("mouseover") then
+      addToken("mouseover")
+    end
+  end
+  for _, token in ipairs(tokens) do
+    local current = unitName(token)
+    if current and cleanName(current) == want then
+      return token
+    end
+  end
+  return nil
+end
+
 function Marker.reset()
   clearMarks()
 end

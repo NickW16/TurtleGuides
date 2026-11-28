@@ -24,6 +24,16 @@ return {
     env.eq(env.messages[1], TG.C.gold .. "TurtleGuides:|r Arrow: on")
   end,
 
+  test_orphans_command_calls_announcement = function()
+    local TG = fresh()
+    local called = false
+    TG.AnnounceOrphanQuests = function()
+      called = true
+    end
+    _G.SlashCmdList.TURTLEGUIDES("orphans")
+    env.eq(called, true)
+  end,
+
   test_unknown_command_prints_help = function()
     fresh()
     _G.SlashCmdList.TURTLEGUIDES("bogus")

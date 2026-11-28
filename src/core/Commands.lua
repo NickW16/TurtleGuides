@@ -95,6 +95,16 @@ local commands = {
       TG:MarkJunkUnderCursor()
     end
   end,
+  orphans = function()
+    if TG.AnnounceOrphanQuests then
+      TG:AnnounceOrphanQuests()
+    end
+  end,
+  waypoint = function()
+    if TG.PrintWaypointDebug then
+      TG:PrintWaypointDebug()
+    end
+  end,
 }
 
 SlashCmdList["TURTLEGUIDES"] = function(msg)
@@ -107,7 +117,7 @@ SlashCmdList["TURTLEGUIDES"] = function(msg)
   else
     TG:Print(
       "Commands: /tg (toggle), /tg guides, /tg suggest (open Guides tab), /tg arrow,"
-        .. " /tg settings, /tg next, /tg prev, /tg find, /tg reset, /tg junk, /tg debug, /tg debugcopy"
+        .. " /tg settings, /tg next, /tg prev, /tg find, /tg reset, /tg junk, /tg orphans, /tg debug, /tg debugcopy"
     )
   end
 end

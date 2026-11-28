@@ -5,7 +5,8 @@ return {
     env.reset()
     local TG = env.load("src/Core.lua", "src/engine/State.lua")
     local Shared = TG.Engine.Shared
-    env.eq(Shared.RECENT_ACCEPT_WINDOW, 5)
+    env.eq(Shared.RECENT_ACCEPT_WINDOW, 2)
+    env.eq(Shared.RESUME_DELAY, 0.5)
     env.eq(Shared.MANUAL_CHECK_VISIBLE_DELAY, 0.6)
     env.eq(Shared.OBJECTIVE_TAGS.accept, true)
     env.eq(Shared.MANUAL_ACTION_TAGS.vendor, true)

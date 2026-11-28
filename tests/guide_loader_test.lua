@@ -70,6 +70,8 @@ return {
     local TG = fresh()
     TG:RegisterGuideText(guideText, "test.lua")
     TG:LoadAllGuides()
+    env.eq(TG.updaters.guideLoader, nil)
+    TG:StartGuideLoader()
     env.eq(TG.updaters.guideLoader ~= nil, true)
     local runs = 0
     while TG._guideLoader do
@@ -109,6 +111,7 @@ step
       "horde.lua"
     )
     TG:LoadAllGuides()
+    TG:StartGuideLoader()
     env.eq(table.getn(TG._guideLoader.queue), 1)
     env.eq(TG._guideLoader.queue[1].faction, "Horde")
   end,

@@ -75,6 +75,34 @@ return {
     env.eq(string.find(row.text.value, "\001", 1, true) == nil, true)
   end,
 
+  test_aux_window_uses_step_number_and_objective_rows = function()
+    local TG = fresh()
+    withGuide(TG)
+    TG.IsElementTrackable = function(_, el)
+      return el.t == "cmd" and (el.tag == "collect" or el.tag == "accept")
+    end
+    TG.GetActiveAuxSteps = function()
+      return {
+        {
+          index = 1,
+          elements = {
+            { t = "text", text = "Kill boars. Loot them for their meat." },
+            { t = "cmd", tag = "collect", args = { "769", "10" } },
+          },
+        },
+      }
+    end
+    TG:InitUI()
+    local window = TG.UI.State.smalls[2]
+    env.eq(window.title.value, "Step 1")
+    env.eq(string.find(window.rows[1].text.value, "Collect:", 1, true) ~= nil, true)
+    env.eq(window.rows[2]:IsShown(), false)
+    env.eq(window.title.color[1], 0.55)
+    env.eq(window.title.color[2], 0.66)
+    env.eq(window.title.color[3], 0.82)
+    env.eq(TG.UI.State.smalls[1].title.color[1], 0.85)
+  end,
+
   test_class_icon_uses_vanilla_sheet = function()
     local TG = fresh()
     TG:InitUI()
@@ -150,6 +178,63 @@ return {
     TG:SetMainWindowMinimized(false)
     env.eq(main:GetHeight() > 20, true)
     env.eq(main.scroll:IsShown(), true)
+  end,
+
+  test_minimize_state_persists_across_init = function()
+    local TG = fresh()
+    TG.db = { frame = { w = 200, h = 180, minimized = true } }
+    TG:InitUI()
+    local main = TG.UI.State.main
+    env.eq(main:GetHeight(), 40)
+    env.eq(main._tgMinimized, true)
+    env.eq(main.scroll:IsShown(), false)
+    env.eq(main.resizer:IsShown(), false)
+  end,
+
+  test_minimize_saves_and_restores_expanded_height = function()
+    local TG = fresh()
+    TG.db = { frame = { w = 200, h = 180, minimized = false } }
+    TG:InitUI()
+    local main = TG.UI.State.main
+    TG:SetMainWindowMinimized(true)
+    env.eq(TG.db.frame.minimized, true)
+    env.eq(TG.db.frame.h, 180)
+    env.eq(main:GetHeight(), 40)
+    TG:SetMainWindowMinimized(false)
+    env.eq(TG.db.frame.minimized, false)
+    env.eq(main:GetHeight(), 180)
+    env.eq(main.scroll:IsShown(), true)
+  end,
+
+  test_squeezed_window_auto_minimizes = function()
+    local TG = fresh()
+    TG.db = { frame = { w = 200, h = 180, minimized = false } }
+    TG:InitUI()
+    local main = TG.UI.State.main
+    main.height = 44
+    main.resizer.scripts.OnDragStop()
+    env.eq(TG.db.frame.minimized, true)
+    env.eq(main:GetHeight(), 40)
+    env.eq(main.scroll:IsShown(), false)
+  end,
+
+  test_trackable_bullet_row_shows_checkbox = function()
+    local TG = fresh()
+    withGuide(TG)
+    TG.IsElementTrackable = function()
+      return true
+    end
+    TG.UI.Icons.forElement = function()
+      return "Interface\\GossipFrame\\GossipGossipIcon"
+    end
+    TG.UI.Icons.isBullet = function()
+      return true
+    end
+    TG.currentGuide.steps[2].elements = { { t = "text", text = "Talk to Einris Brightspear" } }
+    TG:InitUI()
+    local row = TG.UI.State.smalls[1].rows[1]
+    env.eq(row.check:IsShown(), true)
+    env.eq(row.itemIcon.path, "Interface\\GossipFrame\\GossipGossipIcon")
   end,
 
   test_checkbox_click_marks_manual_done = function()

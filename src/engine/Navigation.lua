@@ -1,7 +1,6 @@
 -- guide selection and step navigation
 local TG = _G.TurtleGuides
 local Shared = TG.Engine.Shared
-local strtrim = TG.Util.strtrim
 local Navigation = {}
 TG.Engine.Navigation = Navigation
 
@@ -19,6 +18,11 @@ function TG:SaveGuideCursor()
   end
   self.cdb.guideCursors = self.cdb.guideCursors or {}
   self.cdb.guideCursors[self.currentGuide.key] = self.currentStepIndex
+  self.cdb.guideStepIds = self.cdb.guideStepIds or {}
+  local step = self:CurrentStep()
+  if step and step.stepId then
+    self.cdb.guideStepIds[self.currentGuide.key] = step.stepId
+  end
   self.cdb.currentGuideKey = self.currentGuide.key
   self.cdb.stepIndex = self.currentStepIndex
 end
@@ -33,6 +37,9 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   end
   if self.EnsureGuideParsed then
     self:EnsureGuideParsed(guide)
+  end
+  if self.RestoreManualElementStates then
+    self:RestoreManualElementStates(guide)
   end
   if self.ClearManualCheckHold then
     self:ClearManualCheckHold()
@@ -54,48 +61,26 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   local idx = numericStep or 1
   local savedCursor = self.cdb and self.cdb.guideCursors and self.cdb.guideCursors[key]
   savedCursor = tonumber(savedCursor)
+  local savedStepId = self.cdb and self.cdb.guideStepIds and self.cdb.guideStepIds[key]
+  if savedStepId then
+    for i, step in ipairs(guide.steps or {}) do
+      if step.stepId == savedStepId then
+        savedCursor = i
+        numericStep = nil
+        break
+      end
+    end
+  end
   local hasSavedCursor = savedCursor and savedCursor >= 1 and savedCursor <= n
   if hasSavedCursor and (not numericStep or numericStep == 1) then
     idx = savedCursor
   end
 
-  if self.cdb then
-    if not self.cdb.completedByGuide then
-      self.cdb.completedByGuide = {}
-      if self.cdb.completedSteps and self.cdb.currentGuideKey then
-        self.cdb.completedByGuide[self.cdb.currentGuideKey] = self.cdb.completedSteps
-      end
-    end
-    if not self.cdb.completedByGuide[key] then
-      self.cdb.completedByGuide[key] = {}
-    end
-  end
-
-  if (not numericStep or numericStep == 1) and not hasSavedCursor and self.cdb and not noAutoDetect then
-    local completed = self.cdb.completedByGuide[key] or {}
-    local hasCompleted = next(completed) ~= nil
-    if hasCompleted then
-      for i = 1, n do
-        local step = guide.steps[i]
-        if step and not completed[i] then
-          local hasCompletion, allCompletionDone, hasAnyFalse = false, true, false
-          for _, el in ipairs(step.elements or {}) do
-            if Shared.OBJECTIVE_TAGS[el.tag] then
-              hasCompletion = true
-              local done = self:IsElementDone(el)
-              if done == false then
-                allCompletionDone = false
-                hasAnyFalse = true
-              elseif done == nil then
-                allCompletionDone = false
-              end
-            end
-          end
-          if hasCompletion and allCompletionDone and not hasAnyFalse then
-            idx = i
-            break
-          end
-        end
+  if (not numericStep or numericStep == 1) and not hasSavedCursor and not noAutoDetect then
+    if self.FindResumeIndex then
+      local result = self:FindResumeIndex(guide, { currentIndex = idx })
+      if result then
+        idx = result.index
       end
     end
   end
@@ -145,6 +130,16 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   return true
 end
 
+local function auxRequiredIndex(guide, step)
+  if not step or not step.requires then
+    return nil
+  end
+  if guide.labels and guide.labels[step.requires] then
+    return guide.labels[step.requires]
+  end
+  return tonumber(step.requires)
+end
+
 function TG:GetActiveAuxSteps()
   local result = {}
   local guide = self.currentGuide
@@ -152,16 +147,17 @@ function TG:GetActiveAuxSteps()
     return result
   end
   local idx = self.currentStepIndex or 1
+  local candidates = {}
   for i, step in ipairs(guide.steps) do
     if i < idx and (step.sticky or step.completewith) then
       local targetIdx
       if step.completewith then
         if step.completewithIndex then
           targetIdx = step.completewithIndex
-        elseif guide.labels and guide.labels[step.completewith] then
-          targetIdx = guide.labels[step.completewith]
         elseif step.completewith == "next" then
           targetIdx = i + 1
+        elseif guide.labels and guide.labels[step.completewith] then
+          targetIdx = guide.labels[step.completewith]
         else
           for j, other in ipairs(guide.steps) do
             if other.label == step.completewith then
@@ -186,14 +182,31 @@ function TG:GetActiveAuxSteps()
         hidden = true
       end
       if not hidden then
-        table.insert(result, step)
+        candidates[i] = step
       end
+    end
+  end
+
+  local blocking = { [idx] = true }
+  for i in pairs(candidates) do
+    blocking[i] = true
+  end
+  local excluded = {}
+  for i, step in pairs(candidates) do
+    local req = auxRequiredIndex(guide, step)
+    if req and blocking[req] then
+      excluded[i] = true
+    end
+  end
+  for i, step in ipairs(guide.steps) do
+    if candidates[i] and not excluded[i] then
+      table.insert(result, step)
     end
   end
   return result
 end
 
-function TG:NextStep(manual, isSkip)
+function TG:NextStep(manual, _isSkip)
   if not self.currentGuide then
     return
   end
@@ -206,16 +219,6 @@ function TG:NextStep(manual, isSkip)
   end
   if self.ClearManualCheckHold then
     self:ClearManualCheckHold()
-  end
-  if self.cdb and curStep and not isSkip and not curStep.completewith and not curStep.sticky then
-    if not self.cdb.completedByGuide then
-      self.cdb.completedByGuide = {}
-    end
-    local key = self.currentGuide.key
-    if not self.cdb.completedByGuide[key] then
-      self.cdb.completedByGuide[key] = {}
-    end
-    self.cdb.completedByGuide[key][self.currentStepIndex] = true
   end
   if self.currentStepIndex < table.getn(self.currentGuide.steps) then
     self.currentStepIndex = self.currentStepIndex + 1
@@ -234,7 +237,20 @@ function TG:NextStep(manual, isSkip)
         end
       end
     end
-    if self.currentStepIndex > table.getn(self.currentGuide.steps) then
+    local total = table.getn(self.currentGuide.steps)
+    while self.currentStepIndex <= total do
+      local step = self.currentGuide.steps[self.currentStepIndex]
+      local shouldSkip = self.ShouldAutoSkipStep and self:ShouldAutoSkipStep(step) or false
+      if not shouldSkip then
+        shouldSkip = self:IsStepComplete(step) == true
+      end
+      if shouldSkip then
+        self.currentStepIndex = self.currentStepIndex + 1
+      else
+        break
+      end
+    end
+    if self.currentStepIndex > total then
       self:Print("Guide complete.")
       return
     end
@@ -354,73 +370,6 @@ function TG:PrevStep()
   end
 end
 
-local function findQuestEvidence(el)
-  if not el or el.t ~= "cmd" then
-    return nil
-  end
-  if el.tag ~= "accept" and el.tag ~= "turnin" and el.tag ~= "complete" then
-    return nil
-  end
-  local id = tonumber(el.args and el.args[1])
-  local title = el.text
-  if title and title ~= "" then
-    title = string.gsub(title, "^Accept%s+", "")
-    title = string.gsub(title, "^Turn in%s+", "")
-    title = string.gsub(title, "^Turn In%s+", "")
-    title = strtrim(title)
-    if title == "" then
-      title = nil
-    end
-  end
-  if not title and id and TG.GetQuestTitleById then
-    title = TG:GetQuestTitleById(id)
-  end
-  if not id and not title then
-    return nil
-  end
-
-  local evidence = TG.GetQuestEvidence and TG:GetQuestEvidence(id, title) or nil
-  if evidence then
-    return {
-      id = evidence.id,
-      title = evidence.title,
-      inLog = evidence.inLog == true,
-      complete = evidence.complete == true,
-      turnedIn = evidence.turnedIn == true,
-    }
-  end
-
-  local inLog = false
-  if id and TG.GetQuestLogIndexById and TG:GetQuestLogIndexById(id) then
-    inLog = true
-  end
-  if not inLog and title and TG.IsQuestInLog and TG:IsQuestInLog(title) then
-    inLog = true
-  end
-  local turnedIn = false
-  if id and TG.IsQuestTurnedIn and TG:IsQuestTurnedIn(id) then
-    turnedIn = true
-  end
-  if not turnedIn and title and TG._turnedInTitles and TG._turnedInTitles[title] then
-    turnedIn = true
-  end
-  local complete = false
-  if inLog then
-    local done
-    if id and TG.GetQuestLogIndexById then
-      local idx = TG:GetQuestLogIndexById(id)
-      if idx and GetQuestLogTitle then
-        local _, _, _, _, _, d = GetQuestLogTitle(idx)
-        done = d
-      end
-    elseif title and TG.IsQuestComplete then
-      done = TG:IsQuestComplete(title)
-    end
-    complete = (done == 1 or done == -1)
-  end
-  return { id = id, title = title, inLog = inLog, complete = complete, turnedIn = turnedIn }
-end
-
 function TG:FindMyPlace(quiet)
   local guide = self.currentGuide
   if not guide then
@@ -430,10 +379,11 @@ function TG:FindMyPlace(quiet)
     return nil
   end
   if not self._questLogSeeded then
-    if not quiet then
-      self:Print("Find my place: the quest log has not been read yet. Try again in a moment.")
+    if self.SeedQuestLog then
+      self:SeedQuestLog()
+    else
+      self._questLogSeeded = true
     end
-    return nil
   end
   local steps = guide.steps or {}
   local n = table.getn(steps)
@@ -444,61 +394,11 @@ function TG:FindMyPlace(quiet)
     return nil
   end
 
-  local last, cap, evidence = 1, nil, nil
-  for i, step in ipairs(steps) do
-    for _, el in ipairs(step.elements or {}) do
-      local ev = findQuestEvidence(el)
-      if ev then
-        if el.tag == "accept" then
-          if ev.inLog or ev.turnedIn then
-            last, evidence = i, ev
-          end
-        elseif el.tag == "turnin" or el.tag == "complete" then
-          if ev.turnedIn then
-            last, evidence = i, ev
-          end
-          if not cap and ev.inLog and not ev.complete and not ev.turnedIn then
-            cap = i
-          end
-        end
-      end
-    end
+  local result = self:FindResumeIndex(guide)
+  if not result then
+    return nil
   end
-  local start = last
-  if cap and cap < start then
-    start = cap
-  end
-  if start < 1 then
-    start = 1
-  end
-  if start > n then
-    start = n
-  end
-
-  local pos = start
-  for _ = 1, n + 1 do
-    if pos > n then
-      break
-    end
-    local step = steps[pos]
-    local skipState = self.StepSkipState and self:StepSkipState(step) or false
-    local done = self:IsStepComplete(step) == true
-    local hasWork = false
-    for _, el in ipairs(step.elements or {}) do
-      if Shared.isObjectiveElement(el) then
-        hasWork = true
-        break
-      end
-    end
-    if skipState == true or done or (not hasWork and not self:StepHasManualAction(step)) then
-      pos = pos + 1
-    else
-      break
-    end
-  end
-  if pos > n then
-    pos = n
-  end
+  local pos = result.index
 
   self.currentStepIndex = pos
   self:SaveGuideCursor()
@@ -519,18 +419,7 @@ function TG:FindMyPlace(quiet)
   end
 
   if not quiet then
-    local why = "start of guide"
-    if evidence and evidence.title and evidence.title ~= "" then
-      why = (evidence.inLog and "quest in log: " or "handed in: ") .. evidence.title
-    elseif evidence and evidence.id then
-      why = "quest evidence #" .. evidence.id
-    end
-    if cap and cap <= pos then
-      why = why .. "; held before unfinished quest work"
-    end
-    self:Print("Find my place: step " .. pos .. " of " .. n .. " (" .. why .. ").")
+    self:Print("Find my place: step " .. pos .. " of " .. n .. " (" .. result.reason .. ").")
   end
   return pos
 end
-
-Navigation.findQuestEvidence = findQuestEvidence

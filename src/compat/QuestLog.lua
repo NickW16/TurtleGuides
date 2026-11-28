@@ -48,12 +48,18 @@ local function questTitleFromDb(id)
   return nil
 end
 
+local titleIdCache = {}
+
 local function questIdsByTitle(title)
   local ids, seen = {}, {}
   if not title or title == "" or not pfDB or type(pfDB["quests"]) ~= "table" then
     return ids
   end
   local want = string.lower(title)
+  local cached = titleIdCache[want]
+  if cached then
+    return cached
+  end
   for _, tbl in pairs(pfDB["quests"]) do
     if type(tbl) == "table" then
       for id, value in pairs(tbl) do
@@ -67,12 +73,34 @@ local function questIdsByTitle(title)
     end
   end
   table.sort(ids)
+  titleIdCache[want] = ids
   return ids
 end
 
 local function parseQuestLinkId(link)
   local id = string.match(tostring(link or ""), "|Hquest:(%d+):")
   return tonumber(id)
+end
+
+function TG:ModernQuestCompleted(id)
+  id = tonumber(id)
+  if not id then
+    return nil
+  end
+  if C_QuestLog and type(C_QuestLog.IsQuestFlaggedCompleted) == "function" then
+    local ok, value = pcall(C_QuestLog.IsQuestFlaggedCompleted, id)
+    if ok then
+      return value == true
+    end
+  end
+  local flagged = _G.IsQuestFlaggedCompleted
+  if type(flagged) == "function" then
+    local ok, value = pcall(flagged, id)
+    if ok then
+      return value == true
+    end
+  end
+  return nil
 end
 
 function TG:IterateQuestLog()
@@ -312,6 +340,11 @@ function TG:GetQuestLogIndexById(id)
   if not id then
     return nil
   end
+  local ledger = type(self.GetQuestLedger) == "function" and self:GetQuestLedger() or nil
+  if ledger then
+    local rec = ledger.byId[id]
+    return rec and rec.logIndex or nil
+  end
   local n = GetNumQuestLogEntries()
   for i = 1, n do
     local ids = self:GetQuestIdsForLogIndex(i)
@@ -331,7 +364,15 @@ function TG:GetQuestTitleById(id)
   if not id then
     return nil
   end
-  local idx = self.GetQuestLogIndexById and self:GetQuestLogIndexById(id)
+  local ledger = type(self.GetQuestLedger) == "function" and self:GetQuestLedger() or nil
+  if ledger then
+    local rec = ledger.byId[id]
+    if rec and rec.title and rec.title ~= "" then
+      return rec.title
+    end
+    return questTitleFromDb(id)
+  end
+  local idx = type(self.GetQuestLogIndexById) == "function" and self:GetQuestLogIndexById(id) or nil
   if idx then
     local title = GetQuestLogTitle(idx)
     if title and title ~= "" then

@@ -8,6 +8,7 @@ local function fresh()
     "src/core/Util.lua",
     "src/compat/Text.lua",
     "src/engine/State.lua",
+    "src/engine/QuestDiff.lua",
     "src/engine/Quests.lua",
     "src/engine/Manual.lua"
   )

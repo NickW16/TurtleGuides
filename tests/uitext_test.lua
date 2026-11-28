@@ -74,6 +74,52 @@ return {
     env.eq(TG.UI.Text.element(el), "Kill Elder Crag Boar (0/8)")
   end,
 
+  test_aux_step_rows_expose_checkbox_element = function()
+    local TG = fresh()
+    TG.IsElementTrackable = function()
+      return true
+    end
+    TG.IsElementDone = function()
+      return false
+    end
+    local el = {
+      t = "cmd",
+      tag = "complete",
+      args = { "2138", "1" },
+      objectiveText = "Rabid Thistle Bear slain (20)",
+    }
+    local entries = TG.UI.Text.entries({ completewith = true, elements = { el } })
+    env.eq(entries[1].el, el)
+    env.eq(entries[1].state, false)
+  end,
+
+  test_complete_objective_uses_plain_count_in_guide_text = function()
+    local TG = fresh()
+    local el = {
+      t = "cmd",
+      tag = "complete",
+      args = { "2138", "1" },
+      objectiveText = "Rabid Thistle Bear slain (20)",
+    }
+    env.eq(TG.UI.Text.element(el), "Rabid Thistle Bear slain (0/20)")
+  end,
+
+  test_manual_done_objective_shows_full_progress = function()
+    local TG = fresh()
+    TG.GetObjectiveItemProgress = function()
+      return 0, 6
+    end
+    local el = {
+      t = "cmd",
+      tag = "complete",
+      args = { "1138", "1" },
+      objectiveText = "Fine Crab Chunks (6)",
+    }
+    env.eq(TG.UI.Text.element(el), "Fine Crab Chunks (0/6)")
+    el._tgManualDone = true
+    env.eq(TG.UI.Text.element(el), "Fine Crab Chunks (6/6)")
+  end,
+
   test_complete_item_objective_shows_bag_progress = function()
     local TG = fresh()
     TG.GetObjectiveItemProgress = function()

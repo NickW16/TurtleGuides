@@ -19,9 +19,12 @@ local CLASS_ICON_COORDS = {
   PALADIN = { 0, 0.25, 0.5, 0.75 },
 }
 local BODY_SIZE = 10
+local MINIMIZED_HEIGHT = 40
+local AUTO_MINIMIZE_HEIGHT = 52
+local MIN_EXPANDED_HEIGHT = 120
 local MAX_SMALL = 3
 local MAX_SMALL_LINES = 5
-local MAX_STEPS = 24
+local MAX_STEPS = 4
 local MAX_TASKS = 6
 local MAX_ROWS = 168
 local ROW_GAP = 1
@@ -172,7 +175,23 @@ local function renderRow(
     row.stepNum:Hide()
   end
   local topPad = (topLine and not isHeader) and 2 or 0
-  local x = isHeader and 2 or (child and 22 or (bulletIcon and 16 or (icon and 26 or (row.trackable and 16 or 12))))
+  local showCheck = row.trackable and interactive == true
+  local x
+  if isHeader then
+    x = 2
+  elseif child then
+    x = 22
+  elseif showCheck and (bulletIcon or icon) then
+    x = 29
+  elseif bulletIcon then
+    x = 16
+  elseif icon then
+    x = 26
+  elseif row.trackable then
+    x = 16
+  else
+    x = 12
+  end
   local textWidth = math.max(20, width - x - 1 - (stepNum and 18 or 0))
   local anchors = {}
   if contentIcons and not isHeader then
@@ -324,11 +343,11 @@ local function renderRow(
     end
     row.itemIcon:SetVertexColor(unpack(tint))
     row.itemIcon:ClearAllPoints()
-    row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", bulletIcon and 3 or 16, -1 - topPad)
+    row.itemIcon:SetPoint("TOPLEFT", row, "TOPLEFT", showCheck and 16 or (bulletIcon and 3 or 16), -1 - topPad)
   else
     row.itemIcon:Hide()
   end
-  if bulletIcon then
+  if bulletIcon and not row.trackable then
     row.icon:Hide()
     row.check:Hide()
     return height
@@ -401,8 +420,13 @@ local function makeSmallWindow(index)
   return frame
 end
 
-local function updateSmallWindow(frame, title, entries, width)
+local function updateSmallWindow(frame, title, entries, width, dim)
   frame.title:SetText(title)
+  if dim then
+    frame.title:SetTextColor(0.55, 0.66, 0.82)
+  else
+    frame.title:SetTextColor(0.85, 0.85, 0.88)
+  end
   frame.plaque:SetWidth(Text.width(title, BODY_SIZE) + 18)
   local y = -10
   local shown = entries
@@ -474,28 +498,13 @@ local function iconButton(parent, texture, label, onClick, size)
   return button
 end
 
-function TG:SetMainWindowMinimized(value)
-  local main = State.main
-  if not main then
-    return
-  end
-  local minimized = value and true or false
-  if minimized == main._tgMinimized then
-    return
-  end
+local function applyMinimizeVisual(main, minimized)
   local children = { main.scroll, main.resizer }
-  if minimized then
-    main._tgSavedHeight = main:GetHeight()
-    main:SetHeight(40)
-    for _, child in ipairs(children) do
-      if child then
+  for _, child in ipairs(children) do
+    if child then
+      if minimized then
         child:Hide()
-      end
-    end
-  else
-    main:SetHeight(main._tgSavedHeight or 230)
-    for _, child in ipairs(children) do
-      if child then
+      else
         child:Show()
       end
     end
@@ -511,6 +520,35 @@ function TG:SetMainWindowMinimized(value)
       icon:SetVertexColor(0.82, 0.82, 0.82, 1.00)
     end
   end
+end
+
+local function expandedHeight()
+  local h = tonumber(TG.db and TG.db.frame and TG.db.frame.h) or 230
+  if h < MIN_EXPANDED_HEIGHT then
+    return 230
+  end
+  return math.min(h, 240)
+end
+
+function TG:SetMainWindowMinimized(value)
+  local main = State.main
+  if not main then
+    return
+  end
+  local minimized = value and true or false
+  if minimized == main._tgMinimized then
+    return
+  end
+  if TG.db and TG.db.frame then
+    TG.db.frame.minimized = minimized
+    if not minimized then
+      TG.db.frame.h = expandedHeight()
+    elseif main:GetHeight() >= MIN_EXPANDED_HEIGHT then
+      TG.db.frame.h = math.min(main:GetHeight(), 240)
+    end
+  end
+  main:SetHeight(minimized and MINIMIZED_HEIGHT or expandedHeight())
+  applyMinimizeVisual(main, minimized)
   if not minimized then
     self:UpdateUI()
   end
@@ -525,8 +563,17 @@ function TG:InitUI()
   main:SetFrameStrata("MEDIUM")
   panel(main, 0.92)
   local p = TG.db.frame or { point = "RIGHT", relPoint = "RIGHT", x = -40, y = 0, w = 200, h = 230 }
+  local savedHeight = math.min(p.h or 230, 240)
+  local minimized = p.minimized == true or (p.minimized == nil and savedHeight <= AUTO_MINIMIZE_HEIGHT)
+  if minimized and TG.db and TG.db.frame then
+    TG.db.frame.minimized = true
+    if savedHeight <= AUTO_MINIMIZE_HEIGHT then
+      savedHeight = 230
+      TG.db.frame.h = savedHeight
+    end
+  end
   main:SetWidth(math.min(p.w or 200, 210))
-  main:SetHeight(math.min(p.h or 230, 240))
+  main:SetHeight(minimized and MINIMIZED_HEIGHT or savedHeight)
   main:SetPoint(p.point or "RIGHT", UIParent, p.relPoint or "RIGHT", p.x or -40, p.y or 0)
   main:SetMovable(true)
   main:SetResizable(true)
@@ -542,7 +589,10 @@ function TG:InitUI()
     this:StopMovingOrSizing()
     local point, _, rel, x, y = this:GetPoint(1)
     TG.db.frame.point, TG.db.frame.relPoint, TG.db.frame.x, TG.db.frame.y = point, rel, x, y
-    TG.db.frame.w, TG.db.frame.h = this:GetWidth(), this:GetHeight()
+    TG.db.frame.w = this:GetWidth()
+    if not main._tgMinimized then
+      TG.db.frame.h = this:GetHeight()
+    end
     if TG.RefreshMainWindowLayout then
       TG:RefreshMainWindowLayout()
     end
@@ -721,7 +771,12 @@ function TG:InitUI()
   end)
   resizer:SetScript("OnDragStop", function()
     main:StopMovingOrSizing()
-    TG.db.frame.w, TG.db.frame.h = main:GetWidth(), main:GetHeight()
+    TG.db.frame.w = main:GetWidth()
+    TG.db.frame.h = main:GetHeight()
+    if main:GetHeight() <= AUTO_MINIMIZE_HEIGHT then
+      TG:SetMainWindowMinimized(true)
+      return
+    end
     if TG.RefreshMainWindowLayout then
       TG:RefreshMainWindowLayout()
     end
@@ -733,6 +788,7 @@ function TG:InitUI()
     table.insert(State.smalls, makeSmallWindow(i))
   end
 
+  applyMinimizeVisual(main, minimized)
   main:Show()
   TG.mainFrame = main
   self:UpdateUI()
@@ -788,6 +844,20 @@ function TG:RefreshFonts()
   end
 end
 
+local function auxEntries(step)
+  local all = Text.entries(step)
+  local result = {}
+  for _, entry in ipairs(all) do
+    if entry.el then
+      table.insert(result, entry)
+    end
+  end
+  if table.getn(result) == 0 and table.getn(all) > 0 then
+    table.insert(result, all[1])
+  end
+  return result
+end
+
 function TG:UpdateUI()
   local main = State.main
   if not main then
@@ -828,7 +898,7 @@ function TG:UpdateUI()
   local auxSteps = (self.GetActiveAuxSteps and self:GetActiveAuxSteps()) or {}
   for _, aux in ipairs(auxSteps) do
     if aux ~= current and table.getn(smallData) < MAX_SMALL then
-      table.insert(smallData, { title = "Extra", entries = Text.entries(aux) })
+      table.insert(smallData, { title = "Step " .. tostring(aux.index), entries = auxEntries(aux), dim = true })
     end
   end
   local anchor, smallWidth = main, main:GetWidth()
@@ -836,7 +906,7 @@ function TG:UpdateUI()
     local window = State.smalls[i]
     local data = smallData[i]
     if data then
-      updateSmallWindow(window, data.title, data.entries, smallWidth)
+      updateSmallWindow(window, data.title, data.entries, smallWidth, data.dim)
       local gap = 10
       window:ClearAllPoints()
       window:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, gap)

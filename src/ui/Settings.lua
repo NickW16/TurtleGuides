@@ -67,6 +67,7 @@ function TG:CreateSettings()
       name = "Guide",
       items = {
         { "disableAutoSkip", "Disable auto-skip" },
+        { "autoResume", "Auto resume" },
         {
           "hardcoreMode",
           "Hardcore mode",

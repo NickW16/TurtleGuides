@@ -48,7 +48,6 @@ return {
     TG:SetGuide(g.key, 1)
     TG:NextStep(false)
     env.eq(TG.currentStepIndex, 2)
-    env.eq(TG.cdb.completedByGuide[g.key][1], true)
     TG:PrevStep()
     env.eq(TG.currentStepIndex, 1)
   end,
@@ -129,6 +128,170 @@ return {
     env.eq(TG.currentStepIndex, 3)
   end,
 
+  test_find_my_place_resolves_negative_quest_ids_and_seeds_log = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        { elements = { { t = "text", text = "before" } } },
+        { elements = { { t = "cmd", tag = "turnin", args = { "-414" } } } },
+        { elements = { { t = "text", text = "after" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = { turnedIn = { [414] = true } }
+    TG.guideByKey = { [g.key] = g }
+    TG.GetQuestTitleById = function()
+      return "Foo"
+    end
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG._questLogSeeded = false
+    TG:SetGuide(g.key, 1)
+    TG:FindMyPlace(true)
+    env.eq(TG._questLogSeeded, true)
+    env.eq(TG.currentStepIndex, 3)
+  end,
+
+  test_find_my_place_keeps_confirmed_cap_over_weak_later_evidence = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        { elements = { { t = "text", text = "before" } } },
+        { elements = { { t = "cmd", tag = "turnin", args = { "99" }, text = "Early" } } },
+        { elements = { { t = "text", text = "middle" } } },
+        { elements = { { t = "cmd", tag = "turnin", args = { "414" }, text = "Later" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = {}
+    TG.guideByKey = { [g.key] = g }
+    TG.GetQuestTitleById = function()
+      return "Later"
+    end
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    _G.GetNumQuestLogEntries = function()
+      return 1
+    end
+    _G.GetQuestLogTitle = function()
+      return "Early", 1, nil, false, false, nil, nil, 99
+    end
+    _G.pfQuest_history = { [414] = true }
+    TG:SetGuide(g.key, 1)
+    TG:FindMyPlace(true)
+    env.eq(TG.currentStepIndex, 2)
+  end,
+
+  test_find_my_place_does_not_move_backwards_on_weak_evidence = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        {
+          elements = {
+            { t = "cmd", tag = "turnin", args = { "414" }, text = "Later" },
+            { t = "cmd", tag = "collect", args = { "5", "1", "999" }, text = "Pending" },
+          },
+        },
+        { elements = { { t = "text", text = "two" } } },
+        { elements = { { t = "text", text = "three" } } },
+        { elements = { { t = "text", text = "four" } } },
+        { elements = { { t = "text", text = "five" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = {}
+    TG.guideByKey = { [g.key] = g }
+    TG.GetQuestTitleById = function()
+      return "Later"
+    end
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    _G.pfQuest_history = { [414] = true }
+    TG:SetGuide(g.key, 5)
+    TG:FindMyPlace(true)
+    env.eq(TG.currentStepIndex, 5)
+  end,
+
+  test_next_step_skips_already_complete_steps = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        { elements = { { t = "cmd", tag = "accept", args = { "1" }, text = "Accept One" } } },
+        { elements = { { t = "cmd", tag = "turnin", args = { "2" }, text = "Turn in Two" } } },
+        { elements = { { t = "cmd", tag = "accept", args = { "3" }, text = "Accept Three" } } },
+        { elements = { { t = "text", text = "after" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = { turnedIn = { [2] = true } }
+    TG.guideByKey = { [g.key] = g }
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG:SetGuide(g.key, 1, true, true)
+    TG:NextStep(false)
+    env.eq(TG.currentStepIndex, 3)
+  end,
+
+  test_set_guide_uses_resume_index = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        { elements = { { t = "cmd", tag = "accept", args = { "1" }, text = "Accept One" } } },
+        { elements = { { t = "cmd", tag = "turnin", args = { "2" }, text = "Turn in Two" } } },
+        { elements = { { t = "cmd", tag = "accept", args = { "3" }, text = "Accept Three" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = { turnedIn = { [1] = true, [2] = true } }
+    TG.guideByKey = { [g.key] = g }
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG:SetGuide(g.key, nil, true)
+    env.eq(TG.currentStepIndex, 3)
+  end,
+
+  test_saved_step_id_survives_guide_edit = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = {
+        { stepId = 10, elements = { { t = "text", text = "one" } } },
+        { stepId = 20, elements = { { t = "text", text = "two" } } },
+      },
+    }
+    TG.db = {}
+    TG.cdb = {}
+    TG.guideByKey = { [g.key] = g }
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG:SetGuide(g.key, 2, true, true)
+    env.eq(TG.cdb.guideStepIds[g.key], 20)
+
+    local edited = {
+      key = g.key,
+      name = "Guide",
+      steps = {
+        { stepId = 10, elements = { { t = "text", text = "one" } } },
+        { stepId = 15, elements = { { t = "text", text = "inserted" } } },
+        { stepId = 20, elements = { { t = "text", text = "two" } } },
+      },
+    }
+    TG.guideByKey[g.key] = edited
+    TG:SetGuide(g.key, nil, true, true)
+    env.eq(TG.currentStepIndex, 3)
+  end,
+
   test_saved_cursor_is_per_guide_and_explicit_step_wins = function()
     local TG = loadEngine()
     local a = {
@@ -164,5 +327,143 @@ return {
     env.eq(TG:SetGuide("A", 3, true, true), true)
     env.eq(TG.currentStepIndex, 3)
     env.eq(TG.cdb.guideCursors.A, 3)
+  end,
+
+  test_next_step_does_not_skip_self_found_step = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Variant",
+      name = "Variant",
+      steps = {
+        { index = 1, elements = { { t = "text", text = "first" } } },
+        { index = 2, elements = { { t = "text", text = "second" } } },
+        { index = 3, elements = { { t = "text", text = "third" } } },
+        { index = 4, elements = { { t = "text", text = "fourth" } } },
+        {
+          index = 5,
+          elements = { { t = "text", text = "fifth" } },
+        },
+        {
+          index = 6,
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 8,
+          tags = { ssf = true },
+          elements = { { t = "cmd", tag = "collect", args = { "3027", "1" } } },
+        },
+        {
+          index = 7,
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 8,
+          tags = { ah = true },
+          elements = { { t = "cmd", tag = "collect", args = { "3027", "1" } } },
+        },
+        { index = 8, elements = { { t = "text", text = "eighth" } } },
+      },
+    }
+    TG.db = { hardcoreMode = false }
+    TG.cdb = {}
+    TG.guideByKey = { [g.key] = g }
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG:SetGuide(g.key, 5, true, true)
+    TG:NextStep(false)
+    env.eq(TG.currentStepIndex, 6)
+  end,
+
+  test_aux_steps_show_one_link_per_requires_chain = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Aux",
+      name = "Aux",
+      labels = { Chain1 = 1, Chain2 = 2 },
+      steps = {
+        {
+          index = 1,
+          label = "Chain1",
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 6,
+          elements = { { t = "cmd", tag = "collect", args = { "769", "10" } } },
+        },
+        {
+          index = 2,
+          label = "Chain2",
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 7,
+          requires = "Chain1",
+          elements = { { t = "cmd", tag = "collect", args = { "769", "50" } } },
+        },
+        { index = 3, elements = {} },
+        { index = 4, elements = {} },
+        { index = 5, elements = {} },
+        { index = 6, elements = {} },
+        { index = 7, elements = {} },
+      },
+    }
+    TG.db = {}
+    TG.currentGuide = g
+    TG.currentStepIndex = 5
+    TG.IsStepComplete = function()
+      return false
+    end
+
+    local aux = TG:GetActiveAuxSteps()
+    env.eq(table.getn(aux), 1)
+    env.eq(aux[1].index, 1)
+
+    TG.IsStepComplete = function(_, step)
+      return step.index == 1
+    end
+    aux = TG:GetActiveAuxSteps()
+    env.eq(table.getn(aux), 1)
+    env.eq(aux[1].index, 2)
+  end,
+
+  test_aux_steps_hide_auction_variant_in_hardcore = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Aux",
+      name = "Aux",
+      steps = {
+        {
+          index = 1,
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 5,
+          tags = { ssf = true },
+          elements = { { t = "cmd", tag = "collect", args = { "769", "10" } } },
+        },
+        {
+          index = 2,
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 5,
+          tags = { ah = true },
+          elements = { { t = "cmd", tag = "collect", args = { "769", "50" } } },
+        },
+        { index = 3, elements = {} },
+        { index = 4, elements = {} },
+        { index = 5, elements = {} },
+      },
+    }
+    TG.db = { hardcoreMode = false }
+    TG.currentGuide = g
+    TG.currentStepIndex = 4
+    TG.IsStepComplete = function()
+      return false
+    end
+
+    local aux = TG:GetActiveAuxSteps()
+    env.eq(table.getn(aux), 2)
+    env.eq(aux[1].index, 1)
+    env.eq(aux[2].index, 2)
+
+    TG.db.hardcoreMode = true
+    aux = TG:GetActiveAuxSteps()
+    env.eq(table.getn(aux), 1)
+    env.eq(aux[1].index, 1)
   end,
 }

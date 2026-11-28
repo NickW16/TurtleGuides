@@ -89,6 +89,9 @@ function TG:SignalManualAction(tag)
     self._manualSignals = {}
   end
   self._manualSignals[tostring(step) .. ":" .. tag] = true
+  if self.InvalidateStepCompletionCache then
+    self:InvalidateStepCompletionCache(step)
+  end
   if self.CheckAdvance then
     self:CheckAdvance("event")
   end
@@ -150,9 +153,6 @@ function TG:StepStateSignature(step)
 end
 
 function TG:GetManualNavPosition()
-  if SetMapToCurrentZone and (not WorldMapFrame or not WorldMapFrame:IsVisible()) then
-    SetMapToCurrentZone()
-  end
   local zone = (GetZoneText and GetZoneText() or "")
   local px, py
   if GetPlayerMapPosition then
@@ -232,12 +232,68 @@ function TG:CheckManualCheckAdvance()
   self:CheckAdvance("manual")
 end
 
+local function manualKey(self, el)
+  if not self.currentGuide then
+    return nil
+  end
+  for _, step in ipairs(self.currentGuide.steps or {}) do
+    for index, element in ipairs(step.elements or {}) do
+      if element == el then
+        local stepKey = step.stepId or step.index or "?"
+        return tostring(stepKey) .. ":" .. tostring(index)
+      end
+    end
+  end
+  return nil
+end
+
+function TG:IsElementManuallyDone(el)
+  if not self.cdb then
+    return false
+  end
+  local key = manualKey(self, el)
+  if not key then
+    return false
+  end
+  local guideKey = self.currentGuide and self.currentGuide.key
+  local saved = guideKey and self.cdb.manualDoneByGuide and self.cdb.manualDoneByGuide[guideKey]
+  return saved and saved[key] == true or false
+end
+
+function TG:RestoreManualElementStates(guide)
+  if not guide or not self.cdb then
+    return
+  end
+  local saved = self.cdb.manualDoneByGuide and self.cdb.manualDoneByGuide[guide.key]
+  if not saved then
+    return
+  end
+  for _, step in ipairs(guide.steps or {}) do
+    local stepKey = step.stepId or step.index or "?"
+    for index, el in ipairs(step.elements or {}) do
+      if saved[tostring(stepKey) .. ":" .. tostring(index)] then
+        el._tgManualDone = true
+      end
+    end
+  end
+end
+
 function TG:SetElementManualDone(el, value)
   if not self:IsElementTrackable(el) then
     return false
   end
+  if self.InvalidateStepCompletionCache then
+    self:InvalidateStepCompletionCache()
+  end
   if value then
     el._tgManualDone = true
+    local key = manualKey(self, el)
+    local guideKey = self.currentGuide and self.currentGuide.key
+    if key and guideKey then
+      self.cdb.manualDoneByGuide = self.cdb.manualDoneByGuide or {}
+      self.cdb.manualDoneByGuide[guideKey] = self.cdb.manualDoneByGuide[guideKey] or {}
+      self.cdb.manualDoneByGuide[guideKey][key] = true
+    end
     self._manualCheckTime = GetTime and GetTime() or 0
     self._manualCheckStep = self.currentStepIndex
     if self.ClearManualNavHold then
@@ -246,6 +302,12 @@ function TG:SetElementManualDone(el, value)
     self._autoNavTime = nil
   else
     el._tgManualDone = nil
+    local key = manualKey(self, el)
+    local guideKey = self.currentGuide and self.currentGuide.key
+    local saved = guideKey and self.cdb and self.cdb.manualDoneByGuide and self.cdb.manualDoneByGuide[guideKey]
+    if key and saved then
+      saved[key] = nil
+    end
     self:ClearManualCheckHold()
   end
   return true
@@ -256,7 +318,10 @@ function TG:ClearManualElementStates(step)
     return
   end
   for _, el in ipairs(step.elements or {}) do
-    el._tgManualDone = nil
+    el._tgManualDone = self:IsElementManuallyDone(el) and true or nil
+  end
+  if self.InvalidateStepCompletionCache then
+    self:InvalidateStepCompletionCache(step)
   end
 end
 

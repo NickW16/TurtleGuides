@@ -13,6 +13,12 @@ local function characterQuestTurnedIn(self, id, title)
   if title and self._turnedInTitles and self._turnedInTitles[title] then
     return true
   end
+  if title and self.cdb and self.cdb.turnedInTitles then
+    local key = string.lower(title)
+    if self.cdb.turnedInTitles[key] then
+      return true
+    end
+  end
   return false
 end
 
@@ -78,6 +84,9 @@ function TG:DetectElementDone(el)
       return true
     end
     if characterDone then
+      return true
+    end
+    if evidence and evidence.turnedIn then
       return true
     end
     if itemObjectiveSatisfied(self, el) then
@@ -200,6 +209,19 @@ function TG:IsStepComplete(step)
   if not step then
     return false
   end
+  local elements = step.elements or {}
+  if table.getn(elements) > 0 then
+    local allManual = true
+    for _, el in ipairs(elements) do
+      if not el._tgManualDone then
+        allManual = false
+        break
+      end
+    end
+    if allManual then
+      return true
+    end
+  end
   local hasManual = self:StepHasManualAction(step)
   if hasManual and not self:StepManualActionsSatisfied(step) then
     return false
@@ -217,6 +239,43 @@ function TG:IsStepComplete(step)
     return hasManual
   end
   return allDone
+end
+
+local stepCompleteCache = {}
+local stepCacheGeneration = 0
+
+function TG:InvalidateStepCompletionCache(step)
+  if step then
+    stepCompleteCache[step] = nil
+  else
+    stepCompleteCache = {}
+  end
+end
+
+function TG:CachedStepComplete(step)
+  if not step then
+    return false
+  end
+  local entry = stepCompleteCache[step]
+  if entry and entry.generation == stepCacheGeneration then
+    return entry.value
+  end
+  local value = self:IsStepComplete(step)
+  stepCompleteCache[step] = { generation = stepCacheGeneration, value = value }
+  return value
+end
+
+function TG:RefreshStepCompletionWindow(guide, from, count)
+  if not guide then
+    return
+  end
+  local steps = guide.steps or {}
+  local n = table.getn(steps)
+  local start = math.max(1, from or 1)
+  local finish = math.min(n, start + (count or 8) - 1)
+  for i = start, finish do
+    self:CachedStepComplete(steps[i])
+  end
 end
 
 Completion.strtrim = strtrim

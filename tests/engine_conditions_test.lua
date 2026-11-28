@@ -14,6 +14,7 @@ local function fresh()
     "src/core/Output.lua",
     "src/core/State.lua",
     "src/engine/State.lua",
+    "src/engine/QuestDiff.lua",
     "src/engine/Quests.lua",
     "src/engine/Conditions.lua"
   )
@@ -34,6 +35,96 @@ return {
     local step = { elements = { { t = "cmd", tag = "itemcount", args = { "42", "2" } } } }
     env.eq(TG:EvaluateConditions(step), true)
     env.eq(TG:StepConditionsMet(step), true)
+  end,
+
+  test_item_stat_skips_step_when_equipped_gear_is_better = function()
+    local TG = fresh()
+    _G.GetInventoryItemLink = function(_, slot)
+      if slot == 18 then
+        return "|Hitem:3027::::::::::::|h[Bow]|h"
+      end
+      return nil
+    end
+    _G.GetItemStats = function()
+      return { ITEM_MOD_DAMAGE_PER_SECOND_SHORT = 12.0 }
+    end
+    local step = {
+      elements = {
+        { t = "cmd", tag = "itemStat", args = { "18", "ITEM_MOD_DAMAGE_PER_SECOND_SHORT", "<9.20" } },
+      },
+    }
+    env.eq(TG:EvaluateConditions(step), false)
+    env.eq(TG:StepSkipState(step), true)
+  end,
+
+  test_item_stat_holds_step_when_equipped_gear_is_worse = function()
+    local TG = fresh()
+    _G.GetInventoryItemLink = function(_, slot)
+      if slot == 18 then
+        return "|Hitem:3027::::::::::::|h[Bow]|h"
+      end
+      return nil
+    end
+    _G.GetItemStats = function()
+      return { ITEM_MOD_DAMAGE_PER_SECOND_SHORT = 5.0 }
+    end
+    local step = {
+      elements = {
+        { t = "cmd", tag = "itemStat", args = { "18", "ITEM_MOD_DAMAGE_PER_SECOND_SHORT", "<9.20" } },
+      },
+    }
+    env.eq(TG:EvaluateConditions(step), true)
+  end,
+
+  test_item_stat_level_uses_item_level = function()
+    local TG = fresh()
+    _G.GetInventoryItemLink = function(_, slot)
+      if slot == 10 then
+        return "|Hitem:1234::::::::::::|h[Gloves]|h"
+      end
+      return nil
+    end
+    _G.GetItemInfo = function()
+      return "Gloves", "|Hitem:1234::::::::::::|h[Gloves]|h", 2, 15
+    end
+    local step = { elements = { { t = "cmd", tag = "itemStat", args = { "10", "LEVEL", "<20" } } } }
+    env.eq(TG:EvaluateConditions(step), true)
+    step.elements[1].args[3] = "<10"
+    env.eq(TG:EvaluateConditions(step), false)
+  end,
+
+  test_item_stat_unknown_holds_step = function()
+    local TG = fresh()
+    _G.GetInventoryItemLink = function()
+      return "|Hitem:3027::::::::::::|h[Bow]|h"
+    end
+    local step = {
+      elements = {
+        { t = "cmd", tag = "itemStat", args = { "18", "ITEM_MOD_DAMAGE_PER_SECOND_SHORT", "<9.20" } },
+      },
+    }
+    env.eq(TG:EvaluateConditions(step), nil)
+    env.eq(TG:StepConditionsMet(step), true)
+  end,
+
+  test_equip_condition_tracks_equipped_item = function()
+    local TG = fresh()
+    _G.GetInventoryItemID = function(_, slot)
+      if slot == 18 then
+        return 3027
+      end
+      return nil
+    end
+    local step = { elements = { { t = "cmd", tag = "equip", args = { "18", "3027" } } } }
+    env.eq(TG:EvaluateConditions(step), false)
+    step.elements[1].args[2] = "9999"
+    env.eq(TG:EvaluateConditions(step), true)
+    step.elements[1].args = { "18" }
+    env.eq(TG:EvaluateConditions(step), false)
+    _G.GetInventoryItemID = function()
+      return nil
+    end
+    env.eq(TG:EvaluateConditions(step), true)
   end,
 
   test_unreadable_condition_holds_step = function()

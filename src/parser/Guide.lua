@@ -44,6 +44,7 @@ local function parseGuide(text, source)
   local guideApplicable = true
   local inHeader = true
   local lastGotoZone
+  local currentStepLine
 
   local function pushStep()
     if not currentStep then
@@ -59,6 +60,7 @@ local function parseGuide(text, source)
       if not currentStep._skip then
         if table.getn(currentStep.elements) > 0 or currentStep.label or currentStep.completewith then
           currentStep.index = table.getn(guide.steps) + 1
+          currentStep.stepId = currentStepLine
           currentStep.stepSkip = nil
           currentStep.stepSkipReason = nil
           table.insert(guide.steps, currentStep)
@@ -71,7 +73,7 @@ local function parseGuide(text, source)
     currentStep = nil
   end
 
-  for _, raw in ipairs(lines) do
+  for lineNo, raw in ipairs(lines) do
     local line = strtrim(raw)
     local commentText
     local cpos = string.find(line, "%-%-", 1)
@@ -115,6 +117,7 @@ local function parseGuide(text, source)
         inHeader = false
         headerDone = true
         pushStep()
+        currentStepLine = lineNo
         local cond
         local p = string.find(line, "<<", 1, true)
         if p then

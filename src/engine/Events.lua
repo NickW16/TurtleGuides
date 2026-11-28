@@ -1,5 +1,6 @@
 -- engine event and updater registration
 local TG = _G.TurtleGuides
+local Shared = TG.Engine.Shared
 
 TG:RegisterEvent("PLAYER_LOGIN", function()
   TG:OnQuestLogUpdate()
@@ -9,6 +10,9 @@ TG:RegisterEvent("QUEST_LOG_UPDATE", function()
 end)
 TG:RegisterEvent("QUEST_ACCEPTED", function(index)
   TG:OnQuestAccepted(index)
+  if TG.QueueResume then
+    TG:QueueResume()
+  end
 end)
 TG:RegisterEvent("QUEST_COMPLETE", function()
   TG:OnQuestTurninDialog()
@@ -68,11 +72,36 @@ TG:RegisterEvent("QUEST_FINISHED", function()
   TG:OnQuestFinished()
 end)
 TG:RegisterEvent("BAG_UPDATE", function()
+  if TG.InvalidateStepCompletionCache then
+    TG:InvalidateStepCompletionCache()
+  end
   TG:CheckAdvance("event")
+  if TG.QueueResume then
+    TG:QueueResume()
+  end
+  TG:MarkUIDirty()
+end)
+TG:RegisterEvent("UNIT_INVENTORY_CHANGED", function(_, unit)
+  if unit and unit ~= "player" then
+    return
+  end
+  if TG.InvalidateStepCompletionCache then
+    TG:InvalidateStepCompletionCache()
+  end
+  TG:CheckAdvance("event")
+  if TG.QueueResume then
+    TG:QueueResume()
+  end
   TG:MarkUIDirty()
 end)
 TG:RegisterEvent("PLAYER_LEVEL_UP", function()
+  if TG.InvalidateStepCompletionCache then
+    TG:InvalidateStepCompletionCache()
+  end
   TG:CheckAdvance("event")
+  if TG.QueueResume then
+    TG:QueueResume()
+  end
   TG:MarkUIDirty()
 end)
 TG:RegisterEvent("PLAYER_XP_UPDATE", function()
@@ -84,4 +113,29 @@ TG:AddUpdater("engine", 1.0, function()
 end)
 TG:AddUpdater("manualCheck", 0.1, function()
   TG:CheckManualCheckAdvance()
+end)
+TG:AddUpdater("stepCache", 0.5, function()
+  if not TG.db or not TG.db.autoResume then
+    return
+  end
+  if not TG.currentGuide then
+    return
+  end
+  if TG.RefreshStepCompletionWindow then
+    TG:RefreshStepCompletionWindow(TG.currentGuide, TG.currentStepIndex, 8)
+  end
+end)
+TG:AddUpdater("resume", 0.1, function()
+  local dirtyAt = TG._resumeDirtyAt
+  if not dirtyAt then
+    return
+  end
+  local now = GetTime and GetTime() or 0
+  if now - dirtyAt < Shared.RESUME_DELAY then
+    return
+  end
+  TG._resumeDirtyAt = nil
+  if TG.MaybeResume then
+    TG:MaybeResume()
+  end
 end)

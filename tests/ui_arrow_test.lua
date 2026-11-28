@@ -34,7 +34,7 @@ return {
     TG:InitArrow()
     env.eq(table.getn(env.frames), 3)
     env.eq(table.getn(env.textures), 3)
-    env.eq(table.getn(env.texts), 1)
+    env.eq(table.getn(env.texts), 2)
   end,
 
   test_waypoint_updates_rendering = function()
@@ -51,6 +51,94 @@ return {
     env.eq(env.texts[1].value, "100 yd")
     env.eq(env.textures[3].coords ~= nil, true)
     env.eq(env.textures[3].color ~= nil, true)
+  end,
+
+  test_arrow_shows_current_step_and_distance = function()
+    local TG = fresh()
+    TG:InitArrow()
+    TG.currentGuide = { steps = { {}, {}, {}, {}, {} } }
+    TG.currentStepIndex = 3
+    TG:SetWaypoint("Dun Morogh", 50, 60, "Test")
+    _G.GetZoneText = function()
+      return "Dun Morogh"
+    end
+    _G.GetPlayerMapPosition = function()
+      return 0.5, 0.5
+    end
+    TG:ArrowUpdate()
+    env.eq(env.texts[1].value, "100 yd")
+    env.eq(env.texts[2].value, "Step 3/5")
+  end,
+
+  test_arrow_shows_go_to_location_when_distance_unknown = function()
+    local TG = fresh()
+    TG:InitArrow()
+    TG.currentGuide = { name = "18-19 Redridge", steps = { {}, {}, {} } }
+    TG.currentStepIndex = 2
+    TG:SetWaypoint("Redridge", 50, 60, "Test")
+    _G.GetPlayerMapPosition = function()
+      return 0, 0
+    end
+    TG:ArrowUpdate()
+    env.eq(env.texts[1].value, "Go to Redridge")
+    env.eq(env.texts[2].value, "Step 2/3")
+  end,
+
+  test_arrow_shows_distance_only_in_target_zone = function()
+    local TG = fresh()
+    TG:InitArrow()
+    TG.currentGuide = { name = "18-19 Redridge", steps = { {}, {} } }
+    TG.currentStepIndex = 1
+    TG:SetWaypoint("Redridge", 50, 60, "Test")
+    _G.GetZoneText = function()
+      return "Dun Morogh"
+    end
+    _G.GetPlayerMapPosition = function()
+      return 0.5, 0.5
+    end
+    TG:ArrowUpdate()
+    env.eq(env.texts[1].value, "Go to Redridge")
+
+    _G.GetZoneText = function()
+      return "Redridge"
+    end
+    TG.Arrow.State.invalidate()
+    TG:ArrowUpdate()
+    env.eq(env.texts[1].value, "100 yd")
+  end,
+
+  test_arrow_uses_zone_name_with_world_map_open = function()
+    local TG = fresh()
+    TG:InitArrow()
+    TG.currentGuide = { steps = { {} } }
+    TG.currentStepIndex = 1
+    _G.WorldMapFrame = {
+      IsVisible = function()
+        return true
+      end,
+      IsShown = function()
+        return true
+      end,
+    }
+    _G.GetZoneText = function()
+      return "Stormwind City"
+    end
+    _G.UnitPosition = function()
+      return 100, 200, 0, 0
+    end
+    _G.C_Map = {
+      GetWorldPosFromMapPos = function()
+        return 0, {
+          GetXY = function()
+            return 200, 90
+          end,
+        }
+      end,
+    }
+    TG:SetWaypoint("Stormwind City", 61.6, 15.3, "Test")
+    TG.Arrow.State.invalidate()
+    TG:ArrowUpdate()
+    env.eq(env.texts[1].value, "149 yd")
   end,
 
   test_driver_updates_pointer_every_frame = function()

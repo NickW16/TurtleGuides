@@ -2,13 +2,29 @@
 local TG = _G.TurtleGuides
 local zoneData = TG.ZoneData
 
+local ZONE_ALIASES = {
+  stormwindclassic = "stormwindcity",
+}
+
+local STORMWIND_X_SCALE = 0.7736810083183454
+local STORMWIND_X_OFFSET = 19.680298729766175
+local STORMWIND_Y_SCALE = 0.7738299382700434
+local STORMWIND_Y_OFFSET = 24.433158479564715
+
+function TG:GuideMapCoords(zone, x, y)
+  if zone == "StormwindClassic" and x and y then
+    return "Stormwind City", x * STORMWIND_X_SCALE + STORMWIND_X_OFFSET, y * STORMWIND_Y_SCALE + STORMWIND_Y_OFFSET
+  end
+  return zone, x, y
+end
+
 local function normalizeZoneName(s)
   if s == nil then
     return ""
   end
   s = string.lower(tostring(s))
   s = string.gsub(s, "[^%w]", "")
-  return s
+  return ZONE_ALIASES[s] or s
 end
 
 local MAP_ZONE_NAMES = {}
@@ -26,13 +42,16 @@ function TG:ZoneNameFromId(id)
   if not id then
     return nil
   end
+  if zoneData[id] then
+    return zoneData[id]
+  end
   if pfDB and pfDB["zones"] then
     local loc = pfDB["zones"]["loc"] or pfDB["zones"]["enUS"] or pfDB["zones"][GetLocale() or "enUS"]
     if loc and loc[id] then
       return loc[id]
     end
   end
-  return zoneData[id]
+  return nil
 end
 
 function TG:ZoneName(zone)
@@ -42,6 +61,10 @@ function TG:ZoneName(zone)
   local num = tonumber(zone)
   if num then
     return self:ZoneNameFromId(num) or "Map " .. tostring(num)
+  end
+  local id = self:ZoneIdByName(zone)
+  if id then
+    return self:ZoneNameFromId(id) or tostring(zone)
   end
   return tostring(zone)
 end
@@ -62,32 +85,6 @@ local function pfZoneIdByName(name)
   end
 end
 
-local function pfParentMapId(areaId)
-  if not pfDB or type(pfDB["zones"]) ~= "table" then
-    return nil
-  end
-  local data = pfDB["zones"]["data"] or pfDB["zones"]["data-tbc"]
-  local entry = data and data[areaId]
-  if type(entry) ~= "table" or not entry[1] then
-    return nil
-  end
-  local parentName = pfDB["zones"]["loc"] and pfDB["zones"]["loc"][entry[1]]
-  if not parentName then
-    local loc = pfDB["zones"][GetLocale() or "enUS"] or pfDB["zones"]["enUS"]
-    parentName = loc and loc[entry[1]]
-  end
-  if not parentName then
-    for _, tbl in pairs(pfDB["zones"]) do
-      if type(tbl) == "table" and type(tbl[entry[1]]) == "string" then
-        parentName = tbl[entry[1]]
-        break
-      end
-    end
-  end
-  local n = normalizeZoneName(parentName)
-  return n ~= "" and ZONE_NAME_TO_MAPID[n] or nil
-end
-
 local zoneIdCache = {}
 
 function TG:ZoneIdByName(name)
@@ -102,12 +99,9 @@ function TG:ZoneIdByName(name)
   if zoneIdCache[n] ~= nil then
     return zoneIdCache[n] or nil
   end
-  local mapId = ZONE_NAME_TO_MAPID[n]
+  local mapId = pfZoneIdByName(n)
   if not mapId then
-    local areaId = pfZoneIdByName(n)
-    if areaId then
-      mapId = pfParentMapId(areaId) or areaId
-    end
+    mapId = ZONE_NAME_TO_MAPID[n]
   end
   zoneIdCache[n] = mapId or false
   return mapId
@@ -139,9 +133,9 @@ function TG:PlayerWorldPos()
   if not UnitPosition then
     return nil
   end
-  local ok, y, x, instance = pcall(UnitPosition, "player")
-  if ok and type(x) == "number" and type(y) == "number" then
-    return x, y, tonumber(instance) or nil
+  local ok, posX, posY, _, instance = pcall(UnitPosition, "player")
+  if ok and type(posX) == "number" and type(posY) == "number" then
+    return posX, posY, tonumber(instance) or nil
   end
 end
 
@@ -183,7 +177,7 @@ function TG:WorldPosFromMapPos(id, x, y)
     end
   end
   if first and second then
-    local result = { x = second, y = first, instance = tonumber(instance) or nil }
+    local result = { x = first, y = second, instance = tonumber(instance) or nil }
     worldPosCache[key] = result
     return result.x, result.y, result.instance
   end
@@ -197,6 +191,19 @@ function TG:ZoneWorldPos(zone, x, y)
     return nil
   end
   return self:WorldPosFromMapPos(id, x, y)
+end
+
+function TG:ZoneCenter(zone)
+  local id = self.ZoneIdByName and self:ZoneIdByName(zone)
+  if not id then
+    return nil
+  end
+  local data = pfDB and pfDB["zones"] and pfDB["zones"]["data"]
+  local entry = data and data[id]
+  if entry and tonumber(entry[4]) and tonumber(entry[5]) then
+    return tonumber(entry[4]), tonumber(entry[5])
+  end
+  return 50, 50
 end
 
 function TG:WorldDistanceToWaypoint(zone, x, y)

@@ -8,6 +8,22 @@ return {
     env.eq(TG._tgDoneSource, "manual checkbox")
   end,
 
+  test_all_manually_checked_elements_complete_step = function()
+    local TG = loadEngine()
+    local step = {
+      elements = {
+        { t = "text", text = "Kill the crawlers." },
+        { t = "cmd", tag = "collect", args = { "769", "6" } },
+      },
+    }
+    env.eq(TG:IsStepComplete(step), false)
+    env.eq(TG:IsElementTrackable(step.elements[1]), true)
+    step.elements[1]._tgManualDone = true
+    env.eq(TG:IsStepComplete(step), false)
+    step.elements[2]._tgManualDone = true
+    env.eq(TG:IsStepComplete(step), true)
+  end,
+
   test_collect_uses_bag_count = function()
     local TG = loadEngine()
     _G.GetContainerNumSlots = function()
@@ -30,7 +46,7 @@ return {
     env.eq(TG:IsElementDone({ t = "cmd", tag = "xp", args = { "10" } }), true)
   end,
 
-  test_complete_objective_ignores_account_quest_history = function()
+  test_complete_objective_uses_quest_turnin_evidence = function()
     local TG = loadEngine()
     _G.pfQuest_history = { [319] = true }
     TG.GetQuestTitleById = function()
@@ -43,8 +59,8 @@ return {
       return nil
     end
     local el = { t = "cmd", tag = "complete", args = { "319", "1" }, text = "" }
-    env.eq(TG:IsElementDone(el), false)
-    env.eq(TG:IsStepComplete({ elements = { el } }), false)
+    env.eq(TG:IsElementDone(el), true)
+    env.eq(TG:IsStepComplete({ elements = { el } }), true)
     TG.cdb = { turnedIn = { [319] = true } }
     env.eq(TG:IsElementDone(el), true)
   end,

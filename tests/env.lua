@@ -51,6 +51,8 @@ function env.reset()
   _G.GetInventoryItemID = function() end
   _G.GetInventoryItemLink = function() end
   _G.GetItemInfo = function() end
+  _G.GetItemStats = nil
+  _G.GetInventoryItemQuality = nil
   _G.UnitSex = function()
     return 2
   end
@@ -359,7 +361,11 @@ function env.reset()
       text.SetJustifyV = noop
       text.SetNonSpaceWrap = noop
       text.SetAlpha = noop
-      text.SetTextColor = noop
+      text.SetTextColor = function(_, r, g, b)
+        text.color = { r, g, b }
+      end
+      text.SetShadowColor = noop
+      text.SetShadowOffset = noop
       text.SetDrawLayer = noop
       text.Hide = noop
       text.Show = noop
