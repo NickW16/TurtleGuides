@@ -13,6 +13,7 @@ src\core\Util.lua
 src\compat\Text.lua
 src\compat\ZoneData.lua
 src\compat\Zone.lua
+src\compat\Npc.lua
 src\compat\QuestLog.lua
 src\compat\Item.lua
 src\core\Output.lua
@@ -71,6 +72,8 @@ src\engine\Conditions.lua
 src\engine\Manual.lua
 src\engine\Completion.lua
 src\engine\Resume.lua
+src\engine\Prereqs.lua
+src\engine\Orphans.lua
 src\engine\Goto.lua
 src\engine\Navigation.lua
 src\engine\Advance.lua

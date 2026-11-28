@@ -222,6 +222,20 @@ function TG:DebugCurrentStep()
           else
             add("    ledger: no evidence")
           end
+          local numericId = tonumber(id)
+          local lowerTitle = title and string.lower(title) or nil
+          local history = pfQuest_history
+          local hasHistory = false
+          if type(history) == "table" then
+            if numericId and history[numericId] then
+              hasHistory = true
+            elseif lowerTitle and history[title] then
+              hasHistory = true
+            elseif lowerTitle and history[lowerTitle] then
+              hasHistory = true
+            end
+          end
+          add("    pfQuest history: " .. (hasHistory and "yes" or "no"))
         end
         if el.tag == "complete" then
           local objNum = el.args and tonumber(el.args[2])
@@ -309,5 +323,15 @@ function TG:DebugCurrentStep()
   end
   if self.ShowDebugCopy then
     self:ShowDebugCopy(table.concat(lines, "\n"))
+  end
+end
+
+function TG:PrintWaypointDebug()
+  if not self.Arrow or not self.Arrow.State or not self.Arrow.State.debugLines then
+    self:Print("Waypoint debug unavailable.")
+    return
+  end
+  for _, line in ipairs(self.Arrow.State.debugLines()) do
+    self:Print(line)
   end
 end
