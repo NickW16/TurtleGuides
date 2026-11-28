@@ -140,6 +140,9 @@ local function withObjectiveProgress(text, el)
     return text
   end
   have = math.min(have or 0, need)
+  if el and el._tgManualDone then
+    have = need
+  end
   local progress = "(" .. have .. "/" .. need .. ")"
   local pattern
   if string.find(text, "%(x%d+%)") then

@@ -104,6 +104,22 @@ return {
     env.eq(TG.UI.Text.element(el), "Rabid Thistle Bear slain (0/20)")
   end,
 
+  test_manual_done_objective_shows_full_progress = function()
+    local TG = fresh()
+    TG.GetObjectiveItemProgress = function()
+      return 0, 6
+    end
+    local el = {
+      t = "cmd",
+      tag = "complete",
+      args = { "1138", "1" },
+      objectiveText = "Fine Crab Chunks (6)",
+    }
+    env.eq(TG.UI.Text.element(el), "Fine Crab Chunks (0/6)")
+    el._tgManualDone = true
+    env.eq(TG.UI.Text.element(el), "Fine Crab Chunks (6/6)")
+  end,
+
   test_complete_item_objective_shows_bag_progress = function()
     local TG = fresh()
     TG.GetObjectiveItemProgress = function()
