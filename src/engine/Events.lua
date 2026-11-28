@@ -88,9 +88,11 @@ TG:AddUpdater("trainerClose", 0.1, function()
   end
 end)
 TG:RegisterEvent("TAXIMAP_OPENED", function()
-  TG:SignalManualAction("fly")
-  TG:SignalManualAction("f")
-  TG:SignalManualAction("fp")
+  TG._wasStepComplete = nil
+  if TG.InvalidateStepCompletionCache then
+    TG:InvalidateStepCompletionCache()
+  end
+  TG:MarkUIDirty()
 end)
 TG:RegisterEvent("QUEST_FINISHED", function()
   TG:OnQuestFinished()

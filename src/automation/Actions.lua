@@ -87,6 +87,9 @@ function TG:OnQuestComplete()
 end
 
 function TG:OnGossipShow()
+  if self:AutoSelectTaxiGossip() then
+    return
+  end
   if not autoOn() then
     return
   end
@@ -151,34 +154,201 @@ function TG:OnQuestGreeting()
   end
 end
 
-function TG:AutoTakeFlight()
-  if not (TG.db and TG.db.autoTakeFlight) then
-    return
+local function cleanFlightText(text)
+  if not text then
+    return ""
   end
-  if not TaxiFrame or not TaxiFrame:IsShown() then
-    return
+  if TG.cleanRxpColors then
+    text = TG.cleanRxpColors(text)
   end
+  text = string.gsub(text, "|T.-|t", "")
+  text = string.gsub(text, "%s+", " ")
+  return strtrim(text)
+end
+
+local function flightDestination(el)
+  local dest = cleanFlightText(el.args and el.args[1] or "")
+  if dest ~= "" then
+    return dest
+  end
+  local text = cleanFlightText(el.text or "")
+  local parsed = string.match(text, "^[Ff]ly%s+to%s+(.+)$")
+  return parsed and strtrim(parsed) or text
+end
+
+TG.FlightDestination = flightDestination
+
+local function normalizeFlightName(name)
+  local value = cleanFlightText(name)
+  value = string.gsub(value, "[%-_]+", " ")
+  value = string.gsub(value, "%s+", " ")
+  return strtrim(string.lower(value))
+end
+
+local function taxiNodeName(index)
+  if TaxiNodeName then
+    local ok, name = pcall(TaxiNodeName, index)
+    if ok and name then
+      return name
+    end
+  end
+  local button = _G["TaxiButton" .. index]
+  local label = button and (button.Text or button.text or _G["TaxiButton" .. index .. "Text"])
+  if label and label.GetText then
+    return label:GetText()
+  end
+end
+
+local function taxiNodeUsable(index)
+  if not TaxiNodeGetType then
+    return true
+  end
+  local ok, kind = pcall(TaxiNodeGetType, index)
+  if not ok or not kind then
+    return true
+  end
+  kind = string.upper(tostring(kind))
+  return kind ~= "NONE" and kind ~= "CURRENT" and kind ~= "DISTANT"
+end
+
+local function takeTaxiNode(index)
+  if TakeTaxiNode then
+    TakeTaxiNode(index)
+    return true
+  end
+  local button = _G["TaxiButton" .. index]
+  if button and button.Click then
+    button:Click()
+    return true
+  end
+  return false
+end
+
+local function currentFlightElements()
   local step = TG.CurrentStep and TG:CurrentStep()
   if not step then
-    return
+    return nil, nil, nil
   end
+  local flyEl, fpEl
   for _, el in ipairs(step.elements or {}) do
     if el.t == "cmd" and (el.tag == "fly" or el.tag == "f") then
-      local dest = el.text or (el.args and table.concat(el.args, " "))
-      if dest and dest ~= "" then
-        for i = 1, NUM_TAXI_BUTTONS or 20 do
-          local button = _G["TaxiButton" .. i]
-          if button and button:IsShown() then
-            local name = button:GetName()
-            if name and string.find(string.lower(name), string.lower(dest)) then
-              button:Click()
-              return
+      flyEl = flyEl or el
+    elseif el.t == "cmd" and el.tag == "fp" then
+      fpEl = fpEl or el
+    end
+  end
+  return step, flyEl, fpEl
+end
+
+local function currentStepWantsTaxi()
+  local step, flyEl, fpEl = currentFlightElements()
+  if flyEl or fpEl then
+    return step
+  end
+  return nil
+end
+
+function TG:CurrentFlightStep()
+  return currentStepWantsTaxi()
+end
+
+function TG:CurrentFlyElement()
+  local _, flyEl = currentFlightElements()
+  return flyEl
+end
+
+function TG:StepHasFlightPathElement(step)
+  for _, el in ipairs(step and step.elements or {}) do
+    if el.t == "cmd" and el.tag == "fp" then
+      return true
+    end
+  end
+  return false
+end
+
+function TG:ClearAutoFlight()
+  self._autoFlightStep = nil
+  self._autoFlightElement = nil
+  self._autoFlightStarted = nil
+  self._autoFlightTried = nil
+end
+
+function TG:AutoSelectTaxiGossip()
+  if not (TG.db and TG.db.autoTakeFlight) then
+    return false
+  end
+  if IsShiftKeyDown and IsShiftKeyDown() then
+    return false
+  end
+  if not currentStepWantsTaxi() then
+    return false
+  end
+  if not GetGossipOptions then
+    return false
+  end
+  local options = { GetGossipOptions() }
+  for i = 1, table.getn(options) - 1, 2 do
+    local kind = options[i + 1]
+    if kind and string.lower(tostring(kind)) == "taxi" then
+      if SelectGossipOption then
+        SelectGossipOption((i + 1) / 2)
+      end
+      return true
+    end
+  end
+  for i, option in ipairs(options) do
+    if type(option) == "table" and (option.type == "taxi" or option.icon == 132057) then
+      if SelectGossipOption then
+        SelectGossipOption(i)
+      end
+      return true
+    end
+  end
+  return false
+end
+
+function TG:AutoTakeFlight(step, el)
+  if not (TG.db and TG.db.autoTakeFlight) then
+    return false
+  end
+  if IsShiftKeyDown and IsShiftKeyDown() then
+    return false
+  end
+  local taxiFrame = _G.TaxiFrame
+  if not taxiFrame or not taxiFrame.IsShown or not taxiFrame:IsShown() then
+    return false
+  end
+  step = step or (TG.CurrentStep and TG:CurrentStep())
+  if not step then
+    return false
+  end
+  local elements = el and { el } or (step.elements or {})
+  for _, element in ipairs(elements) do
+    if element.t == "cmd" and (element.tag == "fly" or element.tag == "f") then
+      local want = normalizeFlightName(flightDestination(element))
+      if want ~= "" then
+        local total = NumTaxiNodes and NumTaxiNodes() or (NUM_TAXI_BUTTONS or 20)
+        local exact, partial
+        for i = 1, total do
+          if taxiNodeUsable(i) then
+            local node = normalizeFlightName(taxiNodeName(i))
+            if node ~= "" and node == want then
+              exact = i
+              break
+            elseif not partial and node ~= "" and
+              (string.find(node, want, 1, true) or string.find(want, node, 1, true)) then
+              partial = i
             end
           end
+        end
+        local index = exact or partial
+        if index then
+          return takeTaxiNode(index)
         end
       end
     end
   end
+  return false
 end
 
 local function currentStepUseItemIds()

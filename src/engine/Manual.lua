@@ -180,8 +180,8 @@ function TG:PollBindLocation()
   end
 end
 
-function TG:SignalManualAction(tag)
-  local step = self:CurrentStep()
+function TG:SignalManualAction(tag, step)
+  step = step or self:CurrentStep()
   if not step then
     return
   end
