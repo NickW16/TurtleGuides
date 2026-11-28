@@ -47,6 +47,13 @@ return {
     env.eq(guide.steps[2].elements[1].tag, "accept")
   end,
 
+  test_zone_line_parses_as_command = function()
+    local TG = fresh()
+    local guide = TG.Parser.ParseGuide("#name T\n#group G\nstep\n.zone Redridge\n", "test.lua")
+    env.eq(guide.steps[1].elements[1].tag, "zone")
+    env.eq(guide.steps[1].elements[1].args[1], "Redridge")
+  end,
+
   test_step_ids_follow_source_lines = function()
     local TG = fresh()
     local guide = TG.Parser.ParseGuide(TEXT, "test.lua")

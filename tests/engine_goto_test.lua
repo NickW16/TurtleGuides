@@ -13,6 +13,15 @@ return {
     env.eq(gotos[1].text, "Go north")
   end,
 
+  test_stormwind_classic_goto_uses_current_map_coords = function()
+    local TG = loadEngine()
+    local step = { elements = { { t = "cmd", tag = "goto", args = { "StormwindClassic", "61.609", "15.269" } } } }
+    local gotos = TG:GetStepGotos(step)
+    env.eq(gotos[1].zone, "Stormwind City")
+    env.eq(math.abs(gotos[1].x - 67.345) < 0.01, true)
+    env.eq(math.abs(gotos[1].y - 36.244) < 0.01, true)
+  end,
+
   test_goto_index_selects_waypoint = function()
     local TG = loadEngine()
     local step = {
@@ -43,6 +52,134 @@ return {
     TG:UpdateStepWaypoint()
     env.eq(target.zone, "Dun Morogh")
     env.eq(target.title, "Dun Morogh (50.0, 60.0)")
+  end,
+
+  test_update_waypoint_falls_back_to_next_goto = function()
+    local TG = loadEngine()
+    local current = { elements = { { t = "text", text = "talk" } } }
+    local upcoming = { elements = { { t = "cmd", tag = "goto", args = { "Darkshore", "40", "50" } } } }
+    TG.currentGuide = { steps = { current, upcoming } }
+    TG.currentStepIndex = 1
+    local target
+    TG.SetWaypoint = function(_, zone, x, y)
+      target = { zone = zone, x = x, y = y }
+    end
+    TG.ClearWaypoint = function()
+      target = nil
+    end
+    TG:UpdateStepWaypoint()
+    env.eq(target ~= nil, true)
+    env.eq(target.zone, "Darkshore")
+    env.eq(target.x, 40)
+  end,
+
+  test_waypoint_falls_back_to_step_npc_location = function()
+    local TG = loadEngine()
+    _G.GetZoneText = function()
+      return "Stormwind City"
+    end
+    _G.pfDB = {
+      zones = { loc = { [12] = "Stormwind City" } },
+      units = {
+        loc = { [1234] = "Eniris Brightspear" },
+        data = { [1234] = { coords = { { 40.5, 60.5, 12, 0 } } } },
+      },
+    }
+    local step = {
+      elements = { { t = "text", text = "Talk to |cRXP_FRIENDLY_Eniris Brightspear|r" } },
+    }
+    TG.currentGuide = { key = "k", steps = { step } }
+    TG.currentStepIndex = 1
+    local target
+    TG.SetWaypoint = function(_, zone, x, y)
+      target = { zone = zone, x = x, y = y }
+    end
+    TG.ClearWaypoint = function()
+      target = nil
+    end
+    TG:UpdateStepWaypoint()
+    env.eq(target ~= nil, true)
+    env.eq(target.zone, "Stormwind City")
+    env.eq(target.x, 40.5)
+  end,
+
+  test_waypoint_matches_plain_trainer_text = function()
+    local TG = loadEngine()
+    _G.GetZoneText = function()
+      return "Stormwind City"
+    end
+    _G.pfDB = {
+      zones = { loc = { [1519] = "Stormwind City" } },
+      units = {
+        loc = { [5515] = "Einris Brightspear" },
+        data = { [5515] = { coords = { { 61.6, 15.3, 1519, 490 } } } },
+      },
+    }
+    local step = {
+      elements = {
+        { t = "text", text = "Talk to Eniris Brightspear" },
+        { t = "cmd", tag = "train", args = { "589" }, text = "Train your class spells" },
+      },
+    }
+    TG.currentGuide = { key = "k", steps = { step } }
+    TG.currentStepIndex = 1
+    local target
+    TG.SetWaypoint = function(_, zone, x, y)
+      target = { zone = zone, x = x, y = y }
+    end
+    TG.ClearWaypoint = function()
+      target = nil
+    end
+    TG:UpdateStepWaypoint()
+    env.eq(target ~= nil, true)
+    env.eq(target.zone, "Stormwind City")
+    env.eq(target.x, 61.6)
+  end,
+
+  test_waypoint_matches_misspelled_npc_name = function()
+    local TG = loadEngine()
+    _G.GetZoneText = function()
+      return "Stormwind City"
+    end
+    _G.pfDB = {
+      zones = { loc = { [1519] = "Stormwind City" } },
+      units = {
+        loc = { [5515] = "Einris Brightspear" },
+        data = { [5515] = { coords = { { 61.6, 15.3, 1519, 490 } } } },
+      },
+    }
+    local step = { elements = { { t = "text", text = "Talk to |cRXP_FRIENDLY_Eniris Brightspear|r" } } }
+    TG.currentGuide = { key = "k", steps = { step } }
+    TG.currentStepIndex = 1
+    local target
+    TG.SetWaypoint = function(_, zone, x, y)
+      target = { zone = zone, x = x, y = y }
+    end
+    TG.ClearWaypoint = function()
+      target = nil
+    end
+    TG:UpdateStepWaypoint()
+    env.eq(target ~= nil, true)
+    env.eq(target.zone, "Stormwind City")
+    env.eq(target.x, 61.6)
+  end,
+
+  test_waypoint_falls_back_to_zone_element = function()
+    local TG = loadEngine()
+    local step = { elements = { { t = "cmd", tag = "zone", args = { "Redridge" } } } }
+    TG.currentGuide = { key = "k", steps = { step } }
+    TG.currentStepIndex = 1
+    local target
+    TG.SetWaypoint = function(_, zone, x, y)
+      target = { zone = zone, x = x, y = y }
+    end
+    TG.ClearWaypoint = function()
+      target = nil
+    end
+    TG:UpdateStepWaypoint()
+    env.eq(target ~= nil, true)
+    env.eq(target.zone, "Redridge")
+    env.eq(target.x, 50)
   end,
 
   test_disable_auto_skip_still_allows_goto_advance = function()

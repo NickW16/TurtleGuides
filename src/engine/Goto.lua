@@ -37,6 +37,7 @@ function TG:GetStepGotos(step)
         local radius = tonumber(a[4]) or 0
         local optional = a[5] ~= nil
         if zone and x and y then
+          zone, x, y = TG:GuideMapCoords(zone, x, y)
           table.insert(gotos, {
             zone = zone,
             x = x,
@@ -51,6 +52,7 @@ function TG:GetStepGotos(step)
         local x, y = tonumber(a[1]), tonumber(a[2])
         if x and y then
           local zone = el.gotoZone or (GetZoneText and GetZoneText() or "")
+          zone, x, y = TG:GuideMapCoords(zone, x, y)
           table.insert(gotos, {
             zone = zone,
             x = x,
@@ -88,9 +90,6 @@ function TG:GetStepGoto(step)
 end
 
 local function localPlayerPos()
-  if SetMapToCurrentZone and (not WorldMapFrame or not WorldMapFrame:IsVisible()) then
-    SetMapToCurrentZone()
-  end
   if not GetPlayerMapPosition then
     return nil
   end
@@ -359,6 +358,39 @@ function TG:UpdateStepWaypoint()
       if g then
         zone, x, y = g.zone, g.x, g.y
         gotoText = nil
+      end
+    end
+  end
+
+  if not zone and step then
+    for _, el in ipairs(step.elements or {}) do
+      if el.t == "cmd" and el.tag == "zone" then
+        zone = el.args and el.args[1] or el.text
+        x, y = 50, 50
+        gotoText = nil
+        break
+      end
+    end
+  end
+
+  if not zone and self.StepNpcLocation then
+    local location = self:StepNpcLocation(step)
+    if location then
+      zone, x, y = location.zone, location.x, location.y
+      gotoText = nil
+    end
+  end
+
+  if not zone and self.currentGuide and self.currentGuide.steps then
+    local steps = self.currentGuide.steps
+    local from = (self.currentStepIndex or 1) + 1
+    local to = math.min(table.getn(steps), from + 7)
+    for i = from, to do
+      local g = self:GetStepGotos(steps[i])[1]
+      if g then
+        zone, x, y = g.zone, g.x, g.y
+        gotoText = nil
+        break
       end
     end
   end

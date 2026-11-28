@@ -7,6 +7,7 @@ local gmatch = string.gmatch
 
 local TAG_ALIASES = {
   ["goto"] = "goto",
+  zone = "zone",
   accept = "accept",
   turnin = "turnin",
   ["turnin!"] = "turnin",
