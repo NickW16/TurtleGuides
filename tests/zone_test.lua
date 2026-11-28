@@ -12,6 +12,14 @@ return {
     env.eq(TG:ZoneName("Westfall"), "Westfall")
   end,
 
+  test_guide_zone_id_name_wins_over_zone_database = function()
+    local TG = fresh()
+    _G.pfDB = { zones = { loc = { [148] = "Darkshore", [1439] = "Dreadmaul Post" } } }
+    env.eq(TG:ZoneNameFromId(1439), "Darkshore")
+    env.eq(TG:ZoneName(1439), "Darkshore")
+    env.eq(TG:ZoneIdByName("Darkshore"), 148)
+  end,
+
   test_zone_id_by_name_normalizes_spacing = function()
     local TG = fresh()
     env.eq(TG:ZoneIdByName("Dun Morogh"), 1426)

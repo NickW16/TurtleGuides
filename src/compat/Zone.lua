@@ -42,13 +42,16 @@ function TG:ZoneNameFromId(id)
   if not id then
     return nil
   end
+  if zoneData[id] then
+    return zoneData[id]
+  end
   if pfDB and pfDB["zones"] then
     local loc = pfDB["zones"]["loc"] or pfDB["zones"]["enUS"] or pfDB["zones"][GetLocale() or "enUS"]
     if loc and loc[id] then
       return loc[id]
     end
   end
-  return zoneData[id]
+  return nil
 end
 
 function TG:ZoneName(zone)
