@@ -143,6 +143,38 @@ return {
     env.eq(TG:CachedStepComplete(step), true)
   end,
 
+  test_zone_and_subzone_steps_complete_on_arrival = function()
+    local TG = loadEngine()
+    local zone = { t = "cmd", tag = "zone", args = { "Westfall" } }
+    local subzone = { t = "cmd", tag = "subzone", args = { "Goldshire" } }
+    env.eq(TG:IsElementTrackable(zone), true)
+    env.eq(TG:IsElementTrackable(subzone), true)
+    _G.GetZoneText = function()
+      return "Elwynn Forest"
+    end
+    _G.GetSubZoneText = function()
+      return "Goldshire"
+    end
+    env.eq(TG:IsElementDone(zone), false)
+    env.eq(TG:IsElementDone(subzone), true)
+    _G.GetZoneText = function()
+      return "Westfall"
+    end
+    env.eq(TG:IsStepComplete({ elements = { zone } }), true)
+  end,
+
+  test_numeric_subzone_element_resolves_name = function()
+    local TG = loadEngine()
+    TG.ZoneNameFromId = function()
+      return "Goldshire"
+    end
+    _G.GetSubZoneText = function()
+      return "Goldshire"
+    end
+    local el = { t = "cmd", tag = "subzone", args = { "87" } }
+    env.eq(TG:IsElementDone(el), true)
+  end,
+
   test_xp_uses_live_counters = function()
     local TG = loadEngine()
     _G.UnitLevel = function()

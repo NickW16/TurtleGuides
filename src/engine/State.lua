@@ -25,6 +25,8 @@ Shared.OBJECTIVE_TAGS = {
   complete = true,
   collect = true,
   xp = true,
+  zone = true,
+  subzone = true,
 }
 
 Shared.MANUAL_ACTION_TAGS = {

@@ -8,6 +8,19 @@ end)
 TG:RegisterEvent("QUEST_LOG_UPDATE", function()
   TG:OnQuestLogUpdate()
 end)
+local function onZoneChanged()
+  TG._wasStepComplete = nil
+  if TG.InvalidateStepCompletionCache then
+    TG:InvalidateStepCompletionCache()
+  end
+  if TG.CheckAdvance then
+    TG:CheckAdvance("zone")
+  end
+  TG:MarkUIDirty()
+end
+TG:RegisterEvent("ZONE_CHANGED", onZoneChanged)
+TG:RegisterEvent("ZONE_CHANGED_INDOORS", onZoneChanged)
+TG:RegisterEvent("ZONE_CHANGED_NEW_AREA", onZoneChanged)
 TG:RegisterEvent("QUEST_ACCEPTED", function(index)
   TG:OnQuestAccepted(index)
   if TG.QueueResume then
