@@ -69,53 +69,16 @@ function Resume.findIndex(context)
   if n < 1 then
     return nil
   end
-  local currentIndex = context.currentIndex or 1
+  local floor = context.currentIndex or 1
+  if floor < 1 then
+    floor = 1
+  end
+  local limit = math.min(n, floor + 24)
 
-  local last, cap, evidence = 1, nil, nil
-  local lastConfidence, capConfidence
-  for i = 1, n do
+  for i = floor, limit do
     local step = steps[i]
-    for _, el in ipairs(step.elements or {}) do
-      local ev = context.evidence and context.evidence(el)
-      if ev then
-        if el.tag == "accept" then
-          if ev.inLog or ev.turnedIn then
-            last, evidence, lastConfidence = i, ev, ev.confidence
-          end
-        elseif el.tag == "turnin" or el.tag == "complete" then
-          if ev.turnedIn then
-            last, evidence, lastConfidence = i, ev, ev.confidence
-          end
-          if not cap and ev.inLog and not ev.complete and not ev.turnedIn then
-            cap, capConfidence = i, ev.confidence
-          end
-        end
-      end
-    end
-  end
-
-  local start = last
-  if cap and cap < start and atLeastAsStrong(capConfidence, lastConfidence) then
-    start = cap
-  end
-  if start < 1 then
-    start = 1
-  end
-  if start > n then
-    start = n
-  end
-
-  local pos = start
-  for _ = 1, n + 1 do
-    if pos > n then
-      break
-    end
-    local step = steps[pos]
     local skipState = context.skipState and context.skipState(step) or false
-    local done = context.completed and context.completed[pos] == true
-    if not done and context.complete then
-      done = context.complete(step) == true
-    end
+    local done = context.complete and context.complete(step) == true or false
     local hasWork = false
     for _, el in ipairs(step.elements or {}) do
       if Shared.isObjectiveElement(el) then
@@ -123,30 +86,42 @@ function Resume.findIndex(context)
         break
       end
     end
-    if skipState == true or done or (not hasWork and not (context.hasManual and context.hasManual(step))) then
-      pos = pos + 1
-    else
-      break
+    local hasManual = context.hasManual and context.hasManual(step) or false
+    if not (skipState == true or done or (not hasWork and not hasManual)) then
+      return {
+        index = i,
+        reason = context.blockedReason and context.blockedReason(step) or "step not complete",
+        confidence = nil,
+      }
     end
   end
-  if pos > n then
-    pos = n
-  end
-  if pos < currentIndex and lastConfidence ~= "confirmed" then
-    pos = currentIndex
-  end
 
-  local reason = "start of guide"
-  if evidence and evidence.title and evidence.title ~= "" then
-    reason = (evidence.inLog and "quest in log: " or "handed in: ") .. evidence.title
-  elseif evidence and evidence.id then
-    reason = "quest evidence #" .. evidence.id
-  end
-  if cap and cap <= pos then
-    reason = reason .. "; held before unfinished quest work"
-  end
+  return { index = limit, reason = "no unfinished steps found", confidence = nil }
+end
 
-  return { index = pos, reason = reason, confidence = lastConfidence, cap = cap, evidence = evidence }
+local function blockedReason(self, step)
+  for _, el in ipairs(step.elements or {}) do
+    if Shared.isObjectiveElement(el) then
+      local done = self:IsElementDone(el)
+      if done ~= true then
+        local title, id = self:ResolveQuestTitle(el)
+        local label = title or (id and ("#" .. tostring(id))) or tostring(el.tag)
+        local ev = Resume.findQuestEvidence(self, el)
+        if not ev then
+          return "no evidence for " .. label .. (id and (" (" .. tostring(id) .. ")") or "")
+        end
+        if ev.inLog and not ev.complete then
+          return "waiting on " .. label
+        end
+        return "objective " .. tostring(el.tag) .. " not done"
+      end
+    elseif el.t == "cmd" and Shared.MANUAL_ACTION_TAGS[el.tag] then
+      if not self:ManualActionDetected(el, tostring(step)) then
+        return "manual action " .. tostring(el.tag)
+      end
+    end
+  end
+  return "step not complete"
 end
 
 function TG:FindResumeIndex(guide, context)
@@ -175,9 +150,9 @@ function TG:FindResumeIndex(guide, context)
     hasManual = context.hasManual or function(step)
       return self:StepHasManualAction(step)
     end,
-    completed = context.completed
-      or (self.cdb and self.cdb.completedByGuide and self.cdb.completedByGuide[guide.key])
-      or nil,
+    blockedReason = context.blockedReason or function(step)
+      return blockedReason(self, step)
+    end,
   }
   return Resume.findIndex(merged)
 end
@@ -193,6 +168,11 @@ end
 function TG:MaybeResume()
   if not self.db or not self.db.autoResume then
     return false
+  end
+  if self._loginAt and GetTime then
+    if GetTime() - self._loginAt < 2 then
+      return false
+    end
   end
   if not self.currentGuide or not self._questLogSeeded then
     return false
@@ -224,6 +204,9 @@ function TG:MaybeResume()
   end
   if self.GoToStep and self:GoToStep(result.index) then
     self:Print("Skipped to step " .. result.index .. ": " .. result.reason)
+    if self.WarnStepPrerequisites then
+      self:WarnStepPrerequisites(self:CurrentStep())
+    end
     return true
   end
   return false
@@ -284,6 +267,9 @@ function TG:GetExpectedQuestLog()
   local cursor = guide
   local depth = 0
   while cursor and depth < 32 do
+    if self.EnsureGuideParsed then
+      self:EnsureGuideParsed(cursor)
+    end
     local upTo = cursor == guide and (self.currentStepIndex or 1) or table.getn(cursor.steps or {})
     table.insert(chain, 1, { steps = cursor.steps or {}, upTo = upTo })
     cursor = previousGuideFor(self, cursor)

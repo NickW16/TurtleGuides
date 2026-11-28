@@ -48,7 +48,6 @@ return {
     TG:SetGuide(g.key, 1)
     TG:NextStep(false)
     env.eq(TG.currentStepIndex, 2)
-    env.eq(TG.cdb.completedByGuide[g.key][1], true)
     TG:PrevStep()
     env.eq(TG.currentStepIndex, 1)
   end,
@@ -239,7 +238,6 @@ return {
     TG:SetGuide(g.key, 1, true, true)
     TG:NextStep(false)
     env.eq(TG.currentStepIndex, 3)
-    env.eq(TG.cdb.completedByGuide[g.key][2], true)
   end,
 
   test_set_guide_uses_resume_index = function()
@@ -254,7 +252,7 @@ return {
       },
     }
     TG.db = {}
-    TG.cdb = { turnedIn = { [2] = true } }
+    TG.cdb = { turnedIn = { [1] = true, [2] = true } }
     TG.guideByKey = { [g.key] = g }
     TG.SetWaypoint = function() end
     TG.ClearWaypoint = function() end

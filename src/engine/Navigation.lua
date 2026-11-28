@@ -38,6 +38,9 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   if self.EnsureGuideParsed then
     self:EnsureGuideParsed(guide)
   end
+  if self.RestoreManualElementStates then
+    self:RestoreManualElementStates(guide)
+  end
   if self.ClearManualCheckHold then
     self:ClearManualCheckHold()
   end
@@ -63,6 +66,7 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
     for i, step in ipairs(guide.steps or {}) do
       if step.stepId == savedStepId then
         savedCursor = i
+        numericStep = nil
         break
       end
     end
@@ -70,18 +74,6 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   local hasSavedCursor = savedCursor and savedCursor >= 1 and savedCursor <= n
   if hasSavedCursor and (not numericStep or numericStep == 1) then
     idx = savedCursor
-  end
-
-  if self.cdb then
-    if not self.cdb.completedByGuide then
-      self.cdb.completedByGuide = {}
-      if self.cdb.completedSteps and self.cdb.currentGuideKey then
-        self.cdb.completedByGuide[self.cdb.currentGuideKey] = self.cdb.completedSteps
-      end
-    end
-    if not self.cdb.completedByGuide[key] then
-      self.cdb.completedByGuide[key] = {}
-    end
   end
 
   if (not numericStep or numericStep == 1) and not hasSavedCursor and not noAutoDetect then
@@ -186,7 +178,7 @@ function TG:GetActiveAuxSteps()
   return result
 end
 
-function TG:NextStep(manual, isSkip)
+function TG:NextStep(manual, _isSkip)
   if not self.currentGuide then
     return
   end
@@ -199,16 +191,6 @@ function TG:NextStep(manual, isSkip)
   end
   if self.ClearManualCheckHold then
     self:ClearManualCheckHold()
-  end
-  if self.cdb and curStep and not isSkip and not curStep.completewith and not curStep.sticky then
-    if not self.cdb.completedByGuide then
-      self.cdb.completedByGuide = {}
-    end
-    local key = self.currentGuide.key
-    if not self.cdb.completedByGuide[key] then
-      self.cdb.completedByGuide[key] = {}
-    end
-    self.cdb.completedByGuide[key][self.currentStepIndex] = true
   end
   if self.currentStepIndex < table.getn(self.currentGuide.steps) then
     self.currentStepIndex = self.currentStepIndex + 1
@@ -228,7 +210,6 @@ function TG:NextStep(manual, isSkip)
       end
     end
     local total = table.getn(self.currentGuide.steps)
-    local skipFrom = self.currentStepIndex
     while self.currentStepIndex <= total do
       local step = self.currentGuide.steps[self.currentStepIndex]
       local shouldSkip = self.ShouldAutoSkipStep and self:ShouldAutoSkipStep(step) or false
@@ -239,13 +220,6 @@ function TG:NextStep(manual, isSkip)
         self.currentStepIndex = self.currentStepIndex + 1
       else
         break
-      end
-    end
-    if self.cdb and self.cdb.completedByGuide and self.currentStepIndex > skipFrom then
-      local key = self.currentGuide.key
-      self.cdb.completedByGuide[key] = self.cdb.completedByGuide[key] or {}
-      for i = skipFrom, self.currentStepIndex - 1 do
-        self.cdb.completedByGuide[key][i] = true
       end
     end
     if self.currentStepIndex > total then

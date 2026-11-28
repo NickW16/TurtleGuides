@@ -102,6 +102,9 @@ TG:AddUpdater("manualCheck", 0.1, function()
   TG:CheckManualCheckAdvance()
 end)
 TG:AddUpdater("stepCache", 0.5, function()
+  if not TG.db or not TG.db.autoResume then
+    return
+  end
   if not TG.currentGuide then
     return
   end

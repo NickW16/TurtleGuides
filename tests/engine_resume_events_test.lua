@@ -108,6 +108,7 @@ return {
     end
     TG.currentGuide = { key = "k", steps = steps }
     TG.currentStepIndex = 2
+    TG.db = { autoResume = true }
     local seen = {}
     TG.IsStepComplete = function(_, step)
       table.insert(seen, step)

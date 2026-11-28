@@ -149,5 +149,4 @@ function TG:LoadAllGuides()
     count = count + 1
   end
   self:Print("Loaded " .. count .. " classic guides.")
-  self:StartGuideLoader()
 end

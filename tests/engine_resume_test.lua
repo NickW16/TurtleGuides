@@ -18,7 +18,7 @@ local function evidenceFor(values)
 end
 
 return {
-  test_resume_find_index_uses_furthest_evidence = function()
+  test_resume_find_index_returns_first_unfinished_step = function()
     local TG = loadEngine()
     local steps = {
       { elements = { { t = "cmd", tag = "accept", args = { "1" } } } },
@@ -28,17 +28,15 @@ return {
     local result = TG.Engine.Resume.findIndex({
       steps = steps,
       currentIndex = 1,
-      evidence = evidenceFor({ [1] = { inLog = true }, [2] = { turnedIn = true, title = "Two" } }),
-      complete = function()
-        return false
+      evidence = evidenceFor({ [2] = { turnedIn = true, title = "Two" } }),
+      complete = function(step)
+        return step == steps[1]
       end,
       hasManual = function()
         return false
       end,
     })
     env.eq(result.index, 3)
-    env.eq(result.confidence, "confirmed")
-    env.eq(result.reason, "handed in: Two")
   end,
 
   test_resume_find_index_walks_over_completed_steps = function()
@@ -52,9 +50,8 @@ return {
       steps = steps,
       currentIndex = 1,
       evidence = evidenceFor({ [2] = { turnedIn = true, title = "Two" } }),
-      completed = { [2] = true },
-      complete = function()
-        return false
+      complete = function(step)
+        return step == steps[1] or step == steps[2]
       end,
       hasManual = function()
         return false
@@ -74,13 +71,16 @@ return {
     local result = TG.Engine.Resume.findIndex({
       steps = steps,
       currentIndex = 1,
+      complete = function(step)
+        return step == steps[1]
+      end,
+      pendingEvidence = function(step)
+        return step == steps[2]
+      end,
       evidence = evidenceFor({
         [2] = { inLog = true, complete = false, title = "Two" },
         [3] = { turnedIn = true, confidence = "weak", title = "Three" },
       }),
-      complete = function()
-        return false
-      end,
       hasManual = function()
         return false
       end,
@@ -109,6 +109,41 @@ return {
       end,
     })
     env.eq(result.index, 5)
+  end,
+
+  test_resume_reports_missing_evidence_for_blocked_step = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Test||Guide",
+      name = "Guide",
+      steps = { { elements = { { t = "cmd", tag = "turnin", args = { "948" }, text = "Turn in Onu" } } } },
+    }
+    TG.db = {}
+    TG.cdb = {}
+    TG.guideByKey = { [g.key] = g }
+    TG.currentGuide = g
+    TG.currentStepIndex = 1
+    local result = TG:FindResumeIndex(g)
+    env.eq(result.index, 1)
+    env.eq(result.reason, "no evidence for Onu (948)")
+  end,
+
+  test_manual_checkoff_persists_across_reload = function()
+    local TG = loadEngine()
+    local el = { t = "cmd", tag = "accept", args = { "1" }, text = "Accept One" }
+    local step = { stepId = 7, elements = { el } }
+    local g = { key = "Test||Guide", name = "Guide", steps = { step } }
+    TG.db = {}
+    TG.cdb = {}
+    TG.guideByKey = { [g.key] = g }
+    TG.currentGuide = g
+    TG.currentStepIndex = 1
+    TG:SetElementManualDone(el, true)
+    env.eq(TG.cdb.manualDoneByGuide[g.key]["7:1"], true)
+    el._tgManualDone = nil
+    TG:RestoreManualElementStates(g)
+    env.eq(el._tgManualDone, true)
+    env.eq(TG:IsStepComplete(step), true)
   end,
 
   test_expected_quest_log_tracks_accepts_and_turnins = function()
