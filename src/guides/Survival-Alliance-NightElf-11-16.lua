@@ -1172,7 +1172,7 @@ step << Druid
     .target Sheldras Moontree
 step << Druid
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>If you don't plan to take |T136065:0|t[Herbalism] as a primary profession, buy 5 |T134187:0|t[Earthroot] for a future quest
     >>Buy the following items for faster turn ins at Westfall shortly
@@ -1193,7 +1193,7 @@ step << Druid
     .target Auctioneer Jaxon
 step << !Druid
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>Buy the following items for faster turn ins at Westfall shortly
     >>This will save you time as you won't need to run around looking for mobs to kill. Skip this step if you wish to not buy any

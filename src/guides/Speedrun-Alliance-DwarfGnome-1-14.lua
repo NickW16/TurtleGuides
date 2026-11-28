@@ -5034,7 +5034,7 @@ step
     .target Ariena Stormfeather
 step
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_BUY_Buy|r |T133970:0|t|cRXP_LOOT_[Chunks of Boar Meat]|r |cRXP_BUY_and/or|r |T133970:0|t|cRXP_LOOT_[Stringy Wolf Meat]|r |cRXP_BUY_to level your|r |T133971:0|t[Cooking] |cRXP_BUY_with later|r
     >>|cRXP_WARN_You need 50|r |T133971:0|t[Cooking] |cRXP_WARN_for a quest in Darkshire later|r
@@ -5058,7 +5058,7 @@ step
 step
     #ah
     #optional
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_WARN_If you don't want to or can't do this, skip this step|r
     >>|cRXP_BUY_Buy the following items for a faster turn in at Loch Modan shortly:|r
@@ -5599,7 +5599,7 @@ step
     .target Morgan Pestle
 step
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_BUY_Buy|r |T133970:0|t|cRXP_LOOT_[Chunks of Boar Meat]|r |cRXP_BUY_and/or|r |T133970:0|t|cRXP_LOOT_[Stringy Wolf Meat]|r |cRXP_BUY_to level your|r |T133971:0|t[Cooking] |cRXP_BUY_with later|r
     >>|cRXP_WARN_You need 50|r |T133971:0|t[Cooking] |cRXP_WARN_for a quest in Darkshire later|r
@@ -5623,7 +5623,7 @@ step
 step
     #ah
     #optional
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_WARN_If you don't want to or can't do this, skip this step|r
     >>|cRXP_BUY_Buy the following items for a faster turn in at Loch Modan shortly:|r
@@ -6837,7 +6837,7 @@ step << Dwarf Paladin
 step << Paladin
     #xprate <1.5
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_BUY_Buy|r |T133970:0|t|cRXP_LOOT_[Chunks of Boar Meat]|r |cRXP_BUY_and/or|r |T133970:0|t|cRXP_LOOT_[Stringy Wolf Meat]|r |cRXP_BUY_to level your|r |T133971:0|t[Cooking] |cRXP_BUY_with later|r
     >>|cRXP_WARN_You need 50|r |T133971:0|t[Cooking] |cRXP_WARN_for a quest in Darkshire later|r
@@ -6869,7 +6869,7 @@ step << Paladin
     #xprate <1.5
     #ah
     #optional
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_WARN_If you don't want to or can't do this, skip this step|r
     >>|cRXP_BUY_Buy the following items for faster turn ins at Westfall and Darkshore shortly:|r
@@ -6957,7 +6957,7 @@ step << Mage/Priest/Warlock
     #ah
     #sticky
     #label Wand1
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_BUY_Buy a|r |T135144:0|t[Greater Magic Wand] |cRXP_BUY_if you can afford it|r
     >>|cRXP_WARN_If you don't want to or can't do this, skip this step|r
@@ -6967,7 +6967,7 @@ step << Mage/Priest/Warlock
 step << !Paladin
     #xprate <1.5
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_BUY_Buy|r |T133970:0|t|cRXP_LOOT_[Chunks of Boar Meat]|r |cRXP_BUY_and/or|r |T133970:0|t|cRXP_LOOT_[Stringy Wolf Meat]|r |cRXP_BUY_to level your|r |T133971:0|t[Cooking] |cRXP_BUY_with later|r
     >>|cRXP_WARN_You need 50|r |T133971:0|t[Cooking] |cRXP_WARN_for a quest in Darkshire later|r
@@ -6999,7 +6999,7 @@ step << !Paladin
     #xprate <1.5
     #ah
     #optional
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_WARN_If you don't want to or can't do this, skip this step|r
     >>|cRXP_BUY_Buy the following items for faster turn ins at Westfall and Darkshore shortly:|r
@@ -8713,7 +8713,7 @@ step
     .trainer >>Train Staves
 step
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_BUY_Buy|r |T133970:0|t|cRXP_LOOT_[Chunks of Boar Meat]|r |cRXP_BUY_and/or|r |T133970:0|t|cRXP_LOOT_[Stringy Wolf Meat]|r |cRXP_BUY_to level your|r |T133971:0|t[Cooking] |cRXP_BUY_with later|r
     >>|cRXP_WARN_You need 50|r |T133971:0|t[Cooking] |cRXP_WARN_for a quest in Darkshire later|r
@@ -8730,7 +8730,7 @@ step
 step
     #ah
     #optional
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_WARN_If you don't want to or can't do this, skip this step|r
     >>|cRXP_BUY_Buy the following items for faster turn ins in Darkshore shortly:|r

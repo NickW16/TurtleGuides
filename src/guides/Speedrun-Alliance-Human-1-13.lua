@@ -5806,7 +5806,7 @@ step << Rogue
 step
     #xprate <1.5
     #ah
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_BUY_Buy|r |T133970:0|t|cRXP_LOOT_[Chunks of Boar Meat]|r |cRXP_BUY_and/or|r |T133970:0|t|cRXP_LOOT_[Stringy Wolf Meat]|r |cRXP_BUY_to level your|r |T133971:0|t[Cooking] |cRXP_BUY_with later|r
     >>|cRXP_WARN_You need 50|r |T133971:0|t[Cooking] |cRXP_WARN_for a quest in Darkshire later|r
@@ -5838,7 +5838,7 @@ step
     #xprate <1.5
     #ah
     #optional
-    .goto Stormwind City,53.612,59.764
+    .goto StormwindClassic,53.612,59.764
     >>|Tinterface/worldmap/chatbubble_64grey.blp:20|tTalk to |cRXP_FRIENDLY_Auctioneer Jaxon|r
     >>|cRXP_WARN_If you don't want to or can't do this, skip this step|r
     >>|cRXP_BUY_Buy the following items for faster turn ins at Westfall and Darkshore shortly:|r
