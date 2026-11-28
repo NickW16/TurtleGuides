@@ -256,6 +256,11 @@ function TG:IsQuestOn(id)
 end
 
 function TG:EvaluateConditions(step)
+  local hardcore = self.db and self.db.hardcoreMode == true
+  if hardcore and step.tags and step.tags.ah then
+    self._skipDebug = "variant gate"
+    return false
+  end
   local unknown = false
   self._skipDebug = nil
   self._unknownConditionTags = {}

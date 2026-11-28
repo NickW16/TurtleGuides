@@ -401,8 +401,13 @@ local function makeSmallWindow(index)
   return frame
 end
 
-local function updateSmallWindow(frame, title, entries, width)
+local function updateSmallWindow(frame, title, entries, width, dim)
   frame.title:SetText(title)
+  if dim then
+    frame.title:SetTextColor(0.55, 0.66, 0.82)
+  else
+    frame.title:SetTextColor(0.85, 0.85, 0.88)
+  end
   frame.plaque:SetWidth(Text.width(title, BODY_SIZE) + 18)
   local y = -10
   local shown = entries
@@ -788,6 +793,20 @@ function TG:RefreshFonts()
   end
 end
 
+local function auxEntries(step)
+  local all = Text.entries(step)
+  local result = {}
+  for _, entry in ipairs(all) do
+    if entry.el then
+      table.insert(result, entry)
+    end
+  end
+  if table.getn(result) == 0 and table.getn(all) > 0 then
+    table.insert(result, all[1])
+  end
+  return result
+end
+
 function TG:UpdateUI()
   local main = State.main
   if not main then
@@ -828,7 +847,7 @@ function TG:UpdateUI()
   local auxSteps = (self.GetActiveAuxSteps and self:GetActiveAuxSteps()) or {}
   for _, aux in ipairs(auxSteps) do
     if aux ~= current and table.getn(smallData) < MAX_SMALL then
-      table.insert(smallData, { title = "Extra", entries = Text.entries(aux) })
+      table.insert(smallData, { title = "Step " .. tostring(aux.index), entries = auxEntries(aux), dim = true })
     end
   end
   local anchor, smallWidth = main, main:GetWidth()
@@ -836,7 +855,7 @@ function TG:UpdateUI()
     local window = State.smalls[i]
     local data = smallData[i]
     if data then
-      updateSmallWindow(window, data.title, data.entries, smallWidth)
+      updateSmallWindow(window, data.title, data.entries, smallWidth, data.dim)
       local gap = 10
       window:ClearAllPoints()
       window:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, gap)

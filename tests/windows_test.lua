@@ -75,6 +75,34 @@ return {
     env.eq(string.find(row.text.value, "\001", 1, true) == nil, true)
   end,
 
+  test_aux_window_uses_step_number_and_objective_rows = function()
+    local TG = fresh()
+    withGuide(TG)
+    TG.IsElementTrackable = function(_, el)
+      return el.t == "cmd" and (el.tag == "collect" or el.tag == "accept")
+    end
+    TG.GetActiveAuxSteps = function()
+      return {
+        {
+          index = 1,
+          elements = {
+            { t = "text", text = "Kill boars. Loot them for their meat." },
+            { t = "cmd", tag = "collect", args = { "769", "10" } },
+          },
+        },
+      }
+    end
+    TG:InitUI()
+    local window = TG.UI.State.smalls[2]
+    env.eq(window.title.value, "Step 1")
+    env.eq(string.find(window.rows[1].text.value, "Collect:", 1, true) ~= nil, true)
+    env.eq(window.rows[2]:IsShown(), false)
+    env.eq(window.title.color[1], 0.55)
+    env.eq(window.title.color[2], 0.66)
+    env.eq(window.title.color[3], 0.82)
+    env.eq(TG.UI.State.smalls[1].title.color[1], 0.85)
+  end,
+
   test_class_icon_uses_vanilla_sheet = function()
     local TG = fresh()
     TG:InitUI()

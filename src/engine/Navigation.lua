@@ -130,6 +130,16 @@ function TG:SetGuide(key, stepIndex, silent, noAutoDetect)
   return true
 end
 
+local function auxRequiredIndex(guide, step)
+  if not step or not step.requires then
+    return nil
+  end
+  if guide.labels and guide.labels[step.requires] then
+    return guide.labels[step.requires]
+  end
+  return tonumber(step.requires)
+end
+
 function TG:GetActiveAuxSteps()
   local result = {}
   local guide = self.currentGuide
@@ -137,16 +147,17 @@ function TG:GetActiveAuxSteps()
     return result
   end
   local idx = self.currentStepIndex or 1
+  local candidates = {}
   for i, step in ipairs(guide.steps) do
     if i < idx and (step.sticky or step.completewith) then
       local targetIdx
       if step.completewith then
         if step.completewithIndex then
           targetIdx = step.completewithIndex
-        elseif guide.labels and guide.labels[step.completewith] then
-          targetIdx = guide.labels[step.completewith]
         elseif step.completewith == "next" then
           targetIdx = i + 1
+        elseif guide.labels and guide.labels[step.completewith] then
+          targetIdx = guide.labels[step.completewith]
         else
           for j, other in ipairs(guide.steps) do
             if other.label == step.completewith then
@@ -171,8 +182,25 @@ function TG:GetActiveAuxSteps()
         hidden = true
       end
       if not hidden then
-        table.insert(result, step)
+        candidates[i] = step
       end
+    end
+  end
+
+  local blocking = { [idx] = true }
+  for i in pairs(candidates) do
+    blocking[i] = true
+  end
+  local excluded = {}
+  for i, step in pairs(candidates) do
+    local req = auxRequiredIndex(guide, step)
+    if req and blocking[req] then
+      excluded[i] = true
+    end
+  end
+  for i, step in ipairs(guide.steps) do
+    if candidates[i] and not excluded[i] then
+      table.insert(result, step)
     end
   end
   return result

@@ -359,7 +359,9 @@ function env.reset()
       text.SetJustifyV = noop
       text.SetNonSpaceWrap = noop
       text.SetAlpha = noop
-      text.SetTextColor = noop
+      text.SetTextColor = function(_, r, g, b)
+        text.color = { r, g, b }
+      end
       text.SetShadowColor = noop
       text.SetShadowOffset = noop
       text.SetDrawLayer = noop

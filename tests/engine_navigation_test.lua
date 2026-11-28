@@ -328,4 +328,142 @@ return {
     env.eq(TG.currentStepIndex, 3)
     env.eq(TG.cdb.guideCursors.A, 3)
   end,
+
+  test_next_step_does_not_skip_self_found_step = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Variant",
+      name = "Variant",
+      steps = {
+        { index = 1, elements = { { t = "text", text = "first" } } },
+        { index = 2, elements = { { t = "text", text = "second" } } },
+        { index = 3, elements = { { t = "text", text = "third" } } },
+        { index = 4, elements = { { t = "text", text = "fourth" } } },
+        {
+          index = 5,
+          elements = { { t = "text", text = "fifth" } },
+        },
+        {
+          index = 6,
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 8,
+          tags = { ssf = true },
+          elements = { { t = "cmd", tag = "collect", args = { "3027", "1" } } },
+        },
+        {
+          index = 7,
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 8,
+          tags = { ah = true },
+          elements = { { t = "cmd", tag = "collect", args = { "3027", "1" } } },
+        },
+        { index = 8, elements = { { t = "text", text = "eighth" } } },
+      },
+    }
+    TG.db = { hardcoreMode = false }
+    TG.cdb = {}
+    TG.guideByKey = { [g.key] = g }
+    TG.SetWaypoint = function() end
+    TG.ClearWaypoint = function() end
+    TG:SetGuide(g.key, 5, true, true)
+    TG:NextStep(false)
+    env.eq(TG.currentStepIndex, 6)
+  end,
+
+  test_aux_steps_show_one_link_per_requires_chain = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Aux",
+      name = "Aux",
+      labels = { Chain1 = 1, Chain2 = 2 },
+      steps = {
+        {
+          index = 1,
+          label = "Chain1",
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 6,
+          elements = { { t = "cmd", tag = "collect", args = { "769", "10" } } },
+        },
+        {
+          index = 2,
+          label = "Chain2",
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 7,
+          requires = "Chain1",
+          elements = { { t = "cmd", tag = "collect", args = { "769", "50" } } },
+        },
+        { index = 3, elements = {} },
+        { index = 4, elements = {} },
+        { index = 5, elements = {} },
+        { index = 6, elements = {} },
+        { index = 7, elements = {} },
+      },
+    }
+    TG.db = {}
+    TG.currentGuide = g
+    TG.currentStepIndex = 5
+    TG.IsStepComplete = function()
+      return false
+    end
+
+    local aux = TG:GetActiveAuxSteps()
+    env.eq(table.getn(aux), 1)
+    env.eq(aux[1].index, 1)
+
+    TG.IsStepComplete = function(_, step)
+      return step.index == 1
+    end
+    aux = TG:GetActiveAuxSteps()
+    env.eq(table.getn(aux), 1)
+    env.eq(aux[1].index, 2)
+  end,
+
+  test_aux_steps_hide_auction_variant_in_hardcore = function()
+    local TG = loadEngine()
+    local g = {
+      key = "Aux",
+      name = "Aux",
+      steps = {
+        {
+          index = 1,
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 5,
+          tags = { ssf = true },
+          elements = { { t = "cmd", tag = "collect", args = { "769", "10" } } },
+        },
+        {
+          index = 2,
+          sticky = true,
+          completewith = "next",
+          completewithIndex = 5,
+          tags = { ah = true },
+          elements = { { t = "cmd", tag = "collect", args = { "769", "50" } } },
+        },
+        { index = 3, elements = {} },
+        { index = 4, elements = {} },
+        { index = 5, elements = {} },
+      },
+    }
+    TG.db = { hardcoreMode = false }
+    TG.currentGuide = g
+    TG.currentStepIndex = 4
+    TG.IsStepComplete = function()
+      return false
+    end
+
+    local aux = TG:GetActiveAuxSteps()
+    env.eq(table.getn(aux), 2)
+    env.eq(aux[1].index, 1)
+    env.eq(aux[2].index, 2)
+
+    TG.db.hardcoreMode = true
+    aux = TG:GetActiveAuxSteps()
+    env.eq(table.getn(aux), 1)
+    env.eq(aux[1].index, 1)
+  end,
 }
